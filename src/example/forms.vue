@@ -105,7 +105,7 @@
 </template>
 
 <script>
-import User, { UserAddressForm, UserForm } from '../services/user'
+import { UserAddressForm, UserForm } from '../services/user'
 import { MinLengthValidator, minLength, MustMatch } from '../services/validators'
 import FormField from './FormField'
 
