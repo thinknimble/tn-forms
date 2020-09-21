@@ -1,8 +1,8 @@
 {
-  "name": "@thinknimble/tn-models",
+  "name": "tn-forms",
   "version": "1.0.0",
   "description": "Utilities for building front-end models.",
-  "author": "William Huster <william@thinknimble.com>",
+  "author": "William Huster <william@thinknimble.com>, Pari Baker <pari@thinknimble.com>",
   "license": "SEE LICENSE IN LICENSE.TXT",
   "main": "lib/index.js",
   "scripts": {
@@ -12,8 +12,7 @@
     "build": "webpack --config webpack.config.js"
   },
   "directories": {
-    "lib": "./src",
-    "test": "./test"
+    "test": "test"
   },
   "repository": {
     "type": "git",
