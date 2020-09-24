@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import { MinLengthValidator, minLength, MustMatch } from '..validators'
+import { MinLengthValidator, minLength, MustMatch } from '@thinknimble/tn-validators'
 import FormField from '../FormField'
 import Forms from '../index'
 

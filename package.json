@@ -1,7 +1,7 @@
 {
   "name": "@thinknimble/tn-forms",
   "version": "1.0.2",
-  "description": "Utilities for building front-end models.",
+  "description": "Utilities for building front-end forms.",
   "author": "William Huster <william@thinknimble.com>, Pari Baker <pari@thinknimble.com>",
   "license": "SEE LICENSE IN LICENSE.TXT",
   "main": "lib/index.js",
@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/thinknimble/tn-models.git"
+    "url": "git+https://bitbucket.org/thinknimble/tn-forms.git"
   },
   "keywords": [
     "javascript"
   ],
-  "homepage": "https://bitbucket.org/thinknimble/tn-models#readme",
+  "homepage": "https://bitbucket.org/thinknimble/tn-forms#readme",
   "dependencies": {
     "@thinknimble/tn-utils": "^1.4.0",
     "user": "0.0.0"
