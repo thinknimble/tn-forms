@@ -92,9 +92,7 @@
             </button>
           </div>
         </template>
-        <button @click.prevent="addAddress">
-          Add New Field
-        </button>
+        <button @click.prevent="addAddress">Add New Field</button>
       </div>
     </form>
 
@@ -105,9 +103,9 @@
 </template>
 
 <script>
-import { UserAddressForm, UserForm } from '../services/user'
-import { MinLengthValidator, minLength, MustMatch } from '../services/validators'
-import FormField from './FormField'
+import { MinLengthValidator, minLength, MustMatch } from '..validators'
+import FormField from '../FormField'
+import Forms from '../index'
 
 export class UserAddressForm extends Form {
   static street = new FormField({ validators: [] })

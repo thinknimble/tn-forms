@@ -1,5 +1,5 @@
 {
-  "name": "tn-forms",
+  "name": "@thinknimble/tn-forms",
   "version": "1.0.0",
   "description": "Utilities for building front-end models.",
   "author": "William Huster <william@thinknimble.com>, Pari Baker <pari@thinknimble.com>",
@@ -23,7 +23,8 @@
   ],
   "homepage": "https://bitbucket.org/thinknimble/tn-models#readme",
   "dependencies": {
-    "@thinknimble/tn-utils": "^1.4.0"
+    "@thinknimble/tn-utils": "^1.4.0",
+    "user": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
