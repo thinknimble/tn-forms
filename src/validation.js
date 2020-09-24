@@ -61,6 +61,20 @@ export class MustMatchValidator extends Validator {
   }
 }
 
+export class RequiredValidator extends Validator {
+  constructor({ message = 'This is a required field', code = 'required' }) {
+    super({ message, code })
+  }
+  call(value) {
+    if (typeof value === 'object') {
+      throw new Error('Invalid value supplied')
+    }
+    if (value.length < this.minLength) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    }
+  }
+}
+
 export class MinLengthValidator extends Validator {
   constructor({
     message = 'Must meet minimum length requirements',
