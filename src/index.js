@@ -161,17 +161,17 @@ export default class Form {
   validate() {
     this.fields.forEach((f) => {
       if (f instanceof FormField) {
-        f.validate(false)
+        f.validate()
 
         if (!f.isValid) return (this.isValid = false)
         else return (this.isValid = true)
       }
       if (f instanceof FormArray) {
         f.groups.forEach((fg) => {
-          fg.validate()
-
-          if (!fg.validate(false)) return (this.isValid = false)
-          else return (this.isValid = true)
+          fg.fields.forEach(f=>{f.validate()
+            if(!f.isValid) return this.isValid=false 
+            else return this.isValid=true
+          })
         })
       }
     })
