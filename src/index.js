@@ -17,6 +17,11 @@ export class FormField {
   validate() {
     this.errors = []
     this.validators.map((val) => {
+      if(!val){
+        // fails if null is added to list of validators
+        
+        return 
+      }
       try {
         val.call(this.value)
       } catch (e) {
@@ -213,7 +218,14 @@ export default class Form {
       return e
     }
   }
-
+  set errors(errs) {
+    if(Array.isArray(errs)){
+      this._errors = errs
+    }else{
+      this._errors=[errs]
+    }
+    
+  }
   get value() {
     return this.fields.reduce((acc, curr) => {
       acc[curr.name] = curr.value
