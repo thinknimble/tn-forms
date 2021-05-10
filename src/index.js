@@ -17,10 +17,10 @@ export class FormField {
   validate() {
     this.errors = []
     this.validators.map((val) => {
-      if(!val){
+      if (!val) {
         // fails if null is added to list of validators
-        
-        return 
+
+        return
       }
       try {
         val.call(this.value)
@@ -168,16 +168,11 @@ export default class Form {
       if (f instanceof FormField) {
         f.validate()
 
-       /*  if (!f.isValid) return (this.isValid = false)
+        /*  if (!f.isValid) return (this.isValid = false)
         else return (this.isValid = true) */
-      }
-      if (f instanceof FormArray) {
+      } else if (f instanceof FormArray) {
         f.groups.forEach((fg) => {
-          fg.fields.forEach(f=>{
-            f.validate()
-        /*     if(!f.isValid) return this.isValid=false 
-            else return this.isValid=true */
-          })
+          fg.validate()
         })
       }
     })
@@ -219,12 +214,11 @@ export default class Form {
     }
   }
   set errors(errs) {
-    if(Array.isArray(errs)){
+    if (Array.isArray(errs)) {
       this._errors = errs
-    }else{
-      this._errors=[errs]
+    } else {
+      this._errors = [errs]
     }
-    
   }
   get value() {
     return this.fields.reduce((acc, curr) => {
