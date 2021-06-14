@@ -8,6 +8,7 @@ export class FormField {
       _validators: validators,
       _errors: errors,
       _value: value,
+
       name: name,
     })
   }
@@ -66,6 +67,7 @@ export class FormField {
 export default class Form {
   constructor(kwargs = {}) {
     this._fields = {}
+    this._dynamicFormValidators = {}
     for (const prop in this.constructor) {
       if (this.constructor[prop] instanceof FormField) {
         // create a copy of the new Field instance as they point to the same object in memory
@@ -75,6 +77,10 @@ export default class Form {
         // create a copy of the new FieldArray instance as they point to the same object in memory
         this._fields[prop] = this.copyArray(this.constructor[prop])
       }
+      if (prop == 'dynamicFormValidators') {
+        // adds form level validators to fields
+        this._dynamicFormValidators = this.constructor[prop]
+      }
     }
     for (const fieldName in this._fields) {
       const field = this._fields[fieldName]
@@ -83,6 +89,11 @@ export default class Form {
         // or the constructor of the parent form class latest priority first
         field.value = kwargs[fieldName] ? kwargs[fieldName] : field.value
         field.name = fieldName
+      }
+    }
+    for (const [_field, _validators] of Object.entries(this._dynamicFormValidators)) {
+      for (let i = 0; i < _validators.length; i++) {
+        this.addValidator(_field, _validators[i])
       }
     }
   }
@@ -153,14 +164,20 @@ export default class Form {
      * Note for formArrays all instances will receive the validator
      */
     this._handleNoFieldErrors(fieldName)
+    let props = {}
+    for (const prop in validator) {
+      props[prop] = validator[prop]
+    }
+    props['form'] = this
+    let updatedValidatorWithForm = new validator.constructor(props)
     if (this.field[fieldName] instanceof FormArray && extraArgs) {
       this.field[fieldName].groups.forEach((g) => {
         if (g.field[extraArgs]) {
-          g.field[extraArgs].addValidator(validator)
+          g.field[extraArgs].addValidator(updatedValidatorWithForm)
         }
       })
     } else if (this.field[fieldName] instanceof FormField) {
-      this.field[fieldName].addValidator(validator)
+      this.field[fieldName].addValidator(updatedValidatorWithForm)
     }
   }
   validate() {
@@ -169,7 +186,7 @@ export default class Form {
         f.validate()
 
         /*  if (!f.isValid) return (this.isValid = false)
-        else return (this.isValid = true) */
+          else return (this.isValid = true) */
       } else if (f instanceof FormArray) {
         f.groups.forEach((fg) => {
           fg.validate()

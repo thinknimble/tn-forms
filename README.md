@@ -33,14 +33,14 @@ email.errors
 
 class UserRegistration form extends Form {
 static fullName = new FormField({ validators: [new RequiredValidator()] })
-  static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
-  static password = new FormField({
+static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
+static password = new FormField({
     validators: [
       new RequiredValidator(),
       new MinLengthValidator({ minLength: 10, message: 'Minimum Length of 10 required' }),
     ],
   })
-  static confirmPassword = new FormField({ validators: [new RequiredValidator()] })
+static confirmPassword = new FormField({ validators: [new RequiredValidator()] })
 }
 
 ```
@@ -176,3 +176,10 @@ multiple nested form arrays duplicating values when the value is an array
 - Add Dynamic validator types to the form class to handle on its own 
 - Add async validators
 - Add field accessor (to reduce verbosity)
+
+
+# Change Log
+#### v1.0.7 release date *06/13/2021* #### 
+- Dynamic Validators can now be added to the form with the static variable dynamicFormValidators
+- dynamicFormValidators is a reserved keyword for dynamic form level validators
+

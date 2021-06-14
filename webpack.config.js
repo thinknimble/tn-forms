@@ -1,6 +1,6 @@
 const path = require('path')
 module.exports = {
-  entry: './src/forms/index.js',
+  entry: './src/index.js',
   module: {
     rules: [
       {
