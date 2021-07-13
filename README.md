@@ -41,6 +41,7 @@ static password = new FormField({
     ],
   })
 static confirmPassword = new FormField({ validators: [new RequiredValidator()] })
+
 }
 
 ```
@@ -60,18 +61,18 @@ data(){
 <FormField @blur="registrationForm.field.validate()" :errors="registrationForm.field.errors" v-model="registrationForm.field.value">
 
 
-// For dynamic validators (such as cross field validators) the validator must be added when an instance of a form is created 
+// For dynamic validators (such as cross field validators) the validator must be added using the static dynamicFormValidators which accepsts an object of key value (field to apply the validator to) and value (an array of dynamic validators) pairs
 
+class UserForm extends Form {
+....
+static password = new FormField()
+static confirmPassowrd = new FormField()
 
-data(){
-    return {
-        registrationForm = new UserRegistrationForm()
-    }
-}
-created(){
-    // The forms service contains a helper method on the form to add validators on the fly 
+  static dynamicFormValidators = {
+    confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
+  }
 
-    this.registrationForm.addValidator('confirmPassword', new MustMatchValidator({matcher:this.field.password,message:"Messages must match "}))
+....
 }
 
 // Get the form data 
