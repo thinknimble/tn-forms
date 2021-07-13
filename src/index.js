@@ -7,7 +7,11 @@ export class FormField {
     Object.assign(this, {
       _validators: validators,
       _errors: errors,
-      _value: value,
+      _value: Array.isArray(value)
+        ? [...value]
+        : typeof value !== null && typeof value == 'object'
+        ? { ...value }
+        : value,
 
       name: name,
     })
@@ -116,7 +120,7 @@ export default class Form {
   }
   copyArray(opts = {}) {
     let groups = opts.groups.map((g) => new g.constructor(g))
-    return new FormArray({ ...opts, groups })
+    return new FormArray({ opts, groups: [...groups] })
   }
   _handleNoFieldErrors(fieldName) {
     try {
