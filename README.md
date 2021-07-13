@@ -183,3 +183,6 @@ multiple nested form arrays duplicating values when the value is an array
 - Dynamic Validators can now be added to the form with the static variable dynamicFormValidators
 - dynamicFormValidators is a reserved keyword for dynamic form level validators
 
+# Change Log
+#### v1.0.8 release date *07/13/2021* #### 
+- Update to class copy method for bugfix array values in memory 
