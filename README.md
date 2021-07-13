@@ -188,6 +188,3 @@ multiple nested form arrays duplicating values when the value is an array
 #### v1.0.8 release date *07/13/2021* #### 
 - Update to class copy method for bugfix array values in memory 
 
-# Change Log
-#### v1.0.9 release date *07/13/2021* #### 
-- Bugfix for formarray
