@@ -120,7 +120,7 @@ export default class Form {
   }
   copyArray(opts = {}) {
     let groups = opts.groups.map((g) => new g.constructor(g))
-    return new FormArray({ ...opts, groups: [...groups] })
+    return new FormArray({ ...opts, name: opts.name, groups: [...groups] })
   }
   _handleNoFieldErrors(fieldName) {
     try {
