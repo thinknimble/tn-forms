@@ -64,7 +64,9 @@ export class FormField {
     this.validators = validator
   }
   addValidator(validator) {
-    this._validators.push(validator)
+    let __validators = [...this.validators]
+    __validators.push(validator)
+    this._validators = __validators
   }
 }
 
