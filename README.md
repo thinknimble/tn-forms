@@ -192,3 +192,7 @@ multiple nested form arrays duplicating values when the value is an array
 #### v1.0.9 release date *07/13/2021* #### 
 - Bugfix for v1.0.8 
 
+# Change Log
+#### v1.0.10 release date *07/13/2021* #### 
+- Issue with building new code
+
