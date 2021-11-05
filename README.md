@@ -167,16 +167,18 @@ v-for="(form, i) in alertTemplateForm.field.addresses.groups"
 
 
 ```
-## Bugs ##
-
-multiple nested form arrays duplicating values when the value is an array 
-
 
 ## Future Enhancments ##
 
 - Add Dynamic validator types to the form class to handle on its own 
 - Add async validators
-- Add field accessor (to reduce verbosity)
+- Add field accessor (to reduce verbosity) formInstance.formField should act as formInstance.field.formField 
+- Add additional options for form fields (placeholder, id, type, etc) to let users loop over formInstance.fields accessor
+- add reset form function which re-applies initial value from form class to instance 
+- (optional) Add vue and react directives (framework)
+- (optional) Add vue and react components (framework)
+
+
 
 
 # Change Log
@@ -195,4 +197,10 @@ multiple nested form arrays duplicating values when the value is an array
 # Change Log
 #### v1.0.10 release date *07/13/2021* #### 
 - Issue with building new code
+
+# Change Log
+#### v2.0 release date *07/13/2021* #### 
+- Moved tn-validators to this package 
+
+
 
