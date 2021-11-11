@@ -7,6 +7,8 @@ import {
   RequiredValidator,
   MinDateValidator,
   MaxDateValidator,
+  UrlValidator,
+  PatternValidator,
 } from '../src/index.js'
 
 describe('#emailValidator', function () {
@@ -140,6 +142,51 @@ describe('#MaxDateValdiator', function () {
       validator.call(moment().add(1, 'days'))
     } catch (e) {
       assert.strictEqual(JSON.parse(e.message).code, 'maxDate')
+    }
+  })
+})
+
+describe('#UrlValidator', function () {
+  let message = 'UrlValidator'
+  const validator = new UrlValidator({ message: message })
+
+  it('Should throw an error if date is null', function () {
+    try {
+      validator.call(null)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidUrl')
+    }
+  })
+  it('Should not throw an error if date is less than', function () {
+    validator.call('https://test.com')
+  })
+  it('Should throw an error if value is not a url', function () {
+    try {
+      validator.call('test')
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidUrl')
+    }
+  })
+})
+describe('#UrlValidator', function () {
+  let message = 'PatternValidator'
+  const validator = new PatternValidator({ message: message, pattern: /[0-9]+/ })
+
+  it('Should throw an error if value is null', function () {
+    try {
+      validator.call(null)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidPattern')
+    }
+  })
+  it('Should not throw an error if value does pass pattern test', function () {
+    validator.call(1234)
+  })
+  it('Should throw an error if value does not pass pattern test', function () {
+    try {
+      validator.call('test')
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidPattern')
     }
   })
 })

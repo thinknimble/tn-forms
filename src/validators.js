@@ -217,26 +217,35 @@ export class MaximumValueValidator extends Validator {
     }
   }
 }
-export class UrlValidator extends Validator {
-    constructor({ message = 'Please enter a valid url', code = 'invalidUrl' } = {}) {
-      super({ message, code })
-    }
-    call(value) {
-      if (!value) {
-        throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-      } else if (typeof value != 'string') {
-        throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-      } else if (
-        !/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?$/.test(
-          value,
-        )
-      ) {
-        throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-      }
+
+export class PatternValidator extends Validator {
+  constructor({
+    message = 'Value does not match pattern',
+    code = 'invalidPattern',
+    pattern = '',
+  } = {}) {
+    super({ message, code })
+    this.pattern = typeof pattern == 'string' ? new RegExp(pattern) : pattern
+  }
+  call(value) {
+    if (!notNullOrUndefined(value)) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    } else if (typeof value != 'string' && typeof value != 'number') {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    } else if (!this.pattern.test(value)) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }
-  
- */
+}
+
+export class UrlValidator extends PatternValidator {
+  constructor({ message = 'Please enter a valid url', code = 'invalidUrl' } = {}) {
+    let pattern =
+      /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?$/
+    super({ message, code, pattern })
+  }
+}
+
 export function notNullOrUndefined(value) {
   return value !== null && typeof value !== 'undefined'
 }
