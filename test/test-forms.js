@@ -1,7 +1,7 @@
 import assert from 'assert'
 
 import Form, { FormField, FormArray } from '../src/forms'
-import { NumberValidator, MinLengthValidator, MustMatchValidator } from '../src/validation'
+import { NumberValidator, MinLengthValidator, MustMatchValidator } from '../src/index'
 
 describe('Form Model', () => {
   class UserAddressForm extends Form {
@@ -53,7 +53,14 @@ describe('Form Model', () => {
       )
     })
     it('should throw an error if a field accessed does not exist', () => {
-      assert.throws(userForm._handleNoFieldErrors.bind(userForm, 'confirmPassword'), Error)
+      //assert.throws(userForm._handleNoFieldErrors.bind(userForm, 'confirmPassword'), Error)
+      assert.throws(
+        function () {
+          userForm._handleNoFieldErrors(userForm, 'confirmPassword')
+        },
+        Error,
+        /Error thrown/,
+      )
     })
   })
 })

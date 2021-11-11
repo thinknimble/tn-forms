@@ -1,111 +1,8 @@
-<template>
-  <div>
-    <h3>Form Group Validator</h3>
-
-    <form class="user-form">
-      <div class="form-group">
-        <input
-          @blur="userForm.field['firstName'].validate()"
-          type="text"
-          id="firstName"
-          v-model="userForm.field['firstName'].value"
-        />
-        <div v-if="userForm.field['firstName'].errors" class="errors">
-          <span
-            :key="`${error.code}-${i}`"
-            v-for="(error, i) in userForm.field['firstName'].errors"
-          >
-            {{ error.message }}
-          </span>
-        </div>
-      </div>
-      <div class="form-group">
-        <input type="text" id="lastName" v-model="userForm.field['lastName'].value" />
-        <div v-if="userForm.field['lastName'].errors" class="errors">
-          <span :key="`${error.code}-${i}`" v-for="(error, i) in userForm.field['lastName'].errors">
-            {{ error.message }}
-          </span>
-        </div>
-      </div>
-      <div class="form-group">
-        <input type="text" id="password" v-model="userForm.field['password'].value" />
-        <div v-if="userForm.field['password'].errors" class="errors">
-          <span :key="`${error.code}-${i}`" v-for="(error, i) in userForm.field['password'].errors">
-            {{ error.message }}
-          </span>
-        </div>
-      </div>
-      <div class="form-group">
-        <input
-          type="text"
-          id="confirmPassword"
-          v-model="userForm.field['confirmPassword'].value"
-          @blur="userForm.field['confirmPassword'].validate()"
-        />
-        <div v-if="userForm.field['confirmPassword'].errors" class="errors">
-          <span
-            :key="`${error.code}-${i}`"
-            v-for="(error, i) in userForm.field['confirmPassword'].errors"
-          >
-            {{ error.message }}
-          </span>
-        </div>
-      </div>
-      <div class="form-group">
-        <h4>Address</h4>
-        <template v-for="(group, index) in userForm.field['address'].groups">
-          <div :key="index" :class="`address-${index}`">
-            <div class="form-group">
-              <input
-                :key="`street-${index}`"
-                @blur="group.field['street'].validate()"
-                type="text"
-                :id="`street-${index}`"
-                v-model="group.field['street'].value"
-              />
-              <div v-if="group.field['street'].errors" class="errors">
-                <span
-                  :key="`${error.code}-${i}`"
-                  v-for="(error, i) in group.field['street'].errors"
-                >
-                  {{ error.message }}
-                </span>
-              </div>
-            </div>
-            <div class="form-group">
-              <input
-                :key="`city-${index}`"
-                @blur="group.field['city'].validate()"
-                type="text"
-                :id="`city-${index}`"
-                v-model="group.field['city'].value"
-              />
-              <div v-if="group.field['city'].errors" class="errors">
-                <span :key="`${error.code}-${i}`" v-for="(error, i) in group.field['city'].errors">
-                  {{ error.message }}
-                </span>
-              </div>
-            </div>
-
-            <button :key="index" @click.prevent="userForm.removeFromArray('address', index)">
-              Remove
-            </button>
-          </div>
-        </template>
-        <button @click.prevent="addAddress">Add New Field</button>
-      </div>
-    </form>
-
-    <button @click="submitFormGroup" :disabled="!userForm.isValid">Submit</button>
-
-    <br />
-  </div>
-</template>
+<template></template>
 
 <script>
-import { MinLengthValidator, minLength, MustMatch } from '@thinknimble/tn-validators'
-import FormField from '../FormField'
-import Forms from '../index'
+import { MinLengthValidator, MustMatchValidator, RequiredValidator, EmailValidator } from '../index'
+import Form, { FormField } from '../index'
 
 export class UserAddressForm extends Form {
   static street = new FormField({ validators: [] })
@@ -113,9 +10,12 @@ export class UserAddressForm extends Form {
 }
 
 export class UserForm extends Form {
-  static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+  static firstName = new FormField({ validators: [new RequiredValidator()] })
   static lastName = new FormField({
-    validators: [new MinLengthValidator({ minLength: 5 })],
+    validators: [new RequiredValidator()],
+  })
+  static email = new FormField({
+    validators: [new EmailValidator()],
   })
   static address = new FormArray({
     name: 'address',

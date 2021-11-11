@@ -19,7 +19,7 @@ describe('#emailValidator', function () {
       assert.strictEqual(JSON.parse(err.message).code, 'invalidEmail')
     }
   })
-  it('should not throw an error for emails', function () {
+  it('should throw an error for nulls', function () {
     const validator = new EmailValidator()
     try {
       validator.call(null)
