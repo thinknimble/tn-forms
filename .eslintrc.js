@@ -1,23 +1,13 @@
 module.exports = {
-  root: true,
+  parser: 'babel-eslint',
   env: {
-    node: true,
+    browser: true,
+    es2021: true,
   },
-  extends: ['eslint:recommended'],
+  extends: ['eslint:recommended', 'prettier', 'plugin:prettier/recommended'],
   parserOptions: {
-    parser: 'babel-eslint',
+    ecmaVersion: 13,
+    sourceType: 'module',
   },
-  rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-unused-vars': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-  },
-  overrides: [
-    {
-      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
-      env: {
-        mocha: true,
-      },
-    },
-  ],
+  rules: {},
 }
