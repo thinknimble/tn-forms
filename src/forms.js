@@ -95,6 +95,9 @@ export default class Form {
         // or the constructor of the parent form class latest priority first
         field.value = kwargs[fieldName] ? kwargs[fieldName] : field.value
         field.name = fieldName
+        this[fieldName] = field
+      } else if (field instanceof FormArray) {
+        this[fieldName] = field
       }
     }
     for (const [_field, _validators] of Object.entries(this._dynamicFormValidators)) {
