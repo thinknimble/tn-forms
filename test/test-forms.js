@@ -1,7 +1,7 @@
 import assert from 'assert'
 
-import Form, { FormField, FormArray } from '../src/forms'
-import { NumberValidator, MinLengthValidator, MustMatchValidator } from '../src/index'
+import Form, { FormField } from '../src/forms'
+import { MinLengthValidator, MustMatchValidator } from '../src/index'
 
 describe('Form Model', () => {
   class UserAddressForm extends Form {

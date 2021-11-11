@@ -1,4 +1,4 @@
-export class Validator {
+export default class Validator {
   /**
    * Crete an instance of the validator.
    * @param {string} message - The error message to return if validation fails.

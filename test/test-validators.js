@@ -2,7 +2,6 @@ import assert from 'assert'
 import moment from 'moment'
 
 import {
-  NumberValidator,
   MinLengthValidator,
   EmailValidator,
   RequiredValidator,
