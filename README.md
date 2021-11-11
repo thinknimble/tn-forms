@@ -205,5 +205,8 @@ v-for="(form, i) in alertTemplateForm.field.addresses.groups"
 #### v2.0.1 & v2.0.2 & v2.0.3 release date *11/11/2021* #### 
 - Re-organized files 
 
+#### v2.0.4 release date *11/11/2021* #### 
+- Added Url and Pattern validators
+
 
 
