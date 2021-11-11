@@ -9,6 +9,7 @@ import Validator, {
   RequiredValidator,
   MustMatchValidator,
   NumberValidator,
+  UrlValidator,
 } from './validators'
 
 export default Form
@@ -25,4 +26,5 @@ export {
   RequiredValidator,
   MustMatchValidator,
   NumberValidator,
+  UrlValidator,
 }

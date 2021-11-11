@@ -217,25 +217,25 @@ export class MaximumValueValidator extends Validator {
     }
   }
 }
-/* export class UrlValidator extends Validator {
-  constructor({ message = 'This is a required field', code = 'required' } = {}) {
-    super({ message, code })
-  }
-  call(value) {
-    if (!value) {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (typeof value != 'string') {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (
-      !/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?$/.test(
-        value,
-      )
-    ) {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+export class UrlValidator extends Validator {
+    constructor({ message = 'Please enter a valid url', code = 'invalidUrl' } = {}) {
+      super({ message, code })
+    }
+    call(value) {
+      if (!value) {
+        throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+      } else if (typeof value != 'string') {
+        throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+      } else if (
+        !/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?$/.test(
+          value,
+        )
+      ) {
+        throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+      }
     }
   }
-}
-
+  
  */
 export function notNullOrUndefined(value) {
   return value !== null && typeof value !== 'undefined'
