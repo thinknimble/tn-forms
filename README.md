@@ -202,6 +202,15 @@ Validates a field has a link pattern (ftp/http/https)
 ```
     new UrlValidator()
 ```
+**MustMatchValidator**
+Validates a field matches a value (dynamic)
+```
+  //dynamic 
+  new MustMatchValidator({matcher?: string<fieldName>,form?:<FormField>})
+
+
+
+```
 
 
 
@@ -248,6 +257,9 @@ Validates a field has a link pattern (ftp/http/https)
 
 #### v2.0.4 release date *11/11/2021* #### 
 - fields as direct properties
+
+#### v2.0.4 release date *11/11/2021* #### 
+- bug in max/min value validator fixed
 
 
 
