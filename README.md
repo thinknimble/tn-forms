@@ -218,6 +218,7 @@ Validates a field matches a value (dynamic)
 ## Future Enhancments ##
 
 - Add Dynamic validator types to the form class to handle on its own 
+- Make dynamic versions of min/max value/date validators
 - Add async validators
 - Add field accessor (to reduce verbosity) formInstance.formField should act as formInstance.field.formField 
 - Add additional options for form fields (placeholder, id, type, etc) to let users loop over formInstance.fields accessor
