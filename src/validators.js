@@ -186,32 +186,32 @@ export class MaxDateValidator extends Validator {
 }
 
 export class MinimumValueValidator extends Validator {
-  constructor({ message = 'Must meet minimum value', code = 'minValue', min = 0 } = {}) {
+  constructor({ message = 'Must meet minimum value', code = 'invalidMinValue', min = 0 } = {}) {
     super({ message, code })
     this.min = min
   }
 
   call(value) {
-    if (!value || !Number.isInteger(parseFloat(value))) {
+    if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {
-      if (value < this.min) {
+      if (Number(value) < this.min) {
         throw new Error(JSON.stringify({ code: this.code, message: this.message }))
       }
     }
   }
 }
 export class MaximumValueValidator extends Validator {
-  constructor({ message = 'Must meet minimum value', code = 'maxValue', max = 10 } = {}) {
+  constructor({ message = 'Must meet minimum value', code = 'invalidMaxValue', max = 10 } = {}) {
     super({ message, code })
     this.max = max
   }
 
   call(value) {
-    if (!value || !Number.isInteger(parseFloat(value))) {
+    if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {
-      if (value > this.max) {
+      if (Number(value) > this.max) {
         throw new Error(JSON.stringify({ code: this.code, message: this.message }))
       }
     }
@@ -256,4 +256,9 @@ export function isNumber(message = 'Value must be a number') {
       throw new Error(message)
     }
   }
+}
+
+export function isNumberOrFloat(value) {
+  let val = Number(value)
+  return typeof Number(val) == 'number' && !isNaN(val)
 }

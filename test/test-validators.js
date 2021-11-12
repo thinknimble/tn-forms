@@ -9,6 +9,8 @@ import {
   MaxDateValidator,
   UrlValidator,
   PatternValidator,
+  MinimumValueValidator,
+  MaximumValueValidator,
 } from '../src/index.js'
 
 describe('#emailValidator', function () {
@@ -187,6 +189,86 @@ describe('#UrlValidator', function () {
       validator.call('test')
     } catch (e) {
       assert.strictEqual(JSON.parse(e.message).code, 'invalidPattern')
+    }
+  })
+})
+describe('#MinimumValueValidator', function () {
+  let message = 'InvalidMinimumValue'
+  const validator = new MinimumValueValidator({ message: message, min: 10 })
+
+  it('Should throw an error if value is null', function () {
+    try {
+      validator.call(null)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMinValue')
+    }
+  })
+  it('Should not throw an error if value is greater than the min', function () {
+    validator.call(1234)
+  })
+  it('Should not throw an error if value is a string and is greater than the min', function () {
+    validator.call('1234')
+  })
+  it('Should not throw an error if value is a string and is greater than the min', function () {
+    validator.call('1234.5')
+  })
+  it('Should throw an error if value is a string and is less than the min', function () {
+    try {
+      validator.call('1')
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMinValue')
+    }
+  })
+  it('Should throw an error if value is a string and is less than the min', function () {
+    try {
+      validator.call(9.9)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMinValue')
+    }
+  })
+  it('Should throw an error if value is less than the min', function () {
+    try {
+      validator.call(1)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMinValue')
+    }
+  })
+})
+describe('#MaximumValueValidator', function () {
+  let message = 'InvalidMaximumValue'
+  const validator = new MaximumValueValidator({ message: message, max: 10 })
+
+  it('Should throw an error if value is null', function () {
+    try {
+      validator.call(null)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMaxValue')
+    }
+  })
+  it('Should not throw an error if value is less than the min', function () {
+    validator.call(1)
+  })
+  it('Should not throw an error if value is a string and is less than the min', function () {
+    validator.call('1')
+  })
+  it('Should not throw an error if value is a string and is less than the min', function () {
+    validator.call(1.5)
+  })
+  it('Should not throw an error if value is a string and is less than the min', function () {
+    validator.call('1.5')
+  })
+  it('Should throw an error if value is a string and is less than the min', function () {
+    try {
+      validator.call('1234')
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMaxValue')
+    }
+  })
+  it('Should throw an error if value is less than the min', function () {
+    try {
+      validator.call(1234)
+    } catch (e) {
+      assert.strictEqual(JSON.parse(e.message).code, 'invalidMaxValue')
     }
   })
 })

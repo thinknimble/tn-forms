@@ -168,6 +168,44 @@ v-for="(form, i) in alertTemplateForm.field.addresses.groups"
 
 ```
 
+## Validators ##
+
+validators can be added to forms they all extend the base Validator class
+
+**RequiredValidator**
+Validates a field is not null, undefiend or empty 
+
+**MinLengthValidator**
+Validates a field has a certain minimum length (if the value of the field is an array it will check arary length)
+```
+    new MinLengthValidator({minLength: int})
+```
+
+**MinDateValidator/MaxDateValidator**
+Validates a field has a certain minimum/maxium date (this is a static validator)
+```
+    new MinDateValidator/MaxDateValidator({min/max: str|date})
+```
+
+**MinimumValueValidator/MaximumValidator**
+Validates a field has a certain minimum/maxium value (this is a static validator)
+```
+    new MinValueValidator/MaxValueValidator({min/max: str|int})
+```
+**PatternValidator**
+Validates a field matches a pattern 
+```
+    new PatternValidator({pattern:str/<Regex>})
+```
+**UrlValidator**
+Validates a field has a link pattern (ftp/http/https) 
+```
+    new UrlValidator()
+```
+
+
+
+
 ## Future Enhancments ##
 
 - Add Dynamic validator types to the form class to handle on its own 
@@ -207,6 +245,9 @@ v-for="(form, i) in alertTemplateForm.field.addresses.groups"
 
 #### v2.0.4 release date *11/11/2021* #### 
 - Added Url and Pattern validators
+
+#### v2.0.4 release date *11/11/2021* #### 
+- fields as direct properties
 
 
 
