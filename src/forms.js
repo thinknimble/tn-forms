@@ -93,7 +93,7 @@ export default class Form {
       if (field instanceof FormField) {
         // Optionally set the value of the field either from the constructor of the instance
         // or the constructor of the parent form class latest priority first
-        field.value = kwargs[fieldName] ? kwargs[fieldName] : field.value
+        field.value = kwargs[fieldName] ? kwargs[fieldName].value : field.value
         field.name = fieldName
         this[fieldName] = field
       } else if (field instanceof FormArray) {

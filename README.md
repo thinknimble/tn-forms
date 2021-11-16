@@ -262,5 +262,8 @@ Validates a field matches a value (dynamic)
 #### v2.0.6 release date *11/11/2021* #### 
 - bug in max/min value validator fixed
 
+#### v2.0.7 release date *11/15/2021* #### 
+- bug in field value was incorrectly being set for FormArrays. Error was triggered because kwargs will now contain direct assignment of field (this error was pre-existing but did not trigger)
+
 
 
