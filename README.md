@@ -264,6 +264,8 @@ Validates a field matches a value (dynamic)
 
 #### v2.0.7 release date *11/15/2021* #### 
 - bug in field value was incorrectly being set for FormArrays. Error was triggered because kwargs will now contain direct assignment of field (this error was pre-existing but did not trigger)
+#### v2.0.8 release date *11/30/2021* #### 
+- bug error for value fixed
 
 
 
