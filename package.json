@@ -16,12 +16,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/thinknimble/tn-forms.git"
+    "url": "git+https://github.com/thinknimble/tn-forms.git"
   },
   "keywords": [
     "javascript"
   ],
-  "homepage": "https://bitbucket.org/thinknimble/tn-forms#readme",
+  "homepage": "https://github.com/thinknimble/tn-forms#readme",
   "dependencies": {
     "@thinknimble/tn-utils": "^1.4.0",
     "babel-loader": "^8.2.2",
