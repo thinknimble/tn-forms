@@ -1,34 +1,43 @@
+# TN Forms
 
+## Installation
 
-### Stand alone fields 
+```
+npm i -S @thinknimble/tn-forms
+```
+
+## Stand alone fields
+
 [check out form validators as well]('https://bitbucket.org/thinknimble/tn-validators/src/master/)
 
 Fields can be initated without needing a whole form and have access to (almost) all the form methods with optional parameters
+
 ```
 email = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email'})
 
 // get the value
-email.value 
+email.value
 
 // check if the field is valid ( calls the validate method silently)
 email.isValid
 
-// validate the field 
+// validate the field
 email.validate()
 
 //get the errors (must call the validate method first)
 email.errors
 
-// bind to gield 
+// bind to gield
 <input type="text" :name=email.name />
 
 ```
 
-### Form 
+## Form
 
 **Create a new form instance**
 
-*form.js*
+_form.js_
+
 ```
 
 class UserRegistration form extends Form {
@@ -48,7 +57,8 @@ static confirmPassword = new FormField({ validators: [new RequiredValidator()] }
 
 **Instatiate a form to a variable**
 
-*Form.vue*
+_Form.vue_
+
 ```
 data(){
     return {
@@ -75,12 +85,12 @@ static confirmPassowrd = new FormField()
 ....
 }
 
-// Get the form data 
+// Get the form data
 
 methods:{
     onSubmitForm(){
 
-        // optionally validate the form to retrieve all errors 
+        // optionally validate the form to retrieve all errors
         this.registrationForm.validate()
 
         // check the form is valid before submitting (.isValid validates form silently)
@@ -88,7 +98,7 @@ methods:{
 
         // get the form value (returns a dict of key value pairs)
 
-        const val = this.registrationForm.value 
+        const val = this.registrationForm.value
     }
 }
 
@@ -97,7 +107,7 @@ methods:{
 ```
 
 **Dynamic Forms**
-*form.js*
+_form.js_
 
 ```
 class UserAddressForm extends Form {
@@ -122,7 +132,8 @@ static fullName = new FormField({ validators: [new RequiredValidator()] })
 
 
 ```
-*Form.vue*
+
+_Form.vue_
 
 ```
 <FormField
@@ -147,7 +158,7 @@ methods:{
     }
 }
 
-// Add the forms to the html template with an array 
+// Add the forms to the html template with an array
 
 <div
 class="alerts-page__settings"
@@ -220,33 +231,35 @@ Validates a field matches a value (dynamic)
 - Add Dynamic validator types to the form class to handle on its own 
 - Make dynamic versions of min/max value/date validators
 - Add async validators
-- Add field accessor (to reduce verbosity) formInstance.formField should act as formInstance.field.formField 
+- Add field accessor (to reduce verbosity) formInstance.formField should act as formInstance.field.formField
 - Add additional options for form fields (placeholder, id, type, etc) to let users loop over formInstance.fields accessor
-- add reset form function which re-applies initial value from form class to instance 
+- add reset form function which re-applies initial value from form class to instance
 - (optional) Add vue and react directives (framework)
 - (optional) Add vue and react components (framework)
 
-
-
-
 # Change Log
-#### v1.0.7 release date *06/13/2021* #### 
+
+#### v1.0.7 release date _06/13/2021_
+
 - Dynamic Validators can now be added to the form with the static variable dynamicFormValidators
 - dynamicFormValidators is a reserved keyword for dynamic form level validators
 
-# Change Log
-#### v1.0.8 release date *07/13/2021* #### 
-- Update to class copy method for bugfix array values in memory 
 
-# Change Log
-#### v1.0.9 release date *07/13/2021* #### 
-- Bugfix for v1.0.8 
+#### v1.0.8 release date _07/13/2021_
 
-# Change Log
-#### v1.0.10 release date *07/13/2021* #### 
+- Update to class copy method for bugfix array values in memory
+
+
+
+#### v1.0.9 release date _07/13/2021_
+
+- Bugfix for v1.0.8
+
+
+
+#### v1.0.10 release date _07/13/2021_
+
 - Issue with building new code
-
-# Change Log
 #### v2.0 release date *07/13/2021* #### 
 - Moved tn-validators to this package 
 
@@ -270,4 +283,6 @@ Validates a field matches a value (dynamic)
 - bug error for value fixed
 
 
+#### v2.0 release date _07/13/2021_
 
+- Moved tn-validators to this package
