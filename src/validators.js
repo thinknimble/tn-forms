@@ -1,3 +1,6 @@
+import * as EmailValidatorObj from 'email-validator'
+
+import { DateTime } from 'luxon'
 export default class Validator {
   /**
    * Crete an instance of the validator.
@@ -106,7 +109,11 @@ export class EmailValidator extends Validator {
 }
 
 export class MinDateValidator extends Validator {
-  constructor({ message = 'Must meet minimum date', code = 'minDate', min = moment() } = {}) {
+  constructor({
+    message = 'Must meet minimum date',
+    code = 'minDate',
+    min = DateTime.local(new Date()),
+  } = {}) {
     super({ message, code })
     this.min = min
   }
@@ -120,8 +127,10 @@ export class MinDateValidator extends Validator {
         }),
       )
     }
+    let min = null
+    let compare = null
     try {
-      moment(this.min)
+      min = DateTime.local(this.min)
     } catch (e) {
       console.log(e)
       throw new Error(
@@ -129,26 +138,37 @@ export class MinDateValidator extends Validator {
       )
     }
     try {
-      moment(value)
+      compare = DateTime.local(value)
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
-    if (moment(value).isBefore(moment(this.min), 'day')) {
+    if (!min || !min.isValid) {
+      throw new Error(
+        JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the maximum' }),
+      )
+    }
+    if (!compare || !compare.isValid) {
+      console.log('compare', compare)
+      throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
+    }
+
+    if (compare.startOf('day') < min.startOf('day')) {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${moment(this.min).format('MM-DD-YYYY')}`,
+          message: `Please enter a date greater than ${DateTime.local(min).toFormat('D')}`,
         }),
       )
     }
   }
 }
 
-import * as EmailValidatorObj from 'email-validator'
-import moment from 'moment'
-
 export class MaxDateValidator extends Validator {
-  constructor({ message = 'Must meet minimum date', code = 'maxDate', max = moment() } = {}) {
+  constructor({
+    message = 'Must meet minimum date',
+    code = 'maxDate',
+    max = DateTime.local(new Date()),
+  } = {}) {
     super({ message, code })
     this.max = max
   }
@@ -162,23 +182,34 @@ export class MaxDateValidator extends Validator {
         }),
       )
     }
+    let max = null
+    let compare = null
     try {
-      moment(this.max)
+      max = DateTime.local(this.max)
     } catch (e) {
       throw new Error(
-        JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the minimum' }),
+        JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the maximum' }),
       )
     }
     try {
-      moment(value)
+      compare = DateTime.local(value)
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
-    if (moment(value).isAfter(moment(this.max), 'day')) {
+    if (!max || !max.isValid) {
+      throw new Error(
+        JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the maximum' }),
+      )
+    }
+    if (!compare || !compare.isValid) {
+      console.log('compare', compare)
+      throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
+    }
+    if (DateTime.local(value).startOf('day') > DateTime.local(this.max).startOf('day')) {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${moment(this.max).format('MM-DD-YYYY')}`,
+          message: `Please enter a date greater than ${DateTime.local(this.max).toFormat('D')}`,
         }),
       )
     }

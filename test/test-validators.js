@@ -1,5 +1,6 @@
 import assert from 'assert'
-import moment from 'moment'
+
+import { DateTime } from 'luxon'
 
 import {
   MinLengthValidator,
@@ -114,15 +115,18 @@ describe('#MinDateValdiator', function () {
       assert.strictEqual(JSON.parse(e.message).code, 'minDate')
     }
   })
-  it('Should throw an error if date is less than', function () {
+  it('Should throw an error if date is less than min date', function () {
     try {
-      validator.call(moment().subtract(1, 'days'))
+      validator.call(DateTime.local(new Date()).minus({ days: 1 }))
     } catch (e) {
       assert.strictEqual(JSON.parse(e.message).code, 'minDate')
     }
   })
-  it('Should not throw an error if date is greater than', function () {
-    validator.call(moment().add(1, 'days'))
+  it('Should not throw an error if date is equal to min date', function () {
+    validator.call(DateTime.local(new Date()))
+  })
+  it('Should not throw an error if date is greater than min date', function () {
+    validator.call(DateTime.local(new Date()).plus({ days: 1 }))
   })
 })
 describe('#MaxDateValdiator', function () {
@@ -136,12 +140,15 @@ describe('#MaxDateValdiator', function () {
       assert.strictEqual(JSON.parse(e.message).code, 'maxDate')
     }
   })
-  it('Should not throw an error if date is less than', function () {
-    validator.call(moment().subtract(0, 'days'))
+  it('Should not throw an error if date is less than max', function () {
+    validator.call(DateTime.local(new Date()).minus({ days: 1 }))
   })
-  it('Should throw an error if date is greater than', function () {
+  it('Should not throw an error if date is equal to max', function () {
+    validator.call(DateTime.local(new Date()))
+  })
+  it('Should throw an error if date is greater than max', function () {
     try {
-      validator.call(moment().add(1, 'days'))
+      validator.call(DateTime.local(new Date()).plus({ days: 1 }))
     } catch (e) {
       assert.strictEqual(JSON.parse(e.message).code, 'maxDate')
     }
