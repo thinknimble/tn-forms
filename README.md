@@ -283,6 +283,10 @@ Validates a field matches a value (dynamic)
 - bug error for value fixed
 
 
-#### v2.0 release date _07/13/2021_
-
+#### v2.0.0 release date _07/13/2021_
 - Moved tn-validators to this package
+
+#### v2.1.0 release date _06/14/2022_
+- Changed from momentjs to luxon 
+- Updated babel and webpack to resolve chokidar security vuln.
+
