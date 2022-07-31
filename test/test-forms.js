@@ -56,7 +56,7 @@ describe('Form Model', () => {
       //assert.throws(userForm._handleNoFieldErrors.bind(userForm, 'confirmPassword'), Error)
       assert.throws(
         function () {
-          userForm._handleNoFieldErrors(userForm, 'confirmPassword')
+          userForm._handleNoFieldErrors('confirmPassword')
         },
         Error,
         /Error thrown/,
