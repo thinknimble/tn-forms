@@ -109,12 +109,8 @@ export class EmailValidator extends Validator {
 }
 
 export class MinDateValidator extends Validator {
-  min: Date
-  constructor({
-    message = 'Must meet minimum date',
-    code = 'minDate',
-    min = DateTime.local(new Date()),
-  } = {}) {
+  min: any
+  constructor({ message = 'Must meet minimum date', code = 'minDate', min = new Date() } = {}) {
     super({ message, code })
     this.min = min
   }
@@ -131,7 +127,7 @@ export class MinDateValidator extends Validator {
     let min = null
     let compare = null
     try {
-      min = DateTime.local(this.min)
+      min = DateTime.local(this.min).toISO()
     } catch (e) {
       console.log(e)
       throw new Error(
@@ -165,12 +161,8 @@ export class MinDateValidator extends Validator {
 }
 
 export class MaxDateValidator extends Validator {
-  max: Date
-  constructor({
-    message = 'Must meet minimum date',
-    code = 'maxDate',
-    max = DateTime.local(new Date()),
-  } = {}) {
+  max: any
+  constructor({ message = 'Must meet minimum date', code = 'maxDate', max = new Date() } = {}) {
     super({ message, code })
     this.max = max
   }
