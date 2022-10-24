@@ -19,9 +19,11 @@ export type TFormInstance<T> = {
 export interface IFormArrayKwargs<T> {
   name: string
   groups: IForm<T>[]
+  FormClass?: any
 }
 export interface IFormArray<T> {
   name: string
+  get FormClass(): any
   get value(): any[]
   get groups(): IForm<T>[]
   set groups(group: IForm<T>[])

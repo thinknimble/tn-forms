@@ -1,3 +1,4 @@
+import { v4 } from 'uuid'
 import {
   IDynamicFormValidators,
   IValidator,
@@ -69,12 +70,12 @@ export class FormField implements IFormField {
       : typeof value !== null && typeof value == 'object'
       ? { ...value }
       : value
-    this.name = name ? name : Math.floor(Math.random() * 10).toString()
+    this.name = name ? name : v4()
     this.errors = errors
     this.validators = validators
     this.placeholder = placeholder
     this.type = type
-    this.id = id ? id : this.name + '-' + Math.floor(Math.random() * 10)
+    this.id = id ? id : name + '-' + v4()
   }
   static create(data: IFormFieldKwargs = {}): FormField {
     return new FormField(data)
@@ -136,16 +137,31 @@ export class FormField implements IFormField {
 
 export class FormArray<T> implements IFormArray<T> {
   #groups: IForm<T>[] = []
+  #FormClass = null
   name: string = ''
 
-  constructor({ name = '', groups = [] }: IFormArrayKwargs<T>) {
+  constructor({ name = '', groups = [], FormClass = null }: IFormArrayKwargs<T>) {
     this.name = name
+    this.#FormClass = FormClass
     groups && Array.isArray(groups) && groups.length ? groups.map((group) => this.add(group)) : []
+    if (!groups.length && !FormClass) {
+      throw new Error(
+        JSON.stringify(
+          'Form type must be specified either add a new instance of the form or explicitly declare type',
+        ),
+      )
+    }
+    if (!this.#FormClass && groups.length) {
+      this.#FormClass = groups[0].constructor
+    }
   }
   get value() {
     return this.#groups.map((form: IForm<T>) => {
       return form.value
     })
+  }
+  get FormClass(): any {
+    return this.#FormClass
   }
   get groups(): IForm<T>[] {
     return this.#groups
@@ -154,13 +170,16 @@ export class FormArray<T> implements IFormArray<T> {
     this.#groups = group
   }
 
-  add(group: IForm<T>) {
+  add(group: IForm<T> = new this.#FormClass()) {
     this.groups = [...this.groups, group]
   }
   remove(index: number) {
     this.groups.splice(index, 1)
     //this.groups = this.groups
   }
+  // static create(opts:IFormArrayKwargs<unknown> = {}) {
+  //   return new this(opts)
+  // }
 }
 
 export default class Form<T> implements IForm<T> {
@@ -190,20 +209,21 @@ export default class Form<T> implements IForm<T> {
         //@ts-ignore
         this[fieldName] = field
       } else if (field instanceof FormArray) {
-        for (let index = 0; index < field.groups.length; index++) {
-          const group = field.groups[index]
-          if (
-            kwargs[fieldName] &&
-            Array.isArray(kwargs[fieldName]) &&
-            index <= kwargs[fieldName].length
-          ) {
-            console.log('here')
-            let valuesObj = kwargs[fieldName][index]
-            Object.keys(valuesObj).forEach((k: string) => {
-              group.field[k].value = valuesObj[k]
-            })
+        if (kwargs[fieldName] && Array.isArray(kwargs[fieldName])) {
+          for (let index = 0; index < kwargs[fieldName].length; index++) {
+            if (index <= field.groups.length - 1) {
+              const group = field.groups[index]
+              let valuesObj = kwargs[fieldName][index]
+              Object.keys(valuesObj).forEach((k: string) => {
+                group.field[k].value = valuesObj[k]
+              })
+            } else {
+              let valuesObj = kwargs[fieldName][index]
+              field.add(new field.FormClass(valuesObj))
+            }
           }
         }
+        field.name = fieldName
         //@ts-ignore
         this[fieldName] = field
       }
@@ -239,7 +259,12 @@ export default class Form<T> implements IForm<T> {
       //@ts-ignore
       return new g.constructor()
     })
-    return new FormArray({ ...opts, name: opts.name, groups: [...groups] })
+    return new FormArray({
+      ...opts,
+      name: opts.name,
+      FormClass: opts.FormClass,
+      groups: [...groups],
+    })
   }
 
   _handleNoFieldErrors(fieldName: string) {

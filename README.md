@@ -6,14 +6,64 @@
 npm i -S @thinknimble/tn-forms
 ```
 
+## Intro
+
+Tn Forms was created to provide a consistent mechanism for creating forms in webapps within teams. By streamlining the form creation process the aim is to improve code cohesion and interoprability within a team. Anyone picking up the code base should be able to easily create and update forms with little thought beyond the how-to of these forms. 
+The library supports creating simple forms, dynamic forms (using form arrays) or using standalone fields. It also includes a rich set of validators that can be easily extended to create new validators on the fly. 
+The library is written in Typescript and exposes all of the types used to build the forms and can be used with pure JS
+
+<details>
+<summary>TypeScript</summary>
+
+## Stanalone Fields 
+```ts
+import { FormField } from '../src/forms'
+import { IFormField } from '../src/interfaces'
+import {
+  RequiredValidator,
+} from '../src/validators'
+
+let email:IFormField = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my-field"}) // if id or name are not provided one will be generated automatically
+
+// get the value
+email.value
+
+// check if the field is valid (calls the validate method silently)
+email.isValid
+
+// validate the field this will trigger the error handler and add errors to the field
+email.validate()
+
+//get the errors (must call the validate method first)
+email.errors
+```
+</details>
+
+<details>
+<summary>Javascript</summary>
+
+// get the value
+email.value
+
+// check if the field is valid ( calls the validate method silently)
+email.isValid
+
+// validate the field
+email.validate()
+
+//get the errors (must call the validate method first)
+email.errors
+
+</details>
+
+
 ## Stand alone fields
 
-[check out form validators as well]('https://bitbucket.org/thinknimble/tn-validators/src/master/)
 
 Fields can be initated without needing a whole form and have access to (almost) all the form methods with optional parameters
 
 ```
-email = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email'})
+email = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my field"})
 
 // get the value
 email.value

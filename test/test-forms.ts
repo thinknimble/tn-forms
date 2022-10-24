@@ -24,12 +24,23 @@ interface IUserForm {
   address: IFormArray<IUserAddressForm>
 }
 
+interface IFormNoAddress {
+  address: FormArray<IUserAddressForm>
+}
+
 type TUserForm = UserForm & IUserForm
 type TUserAddressForm = UserAddressForm & IUserAddressForm
 
 class UserAddressForm extends Form<IUserAddressForm> {
   static street = new FormField({ validators: [], value: 'this' })
   static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+}
+class FormNoAddressInstance extends Form<IFormNoAddress> {
+  static address = new FormArray<IUserAddressForm>({
+    name: 'address',
+    groups: [],
+    FormClass: FormNoAddressInstance,
+  })
 }
 
 class UserForm extends Form<IUserForm> {
@@ -52,6 +63,12 @@ class UserForm extends Form<IUserForm> {
 }
 
 describe('Forms', () => {
+  describe('# Fields', () => {
+    it('should create a new field', () => {
+      let formField: IFormField = new FormField()
+      assert.equal(formField instanceof FormField, true)
+    })
+  })
   describe('# Form setup', () => {
     const userForm = new UserForm({ firstName: 'pari' }) as TUserForm
     it('should have 6 fields for each static property defined', () => {
@@ -88,9 +105,6 @@ describe('Forms', () => {
     it('should have a validator for address', () => {
       assert.equal((userForm.address.groups[0] as TUserAddressForm).city.validators.length, 1)
     })
-    it('should have a validator for address', () => {
-      assert.equal((userForm.address.groups[0] as TUserAddressForm).city.validators.length, 1)
-    })
     it('should have 2 user address entries', () => {
       userForm.address.add(new UserAddressForm())
       assert.equal(userForm.address.groups.length, 2)
@@ -107,6 +121,26 @@ describe('Forms', () => {
         originalFormAddresses[0].street.value,
         secondUserFormAddresses[0].street.value,
       )
+    })
+    it('should create a form using the factory method', () => {
+      const userFormFact = UserForm.create() as TUserForm
+      assert.equal(userFormFact.fields.length, 6)
+    })
+    // it('should throw an error if no initiliazed form group && no form class are defined for the form array', () => {
+    //   try {
+    //     let testForm = new FormNoAddressInstance()
+    //   } catch {
+    //     console.log('here')
+    //     assert.equal(true, true)
+    //   }
+    //   assert.equal(false, false)
+    // })
+    it('should load all the form array values and create a new instance for each using the FormClass type', () => {
+      const values = {
+        address: [{ street: 'testswdf', city: 'asdasdasdasd' }],
+      }
+      let testForm = new FormNoAddressInstance(values)
+      console.log(testForm.value)
     })
   })
   describe('# Form Validators', () => {
@@ -197,7 +231,7 @@ describe('Forms', () => {
       assert.equal(userAddressForm2.street.value, patchAddress)
       assert.equal(userAddressForm2.value.toString(), { street: patchAddress, city: '' }.toString())
     })
-    it('should prefill values of form using patch value and override field default with formarrays', () => {
+    it('should prefill values of form using ph value and override field default with formarrays', () => {
       let value = {
         firstName: 'lorem',
         lastName: 'ipsum',
@@ -211,7 +245,6 @@ describe('Forms', () => {
         ],
       }
       let userForm1 = new UserForm({ ...value }) as TUserForm
-      userForm1.address.add(new UserAddressForm(value.address[1]))
       assert.equal(userForm1.value.toString(), value.toString())
     })
   })
