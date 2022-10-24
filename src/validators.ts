@@ -3,7 +3,7 @@ import * as EmailValidatorObj from 'email-validator'
 import { DateTime } from 'luxon'
 import { notNullOrUndefined, isNumber, isNumberOrFloat } from './utils'
 
-export default class Validator implements IValidator {
+export default class Validator<T = any> implements IValidator<T> {
   /**
    * Crete an instance of the validator.
    * @param {string} message - The error message to return if validation fails.
@@ -20,7 +20,7 @@ export default class Validator implements IValidator {
    * Perform validation on a given value.
    * @param {string|number|Array|Object} value - The error message to return if validation fails.
    */
-  call(value: any) {
+  call(value: T) {
     throw new Error('Validator cannot be used directly, it must be overwritten in a subclass')
   }
 }
@@ -127,15 +127,14 @@ export class MinDateValidator extends Validator {
     let min = null
     let compare = null
     try {
-      min = DateTime.local(this.min).toISO()
+      min = DateTime.fromJSDate(this.min)
     } catch (e) {
-      console.log(e)
       throw new Error(
         JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the minimum' }),
       )
     }
     try {
-      compare = DateTime.local(value)
+      compare = DateTime.fromJSDate(value)
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
@@ -145,7 +144,6 @@ export class MinDateValidator extends Validator {
       )
     }
     if (!compare || !compare.isValid) {
-      console.log('compare', compare)
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
 
@@ -153,7 +151,7 @@ export class MinDateValidator extends Validator {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${DateTime.local(min).toFormat('D')}`,
+          message: `Please enter a date greater than ${DateTime.fromJSDate(min).toFormat('D')}`,
         }),
       )
     }
@@ -179,14 +177,14 @@ export class MaxDateValidator extends Validator {
     let max = null
     let compare = null
     try {
-      max = DateTime.local(this.max)
+      max = DateTime.fromJSDate(this.max)
     } catch (e) {
       throw new Error(
         JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the maximum' }),
       )
     }
     try {
-      compare = DateTime.local(value)
+      compare = DateTime.fromJSDate(value)
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
@@ -196,28 +194,29 @@ export class MaxDateValidator extends Validator {
       )
     }
     if (!compare || !compare.isValid) {
-      console.log('compare', compare)
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
-    if (DateTime.local(value).startOf('day') > DateTime.local(this.max).startOf('day')) {
+    if (DateTime.fromJSDate(value).startOf('day') > DateTime.fromJSDate(this.max).startOf('day')) {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${DateTime.local(this.max).toFormat('D')}`,
+          message: `Please enter a date greater than ${DateTime.fromJSDate(this.max).toFormat(
+            'D',
+          )}`,
         }),
       )
     }
   }
 }
 
-export class MinimumValueValidator extends Validator {
+export class MinimumValueValidator<integer> extends Validator<integer> {
   min: number
   constructor({ message = 'Must meet minimum value', code = 'invalidMinValue', min = 0 } = {}) {
     super({ message, code })
     this.min = min
   }
 
-  call(value) {
+  call(value: integer | null) {
     if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {

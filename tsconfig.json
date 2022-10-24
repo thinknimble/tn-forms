@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
-        "outDir": "./built",
+        "sourceMap": true,
+        "outDir": "./dist",
         "allowJs": true,
+        "declaration": true,
         "target": "ES2017",
         "types": [
             "mocha",

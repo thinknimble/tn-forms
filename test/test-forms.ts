@@ -1,50 +1,73 @@
 import * as assert from 'assert'
 
-import Form, { FormField } from '../src/forms2'
-import { IFormField } from '../src/interfaces'
-import { MinLengthValidator, MustMatchValidator, RequiredValidator } from '../src/validators2'
+import Form, { FormArray, FormField } from '../src/forms'
+import { IFormArray, IFormField, TFormFieldTypeOpts } from '../src/interfaces'
+import {
+  EmailValidator,
+  MaxDateValidator,
+  MinDateValidator,
+  MinLengthValidator,
+  MustMatchValidator,
+  RequiredValidator,
+} from '../src/validators'
 
-describe('Form Model', () => {
-  class UserAddressForm extends Form<{ street: IFormField; city: IFormField }> {
-    static street = new FormField({ validators: [] })
-    static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
-  }
+interface IUserAddressForm {
+  street: IFormField
+  city: IFormField
+}
+interface IUserForm {
+  firstName: IFormField
+  password: IFormField
+  confirmPassword: IFormField
+  dob: IFormField
+  email: IFormField
+  address: IFormArray<IUserAddressForm>
+}
 
-  interface IUserForm {
-    firstName: IFormField
-    password: IFormField
-    confirmPassword: IFormField
-  }
+type TUserForm = UserForm & IUserForm
+type TUserAddressForm = UserAddressForm & IUserAddressForm
 
-  type TUserForm = UserForm & IUserForm
+class UserAddressForm extends Form<IUserAddressForm> {
+  static street = new FormField({ validators: [], value: 'this' })
+  static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+}
 
-  class UserForm extends Form<UserForm> {
-    static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
-    /*     static address = new FormArray({
-      name: 'address',
-      groups: [new UserAddressForm()],
-    }) */
-    static password = new FormField({ validators: [new RequiredValidator()] })
-    static confirmPassword = new FormField({
-      validators: [new MinLengthValidator({ minLength: 5 })],
-    })
-  }
+class UserForm extends Form<IUserForm> {
+  static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+  static email = new FormField({ validators: [new EmailValidator()] })
+  static password = new FormField({ validators: [new RequiredValidator()] })
+  static confirmPassword = new FormField({
+    validators: [new MinLengthValidator({ minLength: 5 })],
+  })
+  static dob = new FormField({
+    validators: [
+      new MinDateValidator({ min: new Date('10/20/2022') }),
+      new MaxDateValidator({ max: new Date('10/18/2026') }),
+    ],
+  })
+  static address = new FormArray<IUserAddressForm>({
+    name: 'address',
+    groups: [new UserAddressForm()],
+  })
+}
 
-  describe('#constructor()', () => {
+describe('Forms', () => {
+  describe('# Form setup', () => {
     const userForm = new UserForm({ firstName: 'pari' }) as TUserForm
-    it('should have 3 fields for each static property defined', () => {
-      assert.equal(userForm.fields.length, 3)
+    it('should have 6 fields for each static property defined', () => {
+      assert.equal(userForm.fields.length, 6)
     })
-    it('should have 3 fields with keys of firstName, address, password, confirmPassword', () => {
-      assert.equal(userForm.fields[0].name, 'firstName')
-      assert.equal(userForm.fields[1].name, 'password')
-      assert.equal(userForm.fields[2].name, 'confirmPassword')
+    it('should have fields with keys of firstName', () => {
+      assert.equal(
+        userForm.fields.map((f: IFormField | IFormArray<any>) => f?.name).includes('firstName'),
+        true,
+      )
     })
     it('should set the default value of the userForm firstname to pari set on the instance creation', () => {
       assert.equal(userForm.field['firstName'].value, 'pari')
     })
     it('should set firstName, password and confirm password  to have validators (ignoring address for now)', () => {
-      userForm.fields.forEach((field) => {
+      userForm.fields.forEach((field: TFormFieldTypeOpts<any>) => {
         if (field instanceof FormField) {
           assert.equal((userForm.fields[0] as FormField).validators.length, 1)
           assert.equal((userForm.fields[1] as FormField).validators.length, 1)
@@ -52,17 +75,156 @@ describe('Form Model', () => {
         }
       })
     })
-    it('should add Validators to each form field', () => {
+    it('should indicate that firstname has a validator', () => {
       assert.equal(userForm.field['firstName'].validators.length, 1)
+      assert.equal(userForm.firstName.validators.length, 1)
     })
-    it('should return isValid == false since pari is less than 5', () => {
-      assert.equal(userForm.field['firstName'].value, 'pari')
-      assert.equal(userForm.field['firstName'].isValid, false)
+    it('should have a form array for address', () => {
+      assert.equal(userForm.address.groups.length, 1)
     })
-    it('should return isValid == false since pari is less than 5', () => {
-      // @ts-ignore
-      assert.equal(userForm.firstName.value, 'pari')
-      assert.equal(userForm.field['firstName'].isValid, false)
+    it('should have a validator for address', () => {
+      assert.equal(userForm.address.groups[0].field['city'].validators.length, 1)
+    })
+    it('should have a validator for address', () => {
+      assert.equal((userForm.address.groups[0] as TUserAddressForm).city.validators.length, 1)
+    })
+    it('should have a validator for address', () => {
+      assert.equal((userForm.address.groups[0] as TUserAddressForm).city.validators.length, 1)
+    })
+    it('should have 2 user address entries', () => {
+      userForm.address.add(new UserAddressForm())
+      assert.equal(userForm.address.groups.length, 2)
+    })
+    it('should set two different forms that do not share values', () => {
+      let userFormOriginal = new UserForm() as TUserForm
+      const originalFormAddresses = userFormOriginal.address.groups as TUserAddressForm[]
+      originalFormAddresses[0].street.value = 'testingoriginal'
+      originalFormAddresses[0].city.value = 'testingoriginal'
+      let userFormSecond = new UserForm() as TUserForm
+      const secondUserFormAddresses = userFormSecond.address.groups as TUserAddressForm[]
+      secondUserFormAddresses[0].street.value = 'testing'
+      assert.notEqual(
+        originalFormAddresses[0].street.value,
+        secondUserFormAddresses[0].street.value,
+      )
+    })
+  })
+  describe('# Form Validators', () => {
+    const userForm = new UserForm({ firstName: 'par' }) as TUserForm
+    it('should set the field to invalid as it is below the min length ', () => {
+      assert.equal(userForm.firstName.isValid, false)
+    })
+    it('should set field to invalid as it is required', () => {
+      assert.equal(userForm.password.isValid, false)
+    })
+    it('should set field to invalid as date < minimum', () => {
+      userForm.dob.value = new Date('10/15/2022')
+      assert.equal(userForm.dob.isValid, false)
+    })
+    it('should set field to invalid as date > minimum', () => {
+      userForm.dob.value = new Date('10/25/2028')
+      assert.equal(userForm.dob.isValid, false)
+    })
+    it('should set the field to invalid as it is not a valid email', () => {
+      userForm.email.value = 'pb1636'
+      assert.equal(userForm.email.isValid, false)
+    })
+    it('should set the field to valid as it is above the min length ', () => {
+      userForm.firstName.value = 'Paribaker'
+      assert.equal(userForm.firstName.isValid, true)
+    })
+    it('should set field to valid as it is required', () => {
+      userForm.password.value = 'testing213'
+      assert.equal(userForm.password.isValid, true)
+    })
+    it('should set field to valid as date < minimum', () => {
+      userForm.dob.value = new Date('10/25/2022')
+      assert.equal(userForm.dob.isValid, true)
+    })
+    it('should set field to valid as date > minimum', () => {
+      userForm.dob.value = new Date('10/18/2025')
+      assert.equal(userForm.dob.isValid, true)
+    })
+    it('should set the field to valid as it a valid email', () => {
+      userForm.email.value = 'testing123@yahoo.com'
+      assert.equal(userForm.email.isValid, true)
+    })
+  })
+
+  describe('# Form entry & validation', () => {
+    const defaultAddress = 'test street'
+    const patchAddress = 'my street'
+    class UserAddressForm2 extends UserAddressForm {
+      static street = new FormField({ validators: [], value: defaultAddress })
+    }
+    it('should indicate the form is valid after entry', () => {
+      const userForm = new UserForm() as TUserForm
+      userForm.firstName.value = 'pariszcxczxczx'
+      userForm.email.value = 'pasdaad@gmail.com'
+      userForm.dob.value = new Date('10/26/2025')
+      userForm.password.value = '123456'
+      userForm.confirmPassword.value = '123456'
+      const userAddressForm = userForm.address.groups[0] as TUserAddressForm
+      userAddressForm.city.value = 'test1'
+      userAddressForm.street.value = 'yes1'
+      assert.equal(userForm.isValid, true)
+    })
+    let userAddressForm = new UserAddressForm() as TUserAddressForm
+    it('should declare the form invalid initially', () => {
+      assert.equal(userAddressForm.isValid, false)
+    })
+    it('should declare the form valid after entry', () => {
+      userAddressForm = new UserAddressForm({
+        street: 'decatur',
+        city: 'Santa Clara',
+      }) as TUserAddressForm
+      assert.equal(userAddressForm.street.isValid, true)
+      assert.equal(userAddressForm.city.isValid, true)
+      assert.equal(userAddressForm.isValid, true)
+    })
+
+    it('should prefill city and street with default values', () => {
+      const userAddressForm2 = new UserAddressForm2() as TUserAddressForm
+      assert.equal(userAddressForm2.street.value, defaultAddress)
+      assert.equal(
+        userAddressForm2.value.toString(),
+        { street: defaultAddress, city: '' }.toString(),
+      )
+    })
+    it('should prefill values of form using patch value and override field default', () => {
+      const userAddressForm2 = new UserAddressForm2() as TUserAddressForm
+      userAddressForm2.street.value = patchAddress
+      assert.equal(userAddressForm2.street.value, patchAddress)
+      assert.equal(userAddressForm2.value.toString(), { street: patchAddress, city: '' }.toString())
+    })
+    it('should prefill values of form using patch value and override field default with formarrays', () => {
+      let value = {
+        firstName: 'lorem',
+        lastName: 'ipsum',
+        email: 'test@formstofill.com',
+        password: 'testing123',
+        confirmPassword: 'testing123',
+        dob: new Date('12/20/2022'),
+        address: [
+          { street: 'testing', city: 'testing' },
+          { street: 'testing1', city: 'testing1' },
+        ],
+      }
+      let userForm1 = new UserForm({ ...value }) as TUserForm
+      userForm1.address.add(new UserAddressForm(value.address[1]))
+      assert.equal(userForm1.value.toString(), value.toString())
+    })
+  })
+  describe('# Form array functions', () => {
+    it('should add another formgroup to the formarray', () => {
+      let userAddressForm = new UserForm() as TUserForm
+      userAddressForm.address.add(new UserAddressForm())
+      assert.equal(userAddressForm.address.groups.length, 2)
+    })
+    it('should remove a formgroup from the formarray', () => {
+      let userAddressForm = new UserForm() as TUserForm
+      userAddressForm.address.remove(0)
+      assert.equal(userAddressForm.address.groups.length, 0)
     })
   })
 })

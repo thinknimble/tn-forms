@@ -5,12 +5,12 @@
   "author": "William Huster <william@thinknimble.com>, Pari Baker <pari@thinknimble.com>",
   "license": "MIT",
   "main": "lib/index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "compile": "babel src -d lib",
+    "compile": "npx tsc",
     "prepublish": "npm run compile",
-    "test": "mocha --require @babel/register",
     "build": "webpack --config webpack.config.js",
-    "test-ts": "ts-mocha  -- --verbose=true -p tsconfig.json --require @babel/register test/**.ts"
+    "test": "ts-mocha  -- --verbose=true -p tsconfig.json --require @babel/register test/**.ts"
   },
   "directories": {
     "test": "test"
@@ -28,8 +28,7 @@
     "@types/luxon": "^3.0.0",
     "babel-loader": "^8.2.2",
     "email-validator": "^2.0.4",
-    "luxon": "^2.4.0",
-    "user": "0.0.0"
+    "luxon": "^2.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -42,6 +41,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^7.1.1",
     "prettier": "^2.4.1",
     "source-map-loader": "^4.0.0",

@@ -2,10 +2,10 @@ export interface IDynamicFormValidators {
   [key: string]: IValidator[]
 }
 
-export interface IValidator {
+export interface IValidator<T = any> {
   message: string
   code: string
-  call(value: any): void
+  call(value: T): void
 }
 
 export interface IFormLevelValidator extends IValidator {
@@ -16,9 +16,13 @@ export type TFormInstance<T> = {
   [P in keyof T]: T[P]
 }
 
+export interface IFormArrayKwargs<T> {
+  name: string
+  groups: IForm<T>[]
+}
 export interface IFormArray<T> {
   name: string
-  get value(): any
+  get value(): any[]
   get groups(): IForm<T>[]
   set groups(group: IForm<T>[])
   add(group: IForm<T>): void
@@ -27,7 +31,7 @@ export interface IFormArray<T> {
 
 export interface IForm<T> {
   get field(): TFormInstanceFields<T>
-  get fields(): IFormField[] | IFormArray<T>[]
+  get fields(): TFormFieldTypeOpts<T>[]
   get errors(): any[]
   set errors(errors: any[])
   get value(): any
@@ -45,7 +49,7 @@ export interface IFormFieldError {
   message: string
 }
 
-export interface IFormFieldData {
+export interface IFormFieldKwargs {
   name?: string
   validators?: IValidator[]
   errors?: IFormFieldError[]
@@ -64,6 +68,7 @@ export interface IFormField {
   type: string
   id: string
   get isValid(): boolean
+  validate(): void
 }
 
 export interface IFormInstance {
@@ -73,3 +78,10 @@ export interface IFormInstance {
 export type TFormInstanceFields<T> = {
   [P in keyof T]: T[P]
 }
+
+export type TFormFieldTypeCombos<T> = {
+  formArrays: IFormArray<T>[]
+  formFields: IFormField[]
+}
+
+export type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>
