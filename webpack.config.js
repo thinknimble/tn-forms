@@ -2,10 +2,13 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
+  mode: 'production',
   plugins: [],
+  devtool: 'inline-source-map',
   module: {
     rules: [
+      { test: /\.tsx?$/, loader: 'ts-loader' },
       {
         test: /\.(js)$/,
         exclude: /node_modules/,
@@ -14,14 +17,14 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['*', '.js'],
+    extensions: ['.js', '.ts', '.tsx'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
     filename: '[name].[contenthash].js',
   },
-  optimization: {
+  /*   optimization: {
     runtimeChunk: 'single',
     splitChunks: {
       chunks: 'all',
@@ -41,7 +44,7 @@ module.exports = {
         },
       },
     },
-  },
+  }, */
   devServer: {
     contentBase: './dist',
   },
