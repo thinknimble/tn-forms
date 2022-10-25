@@ -44,21 +44,13 @@ class FormNoAddressInstance extends Form<IFormNoAddress> {
 }
 
 class UserForm extends Form<IUserForm> {
-  static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
-  static email = new FormField({ validators: [new EmailValidator()] })
-  static password = new FormField({ validators: [new RequiredValidator()] })
+  static dynamicFormValidators = {
+    confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
+  }
+
+  static password = new FormField()
   static confirmPassword = new FormField({
-    validators: [new MinLengthValidator({ minLength: 5 })],
-  })
-  static dob = new FormField({
-    validators: [
-      new MinDateValidator({ min: new Date('10/20/2022') }),
-      new MaxDateValidator({ max: new Date('10/18/2026') }),
-    ],
-  })
-  static address = new FormArray<IUserAddressForm>({
-    name: 'address',
-    groups: [new UserAddressForm()],
+    validators: [],
   })
 }
 
@@ -66,10 +58,13 @@ describe('Forms', () => {
   describe('# Form setup', () => {
     it('should load all the form array values and create a new instance for each using the FormClass type', () => {
       const values = {
-        address: [{ street: 'testswdf', city: 'asdasdasdasd' }],
+        password: 'testing',
+        confirmPassword: 'testin',
       }
-      let testForm = new FormNoAddressInstance(values)
-      console.log(testForm.value)
+      let testForm = new UserForm(values) as TUserForm
+      assert.equal(testForm.isValid, false)
+      testForm.confirmPassword.value = 'testing'
+      assert.equal(testForm.isValid, true)
     })
   })
 })

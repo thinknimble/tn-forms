@@ -1,4 +1,4 @@
-import { IDynamicFormValidators, IValidator, IFormLevelValidator } from './interfaces'
+import { IDynamicFormValidators, IValidator, IFormLevelValidator, IForm } from './interfaces'
 import * as EmailValidatorObj from 'email-validator'
 import { DateTime } from 'luxon'
 import { notNullOrUndefined, isNumber, isNumberOrFloat } from './utils'
@@ -61,30 +61,32 @@ export class MinLengthValidator extends Validator {
 }
 
 export class MustMatchValidator extends Validator {
-  matcher: string
+  matcher: string | null
   #matchingField: any
 
-  constructor({
-    message = 'Value must match',
-    code = 'mustMatch',
-    matcher = null,
-    form = null,
-  } = {}) {
+  constructor({ message = 'Value must match', code = 'mustMatch', matcher = '' } = {}) {
     super({ message, code })
     this.matcher = matcher
-    if (form) {
+    // if (form) {
+    //   this.#matchingField = form.field[this.matcher]
+    // } else {
+    //   this.#matchingField = null
+    // }
+  }
+
+  setMatchingField(form: IForm<any>) {
+    if (this.matcher && form.field[this.matcher]) {
       this.#matchingField = form.field[this.matcher]
-    } else {
-      this.#matchingField = null
+      return
     }
+    throw new Error('Matching Field does not exist on form')
   }
 
   get matchingVal() {
     return this.#matchingField ? this.#matchingField.value : null
   }
 
-  call(value) {
-    //this.matchingVal = extraArgs
+  call(value: any) {
     if (this.matchingVal !== value) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
@@ -115,7 +117,7 @@ export class MinDateValidator extends Validator {
     this.min = min
   }
 
-  call(value) {
+  call(value: any) {
     if (!value) {
       throw new Error(
         JSON.stringify({
@@ -124,8 +126,8 @@ export class MinDateValidator extends Validator {
         }),
       )
     }
-    let min = null
-    let compare = null
+    let min
+    let compare
     try {
       min = DateTime.fromJSDate(this.min)
     } catch (e) {
@@ -165,7 +167,7 @@ export class MaxDateValidator extends Validator {
     this.max = max
   }
 
-  call(value) {
+  call(value: any) {
     if (!value) {
       throw new Error(
         JSON.stringify({
@@ -174,8 +176,8 @@ export class MaxDateValidator extends Validator {
         }),
       )
     }
-    let max = null
-    let compare = null
+    let max
+    let compare
     try {
       max = DateTime.fromJSDate(this.max)
     } catch (e) {
@@ -233,7 +235,7 @@ export class MaximumValueValidator extends Validator {
     this.max = max
   }
 
-  call(value) {
+  call(value: any) {
     if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {

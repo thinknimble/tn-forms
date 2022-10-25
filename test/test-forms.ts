@@ -140,7 +140,6 @@ describe('Forms', () => {
         address: [{ street: 'testswdf', city: 'asdasdasdasd' }],
       }
       let testForm = new FormNoAddressInstance(values)
-      console.log(testForm.value)
     })
   })
   describe('# Form Validators', () => {

@@ -1,15 +1,14 @@
 export interface IDynamicFormValidators {
-  [key: string]: IValidator[]
+  [key: string]: IFormLevelValidator[]
+}
+export interface IFormLevelValidator extends IValidator {
+  setMatchingField(form: IForm<any>): void
 }
 
 export interface IValidator<T = any> {
   message: string
   code: string
   call(value: T): void
-}
-
-export interface IFormLevelValidator extends IValidator {
-  form: IForm<any>
 }
 
 export type TFormInstance<T> = {

@@ -11,6 +11,7 @@ import {
   IFormArrayKwargs,
   TFormFieldTypeCombos,
   TFormFieldTypeOpts,
+  IFormLevelValidator,
 } from './interfaces'
 
 function setFormFieldValueFromKwargs(
@@ -22,12 +23,12 @@ function setFormFieldValueFromKwargs(
   field.name = name
   return field
 }
-function setValidatorProps(validator: IValidator, kwargs: any): IValidator {
+function setValidatorProps(form: IForm<any>, validator: IValidator, kwargs: any): IValidator {
   let props = {}
   for (const prop in validator) {
     props[prop] = validator[prop]
   }
-  props['form'] = this
+  props['form'] = form
   for (const [k, v] of Object.entries(kwargs)) {
     props[k] = v
   }
@@ -152,6 +153,7 @@ export class FormArray<T> implements IFormArray<T> {
       )
     }
     if (!this.#FormClass && groups.length) {
+      //@ts-ignore
       this.#FormClass = groups[0].constructor
     }
   }
@@ -170,6 +172,7 @@ export class FormArray<T> implements IFormArray<T> {
     this.#groups = group
   }
 
+  //@ts-ignore
   add(group: IForm<T> = new this.#FormClass()) {
     this.groups = [...this.groups, group]
   }
@@ -183,9 +186,9 @@ export class FormArray<T> implements IFormArray<T> {
 }
 
 export default class Form<T> implements IForm<T> {
-  #fields: TFormInstanceFields<T> = {} as T
+  #fields: TFormFieldTypeOpts<T>[] = [] as TFormFieldTypeOpts<T>[]
   #dynamicFormValidators: IDynamicFormValidators = {}
-  #errors: {}
+  #errors = {}
 
   constructor(kwargs: { [key: string]: any } = {}) {
     for (const prop in this.constructor) {
@@ -230,7 +233,7 @@ export default class Form<T> implements IForm<T> {
     }
     for (const [_field, _validators] of Object.entries(this.#dynamicFormValidators)) {
       for (let i = 0; i < _validators.length; i++) {
-        this.addValidator(_field, _validators[i])
+        this.addFormLevelValidator(_field, _validators[i])
       }
     }
   }
@@ -240,10 +243,16 @@ export default class Form<T> implements IForm<T> {
   }
 
   get field(): TFormInstanceFields<T> {
-    return this.#fields
+    let fields: any = {}
+    for (let index = 0; index < this.fields.length; index++) {
+      const field = this.fields[index]
+      fields[field.name] = field
+    }
+
+    return fields
   }
   get fields(): TFormFieldTypeOpts<T>[] {
-    let arr = []
+    let arr: TFormFieldTypeOpts[] = []
     for (const fieldName in this.#fields) {
       arr.push(this.#fields[fieldName])
     }
@@ -255,6 +264,7 @@ export default class Form<T> implements IForm<T> {
   }
 
   copyArray<T>(opts: FormArray<T>) {
+    //@ts-ignore
     let groups = opts.groups.map((g: Form<T>) => {
       //@ts-ignore
       return new g.constructor()
@@ -282,7 +292,7 @@ export default class Form<T> implements IForm<T> {
       throw e
     }
   }
-  addFormLevelValidator(fieldName: string, validator: IValidator) {
+  addFormLevelValidator(fieldName: string, validator: IFormLevelValidator) {
     this._handleNoFieldErrors(fieldName)
     if (this.field[fieldName] instanceof FormArray) {
       throw new Error(
@@ -292,7 +302,8 @@ export default class Form<T> implements IForm<T> {
         }),
       )
     }
-    const newValidator = setValidatorProps(validator, { form: this })
+    const newValidator = validator
+    newValidator.setMatchingField(this)
 
     if (this.field[fieldName] instanceof FormField) {
       this.field[fieldName].addValidator(newValidator)
@@ -355,10 +366,12 @@ export default class Form<T> implements IForm<T> {
   }
   get value() {
     let { formArrays, formFields } = fields(this.fields)
+    //@ts-ignore
     let formFieldVals = formFields.reduce((acc: { [key: string]: FormField }, curr: FormField) => {
       acc[curr.name] = curr.value
       return acc
     }, {})
+
     let formArrayVals = formArrays.reduce((acc, curr) => {
       if (!acc[curr.name]) {
         acc[curr.name] = curr.groups.map((formGroup) => formGroup.value)
