@@ -66,5 +66,18 @@ describe('Forms', () => {
       testForm.confirmPassword.value = 'testing'
       assert.equal(testForm.isValid, true)
     })
+    it('contain a list of errors in the field errors list', () => {
+      const values = {
+        password: 'testing',
+        confirmPassword: 'testin',
+      }
+      let testForm = new UserForm(values) as TUserForm
+      assert.equal(testForm.isValid, false)
+      testForm.validate()
+      console.log(testForm.confirmPassword.errors)
+      assert.equal(testForm.confirmPassword.errors.length, 1)
+      testForm.confirmPassword.value = 'testing'
+      assert.equal(testForm.isValid, true)
+    })
   })
 })

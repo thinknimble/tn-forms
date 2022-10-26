@@ -87,8 +87,14 @@ export class MustMatchValidator extends Validator {
   }
 
   call(value: any) {
+    console.log('matcher', this.matchingVal, 'val', value)
     if (this.matchingVal !== value) {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+      throw new Error(
+        JSON.stringify({
+          code: this.code,
+          message: `${this.message} value ${value} != ${this.matchingVal}`,
+        }),
+      )
     }
   }
 }
@@ -211,14 +217,14 @@ export class MaxDateValidator extends Validator {
   }
 }
 
-export class MinimumValueValidator<integer> extends Validator<integer> {
+export class MinimumValueValidator extends Validator {
   min: number
   constructor({ message = 'Must meet minimum value', code = 'invalidMinValue', min = 0 } = {}) {
     super({ message, code })
     this.min = min
   }
 
-  call(value: integer | null) {
+  call(value: number | null) {
     if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {

@@ -100,6 +100,7 @@ export class FormField implements IFormField {
         )
       }
     })
+    this.errors = errors
   }
   get isValid(): boolean {
     try {
@@ -364,7 +365,7 @@ export default class Form<T> implements IForm<T> {
   set errors(errs) {
     this.#errors = errs
   }
-  get value() {
+  get value(): any {
     let { formArrays, formFields } = fields(this.fields)
     //@ts-ignore
     let formFieldVals = formFields.reduce((acc: { [key: string]: FormField }, curr: FormField) => {
