@@ -252,6 +252,31 @@ export default class Form<T> implements IForm<T> {
   static create(kwargs: { [key: string]: any } = {}) {
     return new this(kwargs)
   }
+  replicate(): Form<T> {
+    // ALERT there is a bug here for FormArrays the referenc is still attached PB
+    let current = this
+
+    //@ts-ignore
+    let newForm = new this.constructor(this.value) as Form<T>
+
+    newForm.#fields = newForm.fields.map((f: IFormField | IFormArray<T>) => {
+      if (f instanceof FormField) {
+        let originalField = this.field[f.name]
+
+        f.errors = [...originalField.errors]
+        return f
+      } else if (f instanceof FormArray) {
+        let formGroups = f.groups.map((fg: IForm<T>, i: number) => {
+          let group = fg.replicate() as IForm<T>
+          return group
+        })
+        f.groups = formGroups
+        return f
+      } else return f
+    })
+    newForm.errors = current.errors
+    return newForm
+  }
 
   get field(): TFormInstanceFields<T> {
     let fields: any = {}
@@ -345,6 +370,7 @@ export default class Form<T> implements IForm<T> {
       }
     })
   }
+
   get errors(): any {
     let { formArrays, formFields } = fields(this.fields)
     let formArrayErrors = formArrays.reduce((acc, curr) => {
@@ -375,7 +401,7 @@ export default class Form<T> implements IForm<T> {
   set errors(errs) {
     this.#errors = errs
   }
-  get value(): any {
+  get value(): Record<keyof T, IFormField['value']> {
     let { formArrays, formFields } = fields(this.fields)
     //@ts-ignore
     let formFieldVals = formFields.reduce((acc: { [key: string]: FormField }, curr: FormField) => {
@@ -391,9 +417,9 @@ export default class Form<T> implements IForm<T> {
       }
       return acc
     }, {})
-    return { ...formFieldVals, ...formArrayVals }
+    return { ...formFieldVals, ...formArrayVals } as Record<keyof T, IFormField['value']>
   }
-  get isValid() {
+  get isValid(): boolean {
     try {
       let { formArrays, formFields } = fields(this.fields)
       formFields.forEach((field) => {
@@ -413,6 +439,7 @@ export default class Form<T> implements IForm<T> {
       return false
     }
   }
+
   set isValid(valid) {
     this.isValid = valid
   }

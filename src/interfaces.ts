@@ -35,7 +35,7 @@ export interface IForm<T> {
   get fields(): TFormFieldTypeOpts<T>[]
   get errors(): any[]
   set errors(errors: any[])
-  get value(): any
+  get value(): Record<keyof T, IFormField['value']>
   get isValid(): boolean
   set isValid(valid: boolean)
 
@@ -43,6 +43,7 @@ export interface IForm<T> {
   _handleNoFieldErrors(fieldName: string): any
   addValidator(fieldName: string, validator: IValidator): any
   validate(): any
+  replicate(): any
 }
 
 export interface IFormFieldError {
@@ -61,8 +62,8 @@ export interface IFormFieldKwargs {
   isTouched?: boolean
 }
 
-export interface IFormField {
-  value: any
+export interface IFormField<T = any> {
+  value: T
   errors: IFormFieldError[]
   validators: IValidator[]
   name: string
@@ -91,3 +92,5 @@ export type TFormFieldTypeCombos<T> = {
 }
 
 export type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>
+
+export type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>

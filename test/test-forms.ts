@@ -28,9 +28,22 @@ interface IFormNoAddress {
   address: FormArray<IUserAddressForm>
 }
 
+interface ICrossFieldForm {
+  usersName: IFormField
+  confirmName: IFormField
+}
+type TCrossFieldForm = ICrossFieldForm & CrossFieldForm
+
 type TUserForm = UserForm & IUserForm
 type TUserAddressForm = UserAddressForm & IUserAddressForm
 
+class CrossFieldForm extends Form<ICrossFieldForm> {
+  static dynamicFormValidators = {
+    confirmName: [new MustMatchValidator({ matcher: 'usersName' })],
+  }
+  static usersName = new FormField()
+  static confirmName = new FormField()
+}
 class UserAddressForm extends Form<IUserAddressForm> {
   static street = new FormField({ validators: [], value: 'this' })
   static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
@@ -245,6 +258,19 @@ describe('Forms', () => {
       }
       let userForm1 = new UserForm({ ...value }) as TUserForm
       assert.equal(userForm1.value.toString(), value.toString())
+    })
+    it('should mark the field as invalid if the matching field is not the same', () => {
+      const values = {
+        usersName: 'pari',
+        confirmName: 'baker',
+      }
+      let newForm = new CrossFieldForm(values) as TCrossFieldForm
+
+      assert.equal(newForm.confirmName.isValid, false)
+      newForm.validate()
+      assert.equal(newForm.confirmName.errors.length, 1)
+      newForm.confirmName.value = 'pari'
+      assert.equal(newForm.confirmName.isValid, true)
     })
   })
   describe('# Form array functions', () => {

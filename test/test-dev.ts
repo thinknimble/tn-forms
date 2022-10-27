@@ -48,7 +48,13 @@ class UserForm extends Form<IUserForm> {
     confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
   }
 
+  static firstName = new FormField()
   static password = new FormField()
+  static address = new FormArray<IUserAddressForm>({
+    name: 'address',
+    groups: [],
+    FormClass: UserAddressForm,
+  })
   static confirmPassword = new FormField({
     validators: [],
   })
@@ -56,28 +62,54 @@ class UserForm extends Form<IUserForm> {
 
 describe('Forms', () => {
   describe('# Form setup', () => {
-    it('should load all the form array values and create a new instance for each using the FormClass type', () => {
+    it('should replicate the form exactly', () => {
       const values = {
         password: 'testing',
         confirmPassword: 'testin',
       }
       let testForm = new UserForm(values) as TUserForm
-      assert.equal(testForm.isValid, false)
-      testForm.confirmPassword.value = 'testing'
-      assert.equal(testForm.isValid, true)
-    })
-    it('contain a list of errors in the field errors list', () => {
-      const values = {
-        password: 'testing',
-        confirmPassword: 'testin',
-      }
-      let testForm = new UserForm(values) as TUserForm
-      assert.equal(testForm.isValid, false)
       testForm.validate()
-      console.log(testForm.confirmPassword.errors)
       assert.equal(testForm.confirmPassword.errors.length, 1)
+      let duplicateForm = testForm.replicate() as TUserForm
+      assert.equal(duplicateForm.confirmPassword.errors.length, 1)
       testForm.confirmPassword.value = 'testing'
-      assert.equal(testForm.isValid, true)
+      testForm.validate()
+      assert.equal(testForm.confirmPassword.errors.length, 0)
+      assert.notEqual(testForm.confirmPassword.value, duplicateForm.confirmPassword.value)
+    })
+
+    // it('should replicate the form exactly using formarray', () => {
+    //   let userForm = new UserForm({ firstName: 'pari' }) as TUserForm
+    //   let duplicate = userForm.replicate() as TUserForm
+    //   assert.equal(userForm.firstName.value, duplicate.firstName.value)
+    //   userForm.firstName.value = 'testingnewname'
+    //   assert.notEqual(duplicate.firstName.value, userForm.firstName.value)
+    //   userForm.address.add(new UserAddressForm({ street: 'test' }))
+    //   assert.equal(userForm.address.groups.length, 1)
+    //   duplicate = userForm.replicate() as TUserForm
+    //   assert.equal(duplicate.address.groups.length, 1)
+    //   let addressForm = userForm.address.groups[0] as TUserAddressForm
+    //   addressForm.validate()
+    //   assert.equal(addressForm.city.errors.length, 1)
+    //   let duplicate1 = userForm.replicate() as TUserForm
+    //   let duplicateAddressForm = duplicate1.address.groups[0] as TUserAddressForm
+    //   assert.equal(duplicateAddressForm.city.errors.length, 1)
+    // })
+    it('should replicate the form exactly using formarray', () => {
+      let userForm = new UserForm({ firstName: 'pari' }) as TUserForm
+      userForm.address.add(new UserAddressForm({ street: 'test' }))
+      assert.equal(userForm.address.groups.length, 1)
+      let addressForm = userForm.address.groups[0] as TUserAddressForm
+      addressForm.validate()
+      assert.equal(addressForm.city.errors.length, 1)
+
+      let duplicate = userForm.replicate() as TUserForm
+      assert.equal(duplicate.address.groups.length, 1)
+      let duplicateAddressForm = userForm.address.groups[0] as TUserAddressForm
+      assert.equal(duplicateAddressForm.city.errors.length, 1)
+      assert.equal(duplicateAddressForm.street.value, addressForm.street.value)
+      //addressForm.street.value = 'testing123'
+      //assert.notEqual(duplicateAddressForm.street.value, addressForm.street.value)
     })
   })
 })
