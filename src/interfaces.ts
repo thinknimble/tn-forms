@@ -71,6 +71,7 @@ export interface IFormField {
   id: string
 
   get isValid(): boolean
+  set isValid(value: boolean)
   validate(): void
   get isTouched(): boolean
 }
