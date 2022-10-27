@@ -69,9 +69,10 @@ export interface IFormField {
   placeholder: string
   type: string
   id: string
-  isTouched: boolean
+
   get isValid(): boolean
   validate(): void
+  get isTouched(): boolean
 }
 
 export interface IFormInstance {

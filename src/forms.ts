@@ -56,7 +56,7 @@ export class FormField implements IFormField {
   placeholder: string = ''
   type: string = ''
   id: string
-  isTouched: boolean
+  #isTouched: boolean
 
   constructor({
     name = '',
@@ -79,7 +79,7 @@ export class FormField implements IFormField {
     this.placeholder = placeholder
     this.type = type
     this.id = id ? id : name ? name : 'field' + '-' + v4()
-    this.isTouched = isTouched
+    this.#isTouched = isTouched
   }
   static create(data: IFormFieldKwargs = {}): FormField {
     return new FormField(data)
@@ -132,6 +132,13 @@ export class FormField implements IFormField {
   }
   set validators(validator) {
     this.#validators = validator
+  }
+
+  get isTouched(): boolean {
+    return this.#isTouched
+  }
+  set isTouched(touched: boolean) {
+    this.#isTouched = touched
   }
 
   addValidator(validator: IValidator) {
