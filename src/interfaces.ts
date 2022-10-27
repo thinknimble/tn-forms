@@ -58,6 +58,7 @@ export interface IFormFieldKwargs {
   id?: string | null
   placeholder?: string
   type?: string
+  isTouched?: boolean
 }
 
 export interface IFormField {
@@ -68,6 +69,7 @@ export interface IFormField {
   placeholder: string
   type: string
   id: string
+  isTouched: boolean
   get isValid(): boolean
   validate(): void
 }

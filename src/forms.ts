@@ -56,6 +56,7 @@ export class FormField implements IFormField {
   placeholder: string = ''
   type: string = ''
   id: string
+  isTouched: boolean
 
   constructor({
     name = '',
@@ -65,6 +66,7 @@ export class FormField implements IFormField {
     placeholder = '',
     type = 'text',
     id = null,
+    isTouched = false,
   }: IFormFieldKwargs = {}) {
     this.value = Array.isArray(value)
       ? [...value]
@@ -76,7 +78,8 @@ export class FormField implements IFormField {
     this.validators = validators
     this.placeholder = placeholder
     this.type = type
-    this.id = id ? id : name + '-' + v4()
+    this.id = id ? id : name ? name : 'field' + '-' + v4()
+    this.isTouched = isTouched
   }
   static create(data: IFormFieldKwargs = {}): FormField {
     return new FormField(data)
