@@ -5,7 +5,7 @@ export declare class FormField implements IFormField {
     placeholder: string;
     type: string;
     id: string;
-    constructor({ name, validators, errors, value, placeholder, type, id, }?: IFormFieldKwargs);
+    constructor({ name, validators, errors, value, placeholder, type, id, isTouched, }?: IFormFieldKwargs);
     static create(data?: IFormFieldKwargs): FormField;
     validate(): void;
     get isValid(): boolean;
@@ -15,6 +15,8 @@ export declare class FormField implements IFormField {
     get value(): any;
     get validators(): IValidator<any>[];
     set validators(validator: IValidator<any>[]);
+    get isTouched(): boolean;
+    set isTouched(touched: boolean);
     addValidator(validator: IValidator): void;
 }
 export declare class FormArray<T> implements IFormArray<T> {
@@ -46,17 +48,7 @@ export default class Form<T> implements IForm<T> {
     validate(): void;
     get errors(): any;
     set errors(errs: any);
-    get value(): {
-        value: any;
-        errors: IFormFieldError[];
-        validators: IValidator<any>[];
-        name: string;
-        placeholder: string;
-        type: string;
-        id: string;
-        isValid: boolean;
-        validate(): void;
-    };
+    get value(): any;
     get isValid(): boolean;
     set isValid(valid: boolean);
 }

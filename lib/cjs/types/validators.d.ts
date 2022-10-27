@@ -70,14 +70,14 @@ export declare class MaxDateValidator extends Validator {
     });
     call(value: any): void;
 }
-export declare class MinimumValueValidator<integer> extends Validator<integer> {
+export declare class MinimumValueValidator extends Validator {
     min: number;
     constructor({ message, code, min }?: {
         message?: string | undefined;
         code?: string | undefined;
         min?: number | undefined;
     });
-    call(value: integer | null): void;
+    call(value: number | null): void;
 }
 export declare class MaximumValueValidator extends Validator {
     max: number;

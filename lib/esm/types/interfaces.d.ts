@@ -50,7 +50,8 @@ export interface IFormFieldKwargs {
     value?: any;
     id?: string | null;
     placeholder?: string;
-    type?: 'text';
+    type?: string;
+    isTouched?: boolean;
 }
 export interface IFormField {
     value: any;
@@ -62,6 +63,7 @@ export interface IFormField {
     id: string;
     get isValid(): boolean;
     validate(): void;
+    get isTouched(): boolean;
 }
 export interface IFormInstance {
     [key: string]: IFormField;
