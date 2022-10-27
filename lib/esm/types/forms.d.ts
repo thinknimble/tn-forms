@@ -23,7 +23,7 @@ export declare class FormArray<T> implements IFormArray<T> {
     #private;
     name: string;
     constructor({ name, groups, FormClass }: IFormArrayKwargs<T>);
-    get value(): any[];
+    get value(): Record<keyof T, any>[];
     get FormClass(): any;
     get groups(): IForm<T>[];
     set groups(group: IForm<T>[]);
@@ -38,6 +38,7 @@ export default class Form<T> implements IForm<T> {
     static create(kwargs?: {
         [key: string]: any;
     }): Form<unknown>;
+    replicate(): Form<T>;
     get field(): TFormInstanceFields<T>;
     get fields(): TFormFieldTypeOpts<T>[];
     copy(opts?: {}): FormField;
@@ -48,7 +49,7 @@ export default class Form<T> implements IForm<T> {
     validate(): void;
     get errors(): any;
     set errors(errs: any);
-    get value(): any;
+    get value(): Record<keyof T, IFormField['value']>;
     get isValid(): boolean;
     set isValid(valid: boolean);
 }

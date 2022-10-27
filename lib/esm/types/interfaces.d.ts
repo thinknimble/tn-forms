@@ -31,13 +31,14 @@ export interface IForm<T> {
     get fields(): TFormFieldTypeOpts<T>[];
     get errors(): any[];
     set errors(errors: any[]);
-    get value(): any;
+    get value(): Record<keyof T, IFormField['value']>;
     get isValid(): boolean;
     set isValid(valid: boolean);
     copy(value: any): any;
     _handleNoFieldErrors(fieldName: string): any;
     addValidator(fieldName: string, validator: IValidator): any;
     validate(): any;
+    replicate(): any;
 }
 export interface IFormFieldError {
     code: string;
@@ -53,8 +54,8 @@ export interface IFormFieldKwargs {
     type?: string;
     isTouched?: boolean;
 }
-export interface IFormField {
-    value: any;
+export interface IFormField<T = any> {
+    value: T;
     errors: IFormFieldError[];
     validators: IValidator[];
     name: string;
@@ -78,4 +79,5 @@ export declare type TFormFieldTypeCombos<T> = {
     formFields: IFormField[];
 };
 export declare type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>;
+export declare type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>;
 //# sourceMappingURL=interfaces.d.ts.map
