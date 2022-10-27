@@ -57,7 +57,7 @@ export interface IFormFieldKwargs {
   value?: any
   id?: string | null
   placeholder?: string
-  type?: 'text'
+  type?: string
 }
 
 export interface IFormField {
