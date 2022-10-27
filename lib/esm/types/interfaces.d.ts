@@ -62,8 +62,10 @@ export interface IFormField {
     type: string;
     id: string;
     get isValid(): boolean;
+    set isValid(value: boolean);
     validate(): void;
     get isTouched(): boolean;
+    set isTouched(touched: boolean);
 }
 export interface IFormInstance {
     [key: string]: IFormField;
