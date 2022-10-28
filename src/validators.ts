@@ -75,7 +75,6 @@ export class MustMatchValidator extends Validator {
   }
 
   setMatchingField(form: IForm<any>) {
-    console.log('testint field form ', form.value)
     if (this.matcher && form.field[this.matcher]) {
       this.#matchingField = form.field[this.matcher]
       return
