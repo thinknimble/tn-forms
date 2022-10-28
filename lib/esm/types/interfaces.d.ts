@@ -53,8 +53,8 @@ export interface IFormFieldKwargs {
     type?: string;
     isTouched?: boolean;
 }
-export interface IFormField {
-    value: any;
+export interface IFormField<T = any> {
+    value: T;
     errors: IFormFieldError[];
     validators: IValidator[];
     name: string;
@@ -77,5 +77,5 @@ export declare type TFormFieldTypeCombos<T> = {
     formArrays: IFormArray<T>[];
     formFields: IFormField[];
 };
-export declare type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>;
+export declare type TFormFieldTypeOpts<T = any> = IFormField<T> | IFormArray<T>;
 //# sourceMappingURL=interfaces.d.ts.map

@@ -14,11 +14,11 @@ import {
   IFormLevelValidator,
 } from './interfaces'
 
-function setFormFieldValueFromKwargs(
+function setFormFieldValueFromKwargs<T>(
   name: string,
-  field: FormField,
+  field: FormField<T>,
   valueFromKwarg = undefined,
-): IFormField {
+): IFormField<T> {
   field.value = valueFromKwarg != undefined ? valueFromKwarg : field.value
   field.name = name
   return field
@@ -36,11 +36,11 @@ function setValidatorProps(form: IForm<any>, validator: IValidator, kwargs: any)
 }
 
 function fields<T>(fields: TFormFieldTypeOpts<T>[]): TFormFieldTypeCombos<T> {
-  let formArrays = [] as FormArray<T>[]
-  let formFields = [] as FormField[]
+  let formArrays:FormArray<T>[] = [] 
+  let formFields:FormField<T>[] = [] 
   for (let i = 0; i < fields.length; i++) {
     fields[i] instanceof FormArray ? formArrays.push(fields[i] as FormArray<T>) : null
-    fields[i] instanceof FormField ? formFields.push(fields[i] as FormField) : null
+    fields[i] instanceof FormField ? formFields.push(fields[i] as FormField<T>) : null
   }
   return {
     formArrays,
@@ -48,7 +48,7 @@ function fields<T>(fields: TFormFieldTypeOpts<T>[]): TFormFieldTypeCombos<T> {
   }
 }
 
-export class FormField implements IFormField {
+export class FormField<T> implements IFormField<T> {
   #value: any = null
   #errors: IFormFieldError[] = []
   #validators: IValidator[] = []
@@ -81,7 +81,7 @@ export class FormField implements IFormField {
     this.id = id ? id : name ? name : 'field' + '-' + v4()
     this.#isTouched = isTouched
   }
-  static create(data: IFormFieldKwargs = {}): FormField {
+  static create<TCreate>(data: IFormFieldKwargs = {}): FormField<TCreate> {
     return new FormField(data)
   }
   validate() {
@@ -197,11 +197,11 @@ export class FormArray<T> implements IFormArray<T> {
 }
 
 export default class Form<T> implements IForm<T> {
-  #fields: TFormFieldTypeOpts<T>[] = [] as TFormFieldTypeOpts<T>[]
+  #fields: TFormFieldTypeOpts<T>[] = [] 
   #dynamicFormValidators: IDynamicFormValidators = {}
   #errors = {}
 
-  constructor(kwargs: { [key: string]: any } = {}) {
+  constructor(kwargs: T) {
     for (const prop in this.constructor) {
       if (this.constructor[prop] instanceof FormField) {
         this.#fields[prop] = this.copy(this.constructor[prop])
@@ -247,6 +247,9 @@ export default class Form<T> implements IForm<T> {
         this.addFormLevelValidator(_field, _validators[i])
       }
     }
+    console.log('Hello from the constructor',{
+      fields:this.#fields,
+    })
   }
 
   static create(kwargs: { [key: string]: any } = {}) {

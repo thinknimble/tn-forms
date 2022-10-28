@@ -1,12 +1,12 @@
 import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, TFormFieldTypeOpts, IFormLevelValidator } from './interfaces';
-export declare class FormField implements IFormField {
+export declare class FormField<T> implements IFormField<T> {
     #private;
     name: string;
     placeholder: string;
     type: string;
     id: string;
     constructor({ name, validators, errors, value, placeholder, type, id, isTouched, }?: IFormFieldKwargs);
-    static create(data?: IFormFieldKwargs): FormField;
+    static create<TCreate>(data?: IFormFieldKwargs): FormField<TCreate>;
     validate(): void;
     get isValid(): boolean;
     get errors(): IFormFieldError[];
@@ -32,15 +32,15 @@ export declare class FormArray<T> implements IFormArray<T> {
 }
 export default class Form<T> implements IForm<T> {
     #private;
-    constructor(kwargs?: {
-        [key: string]: any;
-    });
+    constructor(kwargs: T);
     static create(kwargs?: {
         [key: string]: any;
-    }): Form<unknown>;
+    }): Form<{
+        [key: string]: any;
+    }>;
     get field(): TFormInstanceFields<T>;
     get fields(): TFormFieldTypeOpts<T>[];
-    copy(opts?: {}): FormField;
+    copy(opts?: {}): FormField<unknown>;
     copyArray<T>(opts: FormArray<T>): FormArray<unknown>;
     _handleNoFieldErrors(fieldName: string): void;
     addFormLevelValidator(fieldName: string, validator: IFormLevelValidator): void;

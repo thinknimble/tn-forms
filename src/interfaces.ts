@@ -61,8 +61,8 @@ export interface IFormFieldKwargs {
   isTouched?: boolean
 }
 
-export interface IFormField {
-  value: any
+export interface IFormField<T=any> {
+  value: T
   errors: IFormFieldError[]
   validators: IValidator[]
   name: string
@@ -90,4 +90,4 @@ export type TFormFieldTypeCombos<T> = {
   formFields: IFormField[]
 }
 
-export type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>
+export type TFormFieldTypeOpts<T = any> = IFormField<T> | IFormArray<T>
