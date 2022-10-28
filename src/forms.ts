@@ -264,6 +264,7 @@ export default class Form<T> implements IForm<T> {
         let originalField = this.field[f.name]
 
         f.errors = [...originalField.errors]
+        f.isTouched = originalField.isTouched
         return f
       } else if (f instanceof FormArray) {
         let formGroups = f.groups.map((fg: IForm<T>, i: number) => {

@@ -37,6 +37,7 @@ type TCrossFieldForm = ICrossFieldForm & CrossFieldForm
 type TUserForm = UserForm & IUserForm
 type TUserAddressForm = UserAddressForm & IUserAddressForm
 
+type TFormNoAddressInstance = IFormNoAddress & FormNoAddressInstance
 class CrossFieldForm extends Form<ICrossFieldForm> {
   static dynamicFormValidators = {
     confirmName: [new MustMatchValidator({ matcher: 'usersName' })],
@@ -139,20 +140,35 @@ describe('Forms', () => {
       const userFormFact = UserForm.create() as TUserForm
       assert.equal(userFormFact.fields.length, 6)
     })
-    // it('should throw an error if no initiliazed form group && no form class are defined for the form array', () => {
-    //   try {
-    //     let testForm = new FormNoAddressInstance()
-    //   } catch {
-    //     console.log('here')
-    //     assert.equal(true, true)
-    //   }
-    //   assert.equal(false, false)
-    // })
     it('should load all the form array values and create a new instance for each using the FormClass type', () => {
       const values = {
         address: [{ street: 'testswdf', city: 'asdasdasdasd' }],
       }
-      let testForm = new FormNoAddressInstance(values)
+      let testForm = new FormNoAddressInstance(values) as TFormNoAddressInstance
+      assert.equal(testForm.address.groups.length, 1)
+    })
+    it('should replicate the form exactly', () => {
+      const values = {
+        usersName: 'test',
+        confrimName: 'tests',
+      }
+      let testForm = new CrossFieldForm() as TCrossFieldForm
+      testForm.usersName.value = 'testing123'
+      testForm.confirmName.value = 'tiinngngngn'
+      testForm.validate()
+      assert.equal(testForm.confirmName.errors.length, 1)
+      let duplicateForm = testForm.replicate() as TCrossFieldForm
+      assert.equal(duplicateForm.confirmName.errors.length, 1)
+      testForm.confirmName.value = 'testing123'
+      testForm.validate()
+      assert.equal(testForm.confirmName.errors.length, 0)
+      assert.notEqual(testForm.confirmName.value, duplicateForm.confirmName.value)
+      assert.equal(duplicateForm.confirmName.errors.length, 1)
+      duplicateForm.validate()
+      assert.equal(duplicateForm.confirmName.errors.length, 1)
+      duplicateForm.confirmName.value = 'testing123'
+      duplicateForm.validate()
+      assert.equal(duplicateForm.confirmName.errors.length, 0)
     })
   })
   describe('# Form Validators', () => {
