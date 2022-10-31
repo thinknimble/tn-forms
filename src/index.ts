@@ -26,6 +26,8 @@ import {
   FormValue,
 } from './interfaces'
 
+import { isNumber, isNumberOrFloat, notNullOrUndefined, fieldGetter } from './utils'
+
 export default Form
 export {
   FormField,
@@ -53,4 +55,8 @@ export {
   PatternValidator,
   UrlValidator,
   FormValue,
+  isNumber,
+  isNumberOrFloat,
+  notNullOrUndefined,
+  fieldGetter,
 }
