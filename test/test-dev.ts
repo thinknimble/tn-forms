@@ -67,23 +67,21 @@ describe('Forms', () => {
       //   password: 'testing',
       //   confirmPassword: 'testin',
       // }
-
-
-    // it('should replicate the form exactly using formarray', () => {
-    //   let userForm = new UserForm({ firstName: 'pari' }) as TUserForm
-    //   userForm.address.add(new UserAddressForm({ street: 'test' }))
-    //   assert.equal(userForm.address.groups.length, 1)
-    //   let addressForm = userForm.address.groups[0] as TUserAddressForm
-    //   addressForm.validate()
-    //   assert.equal(addressForm.city.errors.length, 1)
-
-    //   let duplicate = userForm.replicate() as TUserForm
-    //   assert.equal(duplicate.address.groups.length, 1)
-    //   let duplicateAddressForm = userForm.address.groups[0] as TUserAddressForm
-    //   assert.equal(duplicateAddressForm.city.errors.length, 1)
-    //   assert.equal(duplicateAddressForm.street.value, addressForm.street.value)
-    //   //addressForm.street.value = 'testing123'
-    //   //assert.notEqual(duplicateAddressForm.street.value, addressForm.street.value)
-    // })
+      // it('should replicate the form exactly using formarray', () => {
+      //   let userForm = new UserForm({ firstName: 'pari' }) as TUserForm
+      //   userForm.address.add(new UserAddressForm({ street: 'test' }))
+      //   assert.equal(userForm.address.groups.length, 1)
+      //   let addressForm = userForm.address.groups[0] as TUserAddressForm
+      //   addressForm.validate()
+      //   assert.equal(addressForm.city.errors.length, 1)
+      //   let duplicate = userForm.replicate() as TUserForm
+      //   assert.equal(duplicate.address.groups.length, 1)
+      //   let duplicateAddressForm = userForm.address.groups[0] as TUserAddressForm
+      //   assert.equal(duplicateAddressForm.city.errors.length, 1)
+      //   assert.equal(duplicateAddressForm.street.value, addressForm.street.value)
+      //   //addressForm.street.value = 'testing123'
+      //   //assert.notEqual(duplicateAddressForm.street.value, addressForm.street.value)
+      // })
+    })
   })
 })

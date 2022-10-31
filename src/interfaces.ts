@@ -35,7 +35,7 @@ export interface IForm<T> {
   get fields(): TFormFieldTypeOpts<T>[]
   get errors(): any[]
   set errors(errors: any[])
-  get value(): Record<keyof T, IFormField['value']>
+  get value(): FormValue<T>
   get isValid(): boolean
   set isValid(valid: boolean)
 
@@ -94,3 +94,16 @@ export type TFormFieldTypeCombos<T> = {
 export type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>
 
 export type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>
+
+export type PickByValue<T, ValueType> = Pick<
+  T,
+  { [Key in keyof T]-?: T[Key] extends ValueType ? Key : never }[keyof T]
+>
+
+export type PickFormValue<T> = PickByValue<T, IFormField | IFormArray<any>>
+
+export type FormValue<T> = {
+  [Property in keyof PickFormValue<T>]: T[Property] extends IFormField | IFormArray<any>
+    ? T[Property]['value']
+    : never
+}

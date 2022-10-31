@@ -23,6 +23,7 @@ import {
   IFormField,
   IFormInstance,
   TFormInstanceFields,
+  FormValue,
 } from './interfaces'
 
 export default Form
@@ -51,4 +52,5 @@ export {
   MaximumValueValidator,
   PatternValidator,
   UrlValidator,
+  FormValue,
 }

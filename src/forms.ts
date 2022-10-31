@@ -12,6 +12,8 @@ import {
   TFormFieldTypeCombos,
   TFormFieldTypeOpts,
   IFormLevelValidator,
+  FormValue,
+  PickFormValue,
 } from './interfaces'
 
 function setFormFieldValueFromKwargs(
@@ -402,23 +404,23 @@ export default class Form<T> implements IForm<T> {
   set errors(errs) {
     this.#errors = errs
   }
-  get value(): Record<keyof T, IFormField['value']> {
+  get value(): FormValue<T> {
     let { formArrays, formFields } = fields(this.fields)
-    //@ts-ignore
-    let formFieldVals = formFields.reduce((acc: { [key: string]: FormField }, curr: FormField) => {
+
+    let formFieldVals = formFields.reduce<FormValue<T>>((acc, curr) => {
       acc[curr.name] = curr.value
       return acc
-    }, {})
+    }, {} as FormValue<T>)
 
-    let formArrayVals = formArrays.reduce((acc, curr) => {
+    let formArrayVals = formArrays.reduce<FormValue<T>>((acc, curr) => {
       if (!acc[curr.name]) {
         acc[curr.name] = curr.groups.map((formGroup) => formGroup.value)
       } else {
         acc[curr.name] = [...acc[curr.name], curr.groups.map((formGroup) => formGroup.value)]
       }
       return acc
-    }, {})
-    return { ...formFieldVals, ...formArrayVals } as Record<keyof T, IFormField['value']>
+    }, {} as FormValue<T>)
+    return { ...formFieldVals, ...formArrayVals }
   }
   get isValid(): boolean {
     try {

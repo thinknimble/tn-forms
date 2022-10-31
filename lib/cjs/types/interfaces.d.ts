@@ -31,7 +31,7 @@ export interface IForm<T> {
     get fields(): TFormFieldTypeOpts<T>[];
     get errors(): any[];
     set errors(errors: any[]);
-    get value(): Record<keyof T, IFormField['value']>;
+    get value(): FormValue<T>;
     get isValid(): boolean;
     set isValid(valid: boolean);
     copy(value: any): any;
@@ -80,4 +80,11 @@ export declare type TFormFieldTypeCombos<T> = {
 };
 export declare type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>;
 export declare type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>;
+export declare type PickByValue<T, ValueType> = Pick<T, {
+    [Key in keyof T]-?: T[Key] extends ValueType ? Key : never;
+}[keyof T]>;
+export declare type PickFormValue<T> = PickByValue<T, IFormField | IFormArray<any>>;
+export declare type FormValue<T> = {
+    [Property in keyof PickFormValue<T>]: T[Property] extends IFormField | IFormArray<any> ? T[Property]['value'] : never;
+};
 //# sourceMappingURL=interfaces.d.ts.map

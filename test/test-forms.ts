@@ -16,7 +16,7 @@ interface IUserAddressForm {
   city: IFormField
 }
 interface IUserForm {
-  firstName: IFormField
+  firstName: IFormField<string>
   password: IFormField
   confirmPassword: IFormField
   dob: IFormField
@@ -30,7 +30,7 @@ interface IFormNoAddress {
 
 interface ICrossFieldForm {
   usersName: IFormField
-  confirmName: IFormField
+  confirmName: IFormField<string>
 }
 type TCrossFieldForm = ICrossFieldForm & CrossFieldForm
 
@@ -249,8 +249,8 @@ describe('Forms', () => {
       const userAddressForm2 = new UserAddressForm2() as TUserAddressForm
       assert.equal(userAddressForm2.street.value, defaultAddress)
       assert.equal(
-        userAddressForm2.value.toString(),
-        { street: defaultAddress, city: '' }.toString(),
+        JSON.stringify(userAddressForm2.value),
+        JSON.stringify({ street: defaultAddress, city: '' }),
       )
     })
     it('should prefill values of form using patch value and override field default', () => {
@@ -262,7 +262,6 @@ describe('Forms', () => {
     it('should prefill values of form using ph value and override field default with formarrays', () => {
       let value = {
         firstName: 'lorem',
-        lastName: 'ipsum',
         email: 'test@formstofill.com',
         password: 'testing123',
         confirmPassword: 'testing123',
@@ -273,7 +272,8 @@ describe('Forms', () => {
         ],
       }
       let userForm1 = new UserForm({ ...value }) as TUserForm
-      assert.equal(userForm1.value.toString(), value.toString())
+      userForm1.value.address
+      assert.equal(JSON.stringify(userForm1.value), JSON.stringify(value))
     })
     it('should mark the field as invalid if the matching field is not the same', () => {
       const values = {
