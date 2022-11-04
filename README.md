@@ -37,6 +37,83 @@ email.validate()
 //get the errors (must call the validate method first)
 email.errors
 ```
+
+## Basic Form 
+```ts
+
+interface IUserForm {
+  firstName: IFormField<string>
+  password: IFormField
+  confirmPassword: IFormField
+  dob: IFormField
+  email: IFormField
+  address: IFormArray<IUserAddressForm>
+}
+
+class UserForm extends Form<IUserForm> {
+  static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+  static email = new FormField({ validators: [new EmailValidator()] })
+  static password = new FormField({ validators: [new RequiredValidator()] })
+  static confirmPassword = new FormField({
+    validators: [new MinLengthValidator({ minLength: 5 })],
+  })
+  static dob = new FormField({
+    validators: [
+      new MinDateValidator({ min: new Date('10/20/2022') }),
+      new MaxDateValidator({ max: new Date('10/18/2026') }),
+    ],
+  })
+  static address = new FormArray<IUserAddressForm>({
+    name: 'address',
+    groups: [new UserAddressForm()],
+  })
+}
+//initialize the form 
+const userForm = new UserForm()
+// validate the form 
+userForm.validate()
+// check if the form is valid 
+userForm.isValid
+// get the value as an object
+userForm.value
+//get an individial value 
+userForm.value.firstName 
+
+//add a formfield to the input 
+```
+```html 
+<!-- SEE NOTE FOR SHORHAND METHOD RECOMMENDED-->
+<!-- Vue.js -->
+<input type="test" :name="userForm.field.firstName.name" :placeholder="userForm.field.firstName.name" v-model="userForm.field.firstName.value" /> 
+```
+To use shorthand field method you can decalre a union type of the form and its interface 
+
+```ts
+type TUserForm = UserForm & IUserForm
+const userForm = new UserForm() as TUserForm 
+```
+this will give you direct access to the fields as properties of the class 
+```html 
+
+<!-- Vue.js -->
+<input type="test" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
+```
+
+
+## Dynamic Form with form arrays
+```ts 
+interface IUserAddressForm {
+  street: IFormField
+  city: IFormField
+}
+
+class UserAddressForm extends Form<IUserAddressForm> {
+  static street = new FormField({ validators: [], value: 'this' })
+  static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+
+}
+```
+
 </details>
 
 <details>

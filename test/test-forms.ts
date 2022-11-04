@@ -281,6 +281,7 @@ describe('Forms', () => {
         confirmName: 'baker',
       }
       let newForm = new CrossFieldForm(values) as TCrossFieldForm
+      newForm.value.confirmName
 
       assert.equal(newForm.confirmName.isValid, false)
       newForm.validate()

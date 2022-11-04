@@ -24,6 +24,7 @@ import {
   IFormInstance,
   TFormInstanceFields,
   FormValue,
+  OptionalFormArgs,
 } from './interfaces'
 
 import { isNumber, isNumberOrFloat, notNullOrUndefined, fieldGetter } from './utils'
@@ -55,6 +56,7 @@ export {
   PatternValidator,
   UrlValidator,
   FormValue,
+  OptionalFormArgs,
   isNumber,
   isNumberOrFloat,
   notNullOrUndefined,

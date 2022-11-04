@@ -14,6 +14,7 @@ import {
   IFormLevelValidator,
   FormValue,
   PickFormValue,
+  OptionalFormArgs,
 } from './interfaces'
 
 function setFormFieldValueFromKwargs(
@@ -203,7 +204,7 @@ export default class Form<T> implements IForm<T> {
   #dynamicFormValidators: IDynamicFormValidators = {}
   #errors = {}
 
-  constructor(kwargs: { [key: string]: any } = {}) {
+  constructor(kwargs: OptionalFormArgs<T> = {}) {
     for (const prop in this.constructor) {
       if (this.constructor[prop] instanceof FormField) {
         this.#fields[prop] = this.copy(this.constructor[prop])
@@ -298,7 +299,7 @@ export default class Form<T> implements IForm<T> {
 
     return arr
   }
-  copy(opts = {}) {
+  copy<FormFieldType = any>(opts = {}): IFormField<FormFieldType> {
     return new FormField(opts)
   }
 

@@ -34,12 +34,26 @@ export interface IForm<T> {
     get value(): FormValue<T>;
     get isValid(): boolean;
     set isValid(valid: boolean);
-    copy(value: any): any;
+    copy(value: IFormField<T>): IFormField<T>;
     _handleNoFieldErrors(fieldName: string): any;
     addValidator(fieldName: string, validator: IValidator): any;
-    validate(): any;
-    replicate(): any;
+    validate(): void;
+    replicate(): IForm<T>;
 }
+export declare type TForm<T> = {
+    get field(): TFormInstanceFields<T>;
+    get fields(): TFormFieldTypeOpts<T>[];
+    get errors(): any[];
+    set errors(errors: any[]);
+    get value(): FormValue<T>;
+    get isValid(): boolean;
+    set isValid(valid: boolean);
+    copy(value: IFormField<T>): IFormField<T>;
+    _handleNoFieldErrors(fieldName: string): any;
+    addValidator(fieldName: string, validator: IValidator): any;
+    validate(): void;
+    replicate(): IForm<T>;
+} & T;
 export interface IFormFieldError {
     code: string;
     message: string;
@@ -87,4 +101,5 @@ export declare type PickFormValue<T> = PickByValue<T, IFormField | IFormArray<an
 export declare type FormValue<T> = {
     [Property in keyof PickFormValue<T>]: T[Property] extends IFormField | IFormArray<any> ? T[Property]['value'] : never;
 };
+export declare type OptionalFormArgs<T> = Partial<FormValue<T>>;
 //# sourceMappingURL=interfaces.d.ts.map

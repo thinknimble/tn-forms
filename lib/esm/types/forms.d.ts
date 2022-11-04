@@ -1,4 +1,4 @@
-import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, TFormFieldTypeOpts, IFormLevelValidator, FormValue } from './interfaces';
+import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, TFormFieldTypeOpts, IFormLevelValidator, FormValue, OptionalFormArgs } from './interfaces';
 export declare class FormField implements IFormField {
     #private;
     name: string;
@@ -32,16 +32,14 @@ export declare class FormArray<T> implements IFormArray<T> {
 }
 export default class Form<T> implements IForm<T> {
     #private;
-    constructor(kwargs?: {
-        [key: string]: any;
-    });
+    constructor(kwargs?: OptionalFormArgs<T>);
     static create(kwargs?: {
         [key: string]: any;
     }): Form<unknown>;
     replicate(): Form<T>;
     get field(): TFormInstanceFields<T>;
     get fields(): TFormFieldTypeOpts<T>[];
-    copy(opts?: {}): FormField;
+    copy<FormFieldType = any>(opts?: {}): IFormField<FormFieldType>;
     copyArray<T>(opts: FormArray<T>): FormArray<unknown>;
     _handleNoFieldErrors(fieldName: string): void;
     addFormLevelValidator(fieldName: string, validator: IFormLevelValidator): void;
