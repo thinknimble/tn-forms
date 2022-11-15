@@ -1,4 +1,4 @@
-import { IForm } from '../dist'
+import { IForm } from './interfaces'
 
 export function notNullOrUndefined(value: any): boolean {
   return value !== null && typeof value !== 'undefined'
