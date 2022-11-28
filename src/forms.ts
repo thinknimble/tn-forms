@@ -206,9 +206,6 @@ export class FormArray<T> implements IFormArray<T> {
     this.groups.splice(index, 1)
     //this.groups = this.groups
   }
-  // static create(opts:IFormArrayKwargs<unknown> = {}) {
-  //   return new this(opts)
-  // }
   replicate() {
     return new FormArray({
       groups: this.groups.map((g) => g.replicate()),
