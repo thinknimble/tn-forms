@@ -53,7 +53,7 @@ function fields<T>(fields: TArrayOfFormFieldValues<T>): TFormFieldTypeCombos<T> 
 }
 
 export class FormField<T = any> implements IFormField<T> {
-  #value: T = null
+  #value: T | null = null
   #errors: IFormFieldError[] = []
   #validators: IValidator<T>[] = []
   name: string = ''
@@ -165,7 +165,7 @@ export class FormField<T = any> implements IFormField<T> {
 
 export class FormArray<T> implements IFormArray<T> {
   #groups: IForm<T>[] = []
-  #FormClass = null
+  #FormClass: Form<T> | null = null
   name: string = ''
 
   constructor({ name = '', groups = [], FormClass = null }: IFormArrayKwargs<T>) {
@@ -180,6 +180,7 @@ export class FormArray<T> implements IFormArray<T> {
       )
     }
     if (!this.#FormClass && groups.length) {
+      //@ts-ignore
       this.#FormClass = groups[0].constructor
     }
   }
@@ -198,8 +199,8 @@ export class FormArray<T> implements IFormArray<T> {
     this.#groups = group
   }
 
-  add(group: IForm<T> = new this.#FormClass()) {
-    this.groups = [...this.groups, group]
+  add(group: IForm<T> | null = this.#FormClass ? this.#FormClass.replicate() : null) {
+    this.groups = group ? [...this.groups, group] : [...this.groups]
   }
   remove(index: number) {
     this.groups.splice(index, 1)
@@ -294,27 +295,30 @@ export default class Form<T> implements IForm<T> {
     //@ts-ignore
     let newForm = new this.constructor(this.value) as Form<T>
 
-    newForm.#fields = Object.fromEntries(
-      newForm.fields.map((f) => {
-        if (f instanceof FormField) {
-          let originalField = this.field[f.name]
+    const formFieldOpts: unknown = Object.fromEntries(
+      newForm.fields
+        .map((f) => {
+          if (f instanceof FormField) {
+            let originalField = this.field[f.name]
 
-          f.errors = [...originalField.errors]
-          f.isTouched = originalField.isTouched
+            f.errors = [...originalField.errors]
+            f.isTouched = originalField.isTouched
+            return [f.name, f]
+          }
+          if (!(f instanceof FormArray)) {
+            console.error('f should either be FormField or FormArray')
+            return
+          }
+          let formGroups = f.groups.map((fg: IForm<T>, i: number) => {
+            let group = fg.replicate()
+            return group
+          })
+          f.groups = formGroups
           return [f.name, f]
-        }
-        if (!(f instanceof FormArray)) {
-          console.error('f should either be FormField or FormArray')
-          return null
-        }
-        let formGroups = f.groups.map((fg: IForm<T>, i: number) => {
-          let group = fg.replicate()
-          return group
         })
-        f.groups = formGroups
-        return [f.name, f]
-      }),
-    ) as TFormFieldTypeOpts<T>
+        .filter(Boolean) as [name: string, f: any],
+    )
+    newForm.#fields = formFieldOpts as TFormFieldTypeOpts<T>
     newForm.errors = current.errors
     return newForm
   }
@@ -337,7 +341,7 @@ export default class Form<T> implements IForm<T> {
   }
 
   copyArray<T>(opts: FormArray<T>) {
-    let groups = opts.groups.map((g: Form<T>) => {
+    let groups = opts.groups.map((g) => {
       return g.replicate()
     })
     return new FormArray({

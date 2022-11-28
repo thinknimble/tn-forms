@@ -8,7 +8,7 @@ export interface IFormLevelValidator extends IValidator {
 export interface IValidator<T = any> {
   message: string
   code: string
-  call(value: T): void
+  call(value: T | null): void
 }
 
 export type TFormInstance<T> = {
@@ -89,7 +89,7 @@ export interface IFormFieldKwargs {
 }
 
 export interface IFormField<T = any> {
-  value: T
+  value: T | null
   errors: IFormFieldError[]
   validators: IValidator[]
   name: string
