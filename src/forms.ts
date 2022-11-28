@@ -12,6 +12,9 @@ import {
   TFormFieldTypeCombos,
   TFormFieldTypeOpts,
   IFormLevelValidator,
+  FormValue,
+  PickFormValue,
+  OptionalFormArgs,
 } from './interfaces'
 
 function setFormFieldValueFromKwargs<T>(
@@ -36,8 +39,8 @@ function setValidatorProps(form: IForm<any>, validator: IValidator, kwargs: any)
 }
 
 function fields<T>(fields: TFormFieldTypeOpts<T>[]): TFormFieldTypeCombos<T> {
-  let formArrays:FormArray<T>[] = [] 
-  let formFields:FormField<T>[] = [] 
+  let formArrays: FormArray<T>[] = []
+  let formFields: FormField<T>[] = []
   for (let i = 0; i < fields.length; i++) {
     fields[i] instanceof FormArray ? formArrays.push(fields[i] as FormArray<T>) : null
     fields[i] instanceof FormField ? formFields.push(fields[i] as FormField<T>) : null
@@ -197,11 +200,11 @@ export class FormArray<T> implements IFormArray<T> {
 }
 
 export default class Form<T> implements IForm<T> {
-  #fields: TFormFieldTypeOpts<T>[] = [] 
+  #fields: TFormFieldTypeOpts<T>[] = []
   #dynamicFormValidators: IDynamicFormValidators = {}
   #errors = {}
 
-  constructor(kwargs: T) {
+  constructor(kwargs: OptionalFormArgs<T> = {}) {
     for (const prop in this.constructor) {
       if (this.constructor[prop] instanceof FormField) {
         this.#fields[prop] = this.copy(this.constructor[prop])
@@ -247,13 +250,39 @@ export default class Form<T> implements IForm<T> {
         this.addFormLevelValidator(_field, _validators[i])
       }
     }
-    console.log('Hello from the constructor',{
-      fields:this.#fields,
+    console.log('Hello from the constructor', {
+      fields: this.#fields,
     })
   }
 
   static create(kwargs: { [key: string]: any } = {}) {
     return new this(kwargs)
+  }
+  replicate(): Form<T> {
+    // ALERT there is a bug here for FormArrays the referenc is still attached PB
+    let current = this
+
+    //@ts-ignore
+    let newForm = new this.constructor(this.value) as Form<T>
+
+    newForm.#fields = newForm.fields.map((f: IFormField | IFormArray<T>) => {
+      if (f instanceof FormField) {
+        let originalField = this.field[f.name]
+
+        f.errors = [...originalField.errors]
+        f.isTouched = originalField.isTouched
+        return f
+      } else if (f instanceof FormArray) {
+        let formGroups = f.groups.map((fg: IForm<T>, i: number) => {
+          let group = fg.replicate() as IForm<T>
+          return group
+        })
+        f.groups = formGroups
+        return f
+      } else return f
+    })
+    newForm.errors = current.errors
+    return newForm
   }
 
   get field(): TFormInstanceFields<T> {
@@ -273,7 +302,7 @@ export default class Form<T> implements IForm<T> {
 
     return arr
   }
-  copy(opts = {}) {
+  copy<FormFieldType = any>(opts = {}): IFormField<FormFieldType> {
     return new FormField(opts)
   }
 
@@ -348,6 +377,7 @@ export default class Form<T> implements IForm<T> {
       }
     })
   }
+
   get errors(): any {
     let { formArrays, formFields } = fields(this.fields)
     let formArrayErrors = formArrays.reduce((acc, curr) => {
@@ -378,25 +408,25 @@ export default class Form<T> implements IForm<T> {
   set errors(errs) {
     this.#errors = errs
   }
-  get value(): any {
+  get value(): FormValue<T> {
     let { formArrays, formFields } = fields(this.fields)
-    //@ts-ignore
-    let formFieldVals = formFields.reduce((acc: { [key: string]: FormField }, curr: FormField) => {
+
+    let formFieldVals = formFields.reduce<FormValue<T>>((acc, curr) => {
       acc[curr.name] = curr.value
       return acc
-    }, {})
+    }, {} as FormValue<T>)
 
-    let formArrayVals = formArrays.reduce((acc, curr) => {
+    let formArrayVals = formArrays.reduce<FormValue<T>>((acc, curr) => {
       if (!acc[curr.name]) {
         acc[curr.name] = curr.groups.map((formGroup) => formGroup.value)
       } else {
         acc[curr.name] = [...acc[curr.name], curr.groups.map((formGroup) => formGroup.value)]
       }
       return acc
-    }, {})
+    }, {} as FormValue<T>)
     return { ...formFieldVals, ...formArrayVals }
   }
-  get isValid() {
+  get isValid(): boolean {
     try {
       let { formArrays, formFields } = fields(this.fields)
       formFields.forEach((field) => {
@@ -416,6 +446,7 @@ export default class Form<T> implements IForm<T> {
       return false
     }
   }
+
   set isValid(valid) {
     this.isValid = valid
   }

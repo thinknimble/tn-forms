@@ -23,7 +23,11 @@ import {
   IFormField,
   IFormInstance,
   TFormInstanceFields,
+  FormValue,
+  OptionalFormArgs,
 } from './interfaces'
+
+import { isNumber, isNumberOrFloat, notNullOrUndefined, fieldGetter } from './utils'
 
 export default Form
 export {
@@ -51,4 +55,10 @@ export {
   MaximumValueValidator,
   PatternValidator,
   UrlValidator,
+  FormValue,
+  OptionalFormArgs,
+  isNumber,
+  isNumberOrFloat,
+  notNullOrUndefined,
+  fieldGetter,
 }

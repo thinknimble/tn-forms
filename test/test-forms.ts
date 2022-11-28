@@ -16,7 +16,7 @@ interface IUserAddressForm {
   city: IFormField
 }
 interface IUserForm {
-  firstName: IFormField
+  firstName: IFormField<string>
   password: IFormField
   confirmPassword: IFormField
   dob: IFormField
@@ -28,9 +28,23 @@ interface IFormNoAddress {
   address: FormArray<IUserAddressForm>
 }
 
+interface ICrossFieldForm {
+  usersName: IFormField
+  confirmName: IFormField<string>
+}
+type TCrossFieldForm = ICrossFieldForm & CrossFieldForm
+
 type TUserForm = UserForm & IUserForm
 type TUserAddressForm = UserAddressForm & IUserAddressForm
 
+type TFormNoAddressInstance = IFormNoAddress & FormNoAddressInstance
+class CrossFieldForm extends Form<ICrossFieldForm> {
+  static dynamicFormValidators = {
+    confirmName: [new MustMatchValidator({ matcher: 'usersName' })],
+  }
+  static usersName = new FormField()
+  static confirmName = new FormField()
+}
 class UserAddressForm extends Form<IUserAddressForm> {
   static street = new FormField({ validators: [], value: 'this' })
   static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
@@ -126,20 +140,35 @@ describe('Forms', () => {
       const userFormFact = UserForm.create() as TUserForm
       assert.equal(userFormFact.fields.length, 6)
     })
-    // it('should throw an error if no initiliazed form group && no form class are defined for the form array', () => {
-    //   try {
-    //     let testForm = new FormNoAddressInstance()
-    //   } catch {
-    //     console.log('here')
-    //     assert.equal(true, true)
-    //   }
-    //   assert.equal(false, false)
-    // })
     it('should load all the form array values and create a new instance for each using the FormClass type', () => {
       const values = {
         address: [{ street: 'testswdf', city: 'asdasdasdasd' }],
       }
-      let testForm = new FormNoAddressInstance(values)
+      let testForm = new FormNoAddressInstance(values) as TFormNoAddressInstance
+      assert.equal(testForm.address.groups.length, 1)
+    })
+    it('should replicate the form exactly', () => {
+      const values = {
+        usersName: 'test',
+        confrimName: 'tests',
+      }
+      let testForm = new CrossFieldForm() as TCrossFieldForm
+      testForm.usersName.value = 'testing123'
+      testForm.confirmName.value = 'tiinngngngn'
+      testForm.validate()
+      assert.equal(testForm.confirmName.errors.length, 1)
+      let duplicateForm = testForm.replicate() as TCrossFieldForm
+      assert.equal(duplicateForm.confirmName.errors.length, 1)
+      testForm.confirmName.value = 'testing123'
+      testForm.validate()
+      assert.equal(testForm.confirmName.errors.length, 0)
+      assert.notEqual(testForm.confirmName.value, duplicateForm.confirmName.value)
+      assert.equal(duplicateForm.confirmName.errors.length, 1)
+      duplicateForm.validate()
+      assert.equal(duplicateForm.confirmName.errors.length, 1)
+      duplicateForm.confirmName.value = 'testing123'
+      duplicateForm.validate()
+      assert.equal(duplicateForm.confirmName.errors.length, 0)
     })
   })
   describe('# Form Validators', () => {
@@ -220,8 +249,8 @@ describe('Forms', () => {
       const userAddressForm2 = new UserAddressForm2() as TUserAddressForm
       assert.equal(userAddressForm2.street.value, defaultAddress)
       assert.equal(
-        userAddressForm2.value.toString(),
-        { street: defaultAddress, city: '' }.toString(),
+        JSON.stringify(userAddressForm2.value),
+        JSON.stringify({ street: defaultAddress, city: '' }),
       )
     })
     it('should prefill values of form using patch value and override field default', () => {
@@ -233,7 +262,6 @@ describe('Forms', () => {
     it('should prefill values of form using ph value and override field default with formarrays', () => {
       let value = {
         firstName: 'lorem',
-        lastName: 'ipsum',
         email: 'test@formstofill.com',
         password: 'testing123',
         confirmPassword: 'testing123',
@@ -244,7 +272,22 @@ describe('Forms', () => {
         ],
       }
       let userForm1 = new UserForm({ ...value }) as TUserForm
-      assert.equal(userForm1.value.toString(), value.toString())
+      userForm1.value.address
+      assert.equal(JSON.stringify(userForm1.value), JSON.stringify(value))
+    })
+    it('should mark the field as invalid if the matching field is not the same', () => {
+      const values = {
+        usersName: 'pari',
+        confirmName: 'baker',
+      }
+      let newForm = new CrossFieldForm(values) as TCrossFieldForm
+      newForm.value.confirmName
+
+      assert.equal(newForm.confirmName.isValid, false)
+      newForm.validate()
+      assert.equal(newForm.confirmName.errors.length, 1)
+      newForm.confirmName.value = 'pari'
+      assert.equal(newForm.confirmName.isValid, true)
     })
   })
   describe('# Form array functions', () => {

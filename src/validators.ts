@@ -87,12 +87,11 @@ export class MustMatchValidator extends Validator {
   }
 
   call(value: any) {
-    console.log('matcher', this.matchingVal, 'val', value)
     if (this.matchingVal !== value) {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `${this.message} value ${value} != ${this.matchingVal}`,
+          message: `${this.message}`,
         }),
       )
     }
