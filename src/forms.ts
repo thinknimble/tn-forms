@@ -250,16 +250,14 @@ export default class Form<T> implements IForm<T> {
        */
       const unknownFieldNameKey: unknown = fieldName
       const kwargsFieldNameKey = unknownFieldNameKey as keyof typeof kwargs
+
       if (field instanceof FormField) {
-        fieldNameKey in kwargs &&
-          setFormFieldValueFromKwargs(fieldName, field, kwargs[kwargsFieldNameKey])
+        setFormFieldValueFromKwargs(fieldName, field, kwargs[kwargsFieldNameKey])
         // I think this is ts-ignored because this is where we rely on the static fields of the child form class
+        //@ts-ignore
+        this[fieldName] = field
       } else if (field instanceof FormArray) {
-        if (
-          fieldNameKey in kwargs &&
-          kwargs[kwargsFieldNameKey] &&
-          Array.isArray(kwargs[kwargsFieldNameKey])
-        ) {
+        if (kwargs[kwargsFieldNameKey] && Array.isArray(kwargs[kwargsFieldNameKey])) {
           for (let index = 0; index < kwargs[kwargsFieldNameKey].length; index++) {
             if (index <= field.groups.length - 1) {
               const group = field.groups[index]
