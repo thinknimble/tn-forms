@@ -12,9 +12,9 @@ import {
   TFormFieldTypeCombos,
   IFormLevelValidator,
   FormValue,
-  OptionalFormArgs,
   TArrayOfFormFieldValues,
   TFormFieldTypeOpts,
+  OptionalFormArgs,
 } from './interfaces'
 
 function setFormFieldValueFromKwargs<T>(
@@ -288,7 +288,7 @@ export default class Form<T> implements IForm<T> {
   static create<T>(kwargs: OptionalFormArgs<T> = {}) {
     return new this(kwargs)
   }
-  replicate() {
+  replicate(): Form<T> {
     // ALERT there is a bug here for FormArrays the referenc is still attached PB
     let current = this
 
@@ -336,7 +336,7 @@ export default class Form<T> implements IForm<T> {
     const result = Object.values(this.#fields) as TArrayOfFormFieldValues<T>
     return result
   }
-  copy(opts = {}) {
+  copy<FormFieldType = any>(opts = {}): IFormField<FormFieldType> {
     return new FormField(opts)
   }
 
@@ -409,6 +409,7 @@ export default class Form<T> implements IForm<T> {
       }
     })
   }
+
   get errors(): any {
     let { formArrays, formFields } = fields(this.fields)
     let formArrayErrors = formArrays.reduce((acc, curr) => {
@@ -477,6 +478,7 @@ export default class Form<T> implements IForm<T> {
       return false
     }
   }
+
   set isValid(valid) {
     this.isValid = valid
   }
