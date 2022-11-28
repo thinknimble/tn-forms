@@ -20,19 +20,30 @@ export interface IFormArrayKwargs<T> {
   groups: IForm<T>[]
   FormClass?: any
 }
-export interface IFormArray<T> {
+export interface IFormArray<TFormFields, TValue = any> {
   name: string
   get FormClass(): any
-  get value(): any[]
-  get groups(): IForm<T>[]
-  set groups(group: IForm<T>[])
-  add(group: IForm<T>): void
+  get value(): TValue[]
+  get groups(): IForm<TFormFields>[]
+  set groups(group: IForm<TFormFields>[])
+  add(group: IForm<TFormFields>): void
   remove(index: number): void
+  replicate(): IFormArray<TFormFields, TValue>
 }
+
+export type TFormFieldTypeOpts<T> = {
+  [K in keyof T]: T[K] extends IFormField<infer TField>
+    ? IFormField<TField>
+    : T[K] extends IFormArray<infer TForm, infer TValue>
+    ? IFormArray<TForm, TValue>
+    : never
+}
+
+export type TArrayOfFormFieldValues<T> = TFormFieldTypeOpts<T>[keyof TFormFieldTypeOpts<T>][]
 
 export interface IForm<T> {
   get field(): TFormInstanceFields<T>
-  get fields(): TFormFieldTypeOpts<T>[]
+  get fields(): TArrayOfFormFieldValues<T>
   get errors(): any[]
   set errors(errors: any[])
   get value(): FormValue<T>
@@ -91,6 +102,7 @@ export interface IFormField<T = any> {
   validate(): void
   get isTouched(): boolean
   set isTouched(touched: boolean)
+  replicate(): IFormField<T>
 }
 
 export interface IFormInstance {
@@ -101,12 +113,23 @@ export type TFormInstanceFields<T> = {
   [P in keyof T]: T[P]
 }
 
-export type TFormFieldTypeCombos<T> = {
-  formArrays: IFormArray<T>[]
-  formFields: IFormField[]
+type FormArrayMap<T> = {
+  [K in keyof TFormFieldTypeOpts<T>]: TFormFieldTypeOpts<T>[K] extends IFormArray<
+    infer TForm,
+    infer TValue
+  >
+    ? IFormArray<TForm, TValue>
+    : never
 }
-
-export type TFormFieldTypeOpts<T = any> = IFormField | IFormArray<T>
+type FormFieldMap<T> = {
+  [K in keyof TFormFieldTypeOpts<T>]: TFormFieldTypeOpts<T>[K] extends IFormField<infer TValue>
+    ? IFormField<TValue>
+    : never
+}
+export type TFormFieldTypeCombos<T> = {
+  formArrays: FormArrayMap<T>[keyof FormArrayMap<T>][]
+  formFields: FormFieldMap<T>[keyof FormFieldMap<T>][]
+}
 
 export type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>
 
