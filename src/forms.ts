@@ -165,7 +165,7 @@ export class FormField<T = any> implements IFormField<T> {
 
 export class FormArray<T> implements IFormArray<T> {
   #groups: IForm<T>[] = []
-  #FormClass: Form<T> | null = null
+  #FormClass: { new (): Form<T> } | null = null
   name: string = ''
 
   constructor({ name = '', groups = [], FormClass = null }: IFormArrayKwargs<T>) {
@@ -199,7 +199,7 @@ export class FormArray<T> implements IFormArray<T> {
     this.#groups = group
   }
 
-  add(group: IForm<T> | null = this.#FormClass ? this.#FormClass.replicate() : null) {
+  add(group: IForm<T> | null = this.#FormClass ? new this.#FormClass() : null) {
     this.groups = group ? [...this.groups, group] : [...this.groups]
   }
   remove(index: number) {
