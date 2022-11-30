@@ -47,7 +47,9 @@ class CrossFieldForm extends Form<ICrossFieldForm> {
 }
 class UserAddressForm extends Form<IUserAddressForm> {
   static street = new FormField({ validators: [], value: 'this' })
-  static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+  static city = new FormField({
+    validators: [new MinLengthValidator({ minLength: 5 })],
+  })
 }
 class FormNoAddressInstance extends Form<IFormNoAddress> {
   static address = new FormArray<IUserAddressForm>({
@@ -57,8 +59,15 @@ class FormNoAddressInstance extends Form<IFormNoAddress> {
   })
 }
 
+const firstNamePlaceholder = 'Input your first name...'
+const firstNameLabel = 'First name'
+
 class UserForm extends Form<IUserForm> {
-  static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+  static firstName = new FormField({
+    validators: [new MinLengthValidator({ minLength: 5 })],
+    placeholder: firstNamePlaceholder,
+    label: firstNameLabel,
+  })
   static email = new FormField({ validators: [new EmailValidator()] })
   static password = new FormField({ validators: [new RequiredValidator()] })
   static confirmPassword = new FormField({
@@ -169,6 +178,10 @@ describe('Forms', () => {
       duplicateForm.confirmName.value = 'testing123'
       duplicateForm.validate()
       assert.equal(duplicateForm.confirmName.errors.length, 0)
+    })
+    it('should have label and placeholder on firstName field', () => {
+      assert.equal(userForm.firstName.placeholder, firstNamePlaceholder)
+      assert.equal(userForm.firstName.label, firstNameLabel)
     })
   })
   describe('# Form Validators', () => {
