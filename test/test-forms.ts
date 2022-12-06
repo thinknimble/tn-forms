@@ -98,7 +98,7 @@ describe('Forms', () => {
       assert.equal(userForm.field['firstName'].value, 'pari')
     })
     it('should set firstName, password and confirm password  to have validators (ignoring address for now)', () => {
-      userForm.fields.forEach((field: TFormFieldTypeOpts<any>) => {
+      userForm.fields.forEach((field) => {
         if (field instanceof FormField) {
           assert.equal((userForm.fields[0] as FormField).validators.length, 1)
           assert.equal((userForm.fields[1] as FormField).validators.length, 1)

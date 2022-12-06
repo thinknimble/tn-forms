@@ -1,23 +1,24 @@
-import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, TFormFieldTypeOpts, IFormLevelValidator, FormValue, OptionalFormArgs } from './interfaces';
-export declare class FormField implements IFormField {
+import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, IFormLevelValidator, FormValue, TArrayOfFormFieldValues, OptionalFormArgs } from './interfaces';
+export declare class FormField<T = any> implements IFormField<T> {
     #private;
     name: string;
     placeholder: string;
     type: string;
     id: string;
     constructor({ name, validators, errors, value, placeholder, type, id, isTouched, }?: IFormFieldKwargs);
-    static create(data?: IFormFieldKwargs): FormField;
+    static create<TCreate>(data?: IFormFieldKwargs): FormField<TCreate>;
     validate(): void;
     get isValid(): boolean;
     get errors(): IFormFieldError[];
     set errors(error: IFormFieldError[]);
-    set value(value: any);
-    get value(): any;
-    get validators(): IValidator<any>[];
-    set validators(validator: IValidator<any>[]);
+    set value(value: T | null);
+    get value(): T | null;
+    get validators(): IValidator<T>[];
+    set validators(validator: IValidator<T>[]);
     get isTouched(): boolean;
     set isTouched(touched: boolean);
-    addValidator(validator: IValidator): void;
+    addValidator(validator: IValidator<T>): void;
+    replicate(): FormField<any>;
 }
 export declare class FormArray<T> implements IFormArray<T> {
     #private;
@@ -27,20 +28,19 @@ export declare class FormArray<T> implements IFormArray<T> {
     get FormClass(): any;
     get groups(): IForm<T>[];
     set groups(group: IForm<T>[]);
-    add(group?: IForm<T>): void;
+    add(group?: IForm<T> | null): void;
     remove(index: number): void;
+    replicate(): FormArray<T>;
 }
 export default class Form<T> implements IForm<T> {
     #private;
     constructor(kwargs?: OptionalFormArgs<T>);
-    static create(kwargs?: {
-        [key: string]: any;
-    }): Form<unknown>;
+    static create<T>(kwargs?: OptionalFormArgs<T>): Form<T>;
     replicate(): Form<T>;
     get field(): TFormInstanceFields<T>;
-    get fields(): TFormFieldTypeOpts<T>[];
+    get fields(): TArrayOfFormFieldValues<T>;
     copy<FormFieldType = any>(opts?: {}): IFormField<FormFieldType>;
-    copyArray<T>(opts: FormArray<T>): FormArray<unknown>;
+    copyArray<T>(opts: FormArray<T>): FormArray<T>;
     _handleNoFieldErrors(fieldName: string): void;
     addFormLevelValidator(fieldName: string, validator: IFormLevelValidator): void;
     addValidator(fieldName: string, validator: IValidator): void;
