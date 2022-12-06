@@ -86,6 +86,7 @@ export interface IFormFieldKwargs {
   placeholder?: string
   type?: string
   isTouched?: boolean
+  label?: string
 }
 
 export interface IFormField<T = any> {
@@ -96,6 +97,7 @@ export interface IFormField<T = any> {
   placeholder: string
   type: string
   id: string
+  label: string
 
   get isValid(): boolean
   set isValid(value: boolean)

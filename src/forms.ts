@@ -61,6 +61,7 @@ export class FormField<T = any> implements IFormField<T> {
   type: string = ''
   id: string
   #isTouched: boolean
+  label: string = ''
 
   constructor({
     name = '',
@@ -71,6 +72,7 @@ export class FormField<T = any> implements IFormField<T> {
     type = 'text',
     id = null,
     isTouched = false,
+    label = '',
   }: IFormFieldKwargs = {}) {
     this.value = Array.isArray(value)
       ? [...value]
@@ -84,6 +86,7 @@ export class FormField<T = any> implements IFormField<T> {
     this.type = type
     this.id = id ? id : name ? name : 'field' + '-' + v4()
     this.#isTouched = isTouched
+    this.label = label
   }
   static create<TCreate>(data: IFormFieldKwargs = {}): FormField<TCreate> {
     return new FormField(data)
