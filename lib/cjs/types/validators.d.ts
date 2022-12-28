@@ -13,11 +13,24 @@ export default class Validator<T = any> implements IValidator<T> {
         code?: string | undefined;
         isRequired?: boolean | undefined;
     });
+    get enableValidate(): boolean;
     /**
      * Perform validation on a given value.
      * @param {string|number|Array|Object} value - The error message to return if validation fails.
      */
     call(value: T): void;
+}
+export declare class FormLevelValidator<T = any> extends Validator<T> implements IFormLevelValidator {
+    #private;
+    matcher: string | null;
+    constructor({ message, code, isRequired, matcher, }?: {
+        message?: string | undefined;
+        code?: string | undefined;
+        isRequired?: boolean | undefined;
+        matcher?: string | undefined;
+    });
+    setMatchingField(form: IForm<any>): void;
+    get matchingVal(): any;
 }
 export declare class RequiredValidator extends Validator {
     constructor({ message, code, isRequired }?: {
@@ -37,17 +50,7 @@ export declare class MinLengthValidator extends Validator {
     });
     call(value: any): void;
 }
-export declare class MustMatchValidator extends Validator implements IFormLevelValidator {
-    #private;
-    matcher: string | null;
-    constructor({ message, code, isRequired, matcher, }?: {
-        message?: string | undefined;
-        code?: string | undefined;
-        isRequired?: boolean | undefined;
-        matcher?: string | undefined;
-    });
-    setMatchingField(form: IForm<any>): void;
-    get matchingVal(): any;
+export declare class MustMatchValidator extends FormLevelValidator implements IFormLevelValidator {
     call(value: any): void;
 }
 export declare class EmailValidator extends Validator {

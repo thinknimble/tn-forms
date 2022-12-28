@@ -9,6 +9,7 @@ export interface IValidator<T = any> {
   message: string
   code: string
   isRequired: boolean
+  get enableValidate(): boolean
   call(value: T | null): void
 }
 

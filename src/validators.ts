@@ -1,4 +1,4 @@
-import { IDynamicFormValidators, IValidator, IFormLevelValidator, IForm } from './interfaces'
+import { IValidator, IFormLevelValidator, IForm } from './interfaces'
 import * as EmailValidatorObj from 'email-validator'
 import { DateTime } from 'luxon'
 import { notNullOrUndefined, isNumber, isNumberOrFloat } from './utils'
@@ -18,12 +18,43 @@ export default class Validator<T = any> implements IValidator<T> {
     this.isRequired = isRequired
   }
 
+  get enableValidate() {
+    return this.isRequired
+  }
+
   /**
    * Perform validation on a given value.
    * @param {string|number|Array|Object} value - The error message to return if validation fails.
    */
   call(value: T) {
     throw new Error('Validator cannot be used directly, it must be overwritten in a subclass')
+  }
+}
+
+export class FormLevelValidator<T = any> extends Validator<T> implements IFormLevelValidator {
+  matcher: string | null
+  #matchingField: any
+
+  constructor({
+    message = 'Value must match',
+    code = 'mustMatch',
+    isRequired = true,
+    matcher = '',
+  } = {}) {
+    super({ message, code, isRequired })
+    this.matcher = matcher
+  }
+
+  setMatchingField(form: IForm<any>) {
+    if (this.matcher && form.field[this.matcher]) {
+      this.#matchingField = form.field[this.matcher]
+      return
+    }
+    throw new Error('Matching Field does not exist on form')
+  }
+
+  get matchingVal() {
+    return this.#matchingField ? this.#matchingField.value : null
   }
 }
 
@@ -63,32 +94,7 @@ export class MinLengthValidator extends Validator {
   }
 }
 
-export class MustMatchValidator extends Validator implements IFormLevelValidator {
-  matcher: string | null
-  #matchingField: any
-
-  constructor({
-    message = 'Value must match',
-    code = 'mustMatch',
-    isRequired = true,
-    matcher = '',
-  } = {}) {
-    super({ message, code, isRequired })
-    this.matcher = matcher
-  }
-
-  setMatchingField(form: IForm<any>) {
-    if (this.matcher && form.field[this.matcher]) {
-      this.#matchingField = form.field[this.matcher]
-      return
-    }
-    throw new Error('Matching Field does not exist on form')
-  }
-
-  get matchingVal() {
-    return this.#matchingField ? this.#matchingField.value : null
-  }
-
+export class MustMatchValidator extends FormLevelValidator implements IFormLevelValidator {
   call(value: any) {
     if (this.matchingVal !== value) {
       throw new Error(
