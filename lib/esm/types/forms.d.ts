@@ -5,7 +5,8 @@ export declare class FormField<T = any> implements IFormField<T> {
     placeholder: string;
     type: string;
     id: string;
-    constructor({ name, validators, errors, value, placeholder, type, id, isTouched, }?: IFormFieldKwargs);
+    label: string;
+    constructor({ name, validators, errors, value, placeholder, type, id, isTouched, label, }?: IFormFieldKwargs);
     static create<TCreate>(data?: IFormFieldKwargs): FormField<TCreate>;
     validate(): void;
     get isValid(): boolean;

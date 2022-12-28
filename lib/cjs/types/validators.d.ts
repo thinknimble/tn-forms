@@ -103,4 +103,13 @@ export declare class UrlValidator extends PatternValidator {
         code?: string | undefined;
     });
 }
+export declare class TrueFalseValidator extends Validator {
+    truthy: boolean;
+    constructor({ message, code, truthy }?: {
+        message?: string | undefined;
+        code?: string | undefined;
+        truthy?: boolean | undefined;
+    });
+    call(value: any): void;
+}
 //# sourceMappingURL=validators.d.ts.map
