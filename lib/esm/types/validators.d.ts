@@ -1,4 +1,4 @@
-import { IValidator, IForm } from './interfaces';
+import { IValidator, IFormLevelValidator, IForm } from './interfaces';
 export default class Validator<T = any> implements IValidator<T> {
     /**
      * Crete an instance of the validator.
@@ -7,9 +7,11 @@ export default class Validator<T = any> implements IValidator<T> {
      */
     message: string;
     code: string;
-    constructor({ message, code }?: {
+    isRequired: boolean;
+    constructor({ message, code, isRequired }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
     });
     /**
      * Perform validation on a given value.
@@ -18,27 +20,30 @@ export default class Validator<T = any> implements IValidator<T> {
     call(value: T): void;
 }
 export declare class RequiredValidator extends Validator {
-    constructor({ message, code }?: {
+    constructor({ message, code, isRequired }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
     });
     call(value: any): void;
 }
 export declare class MinLengthValidator extends Validator {
     minLength: number;
-    constructor({ message, code, minLength, }?: {
+    constructor({ message, code, isRequired, minLength, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         minLength?: number | undefined;
     });
     call(value: any): void;
 }
-export declare class MustMatchValidator extends Validator {
+export declare class MustMatchValidator extends Validator implements IFormLevelValidator {
     #private;
     matcher: string | null;
-    constructor({ message, code, matcher }?: {
+    constructor({ message, code, isRequired, matcher, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         matcher?: string | undefined;
     });
     setMatchingField(form: IForm<any>): void;
@@ -46,68 +51,76 @@ export declare class MustMatchValidator extends Validator {
     call(value: any): void;
 }
 export declare class EmailValidator extends Validator {
-    constructor({ message, code }?: {
+    constructor({ message, code, isRequired, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
     });
     call(value: any): void;
 }
 export declare class MinDateValidator extends Validator {
     min: any;
-    constructor({ message, code, min }?: {
+    constructor({ message, code, isRequired, min, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         min?: Date | undefined;
     });
     call(value: any): void;
 }
 export declare class MaxDateValidator extends Validator {
     max: any;
-    constructor({ message, code, max }?: {
+    constructor({ message, code, isRequired, max, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         max?: Date | undefined;
     });
     call(value: any): void;
 }
 export declare class MinimumValueValidator extends Validator {
     min: number;
-    constructor({ message, code, min }?: {
+    constructor({ message, code, isRequired, min, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         min?: number | undefined;
     });
     call(value: number | null): void;
 }
 export declare class MaximumValueValidator extends Validator {
     max: number;
-    constructor({ message, code, max }?: {
+    constructor({ message, code, isRequired, max, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         max?: number | undefined;
     });
     call(value: any): void;
 }
 export declare class PatternValidator extends Validator {
     pattern: RegExp;
-    constructor({ message, code, pattern, }?: {
+    constructor({ message, code, isRequired, pattern, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         pattern?: RegExp | undefined;
     });
     call(value: any): void;
 }
 export declare class UrlValidator extends PatternValidator {
-    constructor({ message, code }?: {
+    constructor({ message, code, isRequired, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
     });
 }
 export declare class TrueFalseValidator extends Validator {
     truthy: boolean;
-    constructor({ message, code, truthy }?: {
+    constructor({ message, code, isRequired, truthy, }?: {
         message?: string | undefined;
         code?: string | undefined;
+        isRequired?: boolean | undefined;
         truthy?: boolean | undefined;
     });
     call(value: any): void;
