@@ -52,7 +52,7 @@ interface IUserForm {
 
 class UserForm extends Form<IUserForm> {
   static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
-  static email = new FormField({ validators: [new EmailValidator()] })
+  static email = new FormField({ validators: [new EmailValidator()], label:"Email" })
   static password = new FormField({ validators: [new RequiredValidator()] })
   static confirmPassword = new FormField({
     validators: [new MinLengthValidator({ minLength: 5 })],
@@ -67,6 +67,10 @@ class UserForm extends Form<IUserForm> {
     name: 'address',
     groups: [new UserAddressForm()],
   })
+  // add cross field validators to the dynamicFormValidators object
+  static dynamicFormValidators = {
+    confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
+  }
 }
 //initialize the form 
 const userForm = new UserForm()
@@ -84,7 +88,8 @@ userForm.value.firstName
 ```html 
 <!-- SEE NOTE FOR SHORHAND METHOD RECOMMENDED-->
 <!-- Vue.js -->
-<input type="test" :name="userForm.field.firstName.name" :placeholder="userForm.field.firstName.name" v-model="userForm.field.firstName.value" /> 
+<label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
+<input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
 ```
 To use shorthand field method you can decalre a union type of the form and its interface 
 
@@ -96,7 +101,8 @@ this will give you direct access to the fields as properties of the class
 ```html 
 
 <!-- Vue.js -->
-<input type="test" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
+<label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
+<input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
 ```
 
 
@@ -108,11 +114,34 @@ interface IUserAddressForm {
 }
 
 class UserAddressForm extends Form<IUserAddressForm> {
-  static street = new FormField({ validators: [], value: 'this' })
+  static street = new FormField({ validators: [], value: 'this', label:"Street" })
   static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
 
 }
 ```
+
+```html 
+
+<!-- Vue.js -->
+<label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
+<input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
+<label :for="userForm.adress.groups[0].street.label">{{userForm.adress.groups[0].street.label}}</label>
+<input type="text" :name="userForm.adress.groups[0].street.name" :placeholder="userForm.adress.groups[0].street.name" v-model="userForm.adress.groups[0].street.value" /> 
+
+```
+## Add Dynamic validators on the fly
+```ts 
+
+// This method is useful for adding dynamic validators on the fly in response to other fields 
+
+// Note for react this method is preferred to confrom to react's deep object mutability
+
+type TUserForm = UserForm & IUserForm
+const userForm = new UserForm() as TUserForm 
+userForm.addFormLevelValidator("firstName",new MinLengthValidator())
+
+```
+
 
 </details>
 
