@@ -67,11 +67,6 @@ export class MustMatchValidator extends Validator {
   constructor({ message = 'Value must match', code = 'mustMatch', matcher = '' } = {}) {
     super({ message, code })
     this.matcher = matcher
-    // if (form) {
-    //   this.#matchingField = form.field[this.matcher]
-    // } else {
-    //   this.#matchingField = null
-    // }
   }
 
   setMatchingField(form: IForm<any>) {

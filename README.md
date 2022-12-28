@@ -280,6 +280,10 @@ userForm.addFormLevelValidator("firstName",new MinLengthValidator())
 
 validators can be added to forms they all extend the base Validator class
 
+```
+    new RequiredValidator({minLength: int})
+```
+
 **RequiredValidator**
 Validates a field is not null, undefiend or empty 
 
@@ -321,7 +325,69 @@ Validates a field is true or false depending on true false value
 ```
   new MustMatchValidator({truthy:boolean})
 ```
+### Custom Validators 
+The validators class is easily extendable and allows you to create your own validators on the fly
 
+**Simple Validator**
+
+```
+export class MyValidator extends Validator {
+  // if you intend to override the default variables message & code define a constructor with a call to super
+  // you can pass additional variables as well
+
+  valueToEquals = null
+  constructor({ message = 'This is a required field', code = 'required', valueToEqual=null } = {}) {
+    super({ message, code })
+    this.valueToEquals = valueToEqual
+  }
+  // caller method that gets executed by the validate method
+  call(value: any) {
+    // you can use any of the provided utility functions
+    if (!notNullOrUndefined(value)) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    } else if (value !== valueToEqual) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    }
+  }
+}
+```
+
+*** Dynamic Validator ***
+```
+export class MustMatchValidator extends Validator {
+  matcher: string | null
+  #matchingField: any
+
+  constructor({ message = 'Value must match', code = 'mustMatch', matcher = '' } = {}) {
+    super({ message, code })
+    this.matcher = matcher
+  }
+  
+  // set matching field is required to set dynamically follow the matching field's value
+  setMatchingField(form: IForm<any>) {
+    if (this.matcher && form.field[this.matcher]) {
+      this.#matchingField = form.field[this.matcher]
+      return
+    }
+    throw new Error('Matching Field does not exist on form')
+  }
+
+  get matchingVal() {
+    return this.#matchingField ? this.#matchingField.value : null
+  }
+
+  call(value: any) {
+    if (this.matchingVal !== value) {
+      throw new Error(
+        JSON.stringify({
+          code: this.code,
+          message: `${this.message}`,
+        }),
+      )
+    }
+  }
+}
+```
 
 
 
