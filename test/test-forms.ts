@@ -9,6 +9,7 @@ import {
   MinLengthValidator,
   MustMatchValidator,
   RequiredValidator,
+  TrueFalseValidator,
 } from '../src/validators'
 
 interface IUserAddressForm {
@@ -301,6 +302,20 @@ describe('Forms', () => {
       assert.equal(newForm.confirmName.errors.length, 1)
       newForm.confirmName.value = 'pari'
       assert.equal(newForm.confirmName.isValid, true)
+    })
+    it('should mark the field as invalid because TrueFalseValidator failed', () => {
+      type TUserFormTrue = IUserForm & { trueVal: IFormField<boolean> } & UserForm
+      class UserFormTrue extends UserForm {
+        static trueVal = new FormField({
+          value: true,
+          validators: [new TrueFalseValidator({ truthy: false })],
+        })
+      }
+
+      let userForm1 = new UserFormTrue() as TUserFormTrue
+      assert.equal(userForm1.trueVal.isValid, false)
+      userForm1.trueVal.value = false
+      assert.equal(userForm1.trueVal.isValid, true)
     })
   })
   describe('# Form array functions', () => {

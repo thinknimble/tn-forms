@@ -23,7 +23,9 @@ import {
   RequiredValidator,
 } from '../src/validators'
 
-let email:IFormField = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my-field"}) // if id or name are not provided one will be generated automatically
+let email:IFormField = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my-field",label:"email label"}) 
+// if and id or name are not provided one will be generated automatically
+// All fields are optional
 
 // get the value
 email.value
@@ -40,6 +42,9 @@ email.errors
 
 ## Basic Form 
 ```ts
+
+// Build the interface to retrieve th fields in dot notation
+// optionally provide a type for the value of each field IFormField<type> any is used as a default
 
 interface IUserForm {
   firstName: IFormField<string>
@@ -63,6 +68,7 @@ class UserForm extends Form<IUserForm> {
       new MaxDateValidator({ max: new Date('10/18/2026') }),
     ],
   })
+  // collecttion of sub forms inside the main form -- see next example
   static address = new FormArray<IUserAddressForm>({
     name: 'address',
     groups: [new UserAddressForm()],
@@ -91,13 +97,14 @@ userForm.value.firstName
 <label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
 <input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
 ```
-To use shorthand field method you can decalre a union type of the form and its interface 
+To use shorthand field method (access a field with dot notation) you need to decalre a union type of the form and its interface 
 
 ```ts
 type TUserForm = UserForm & IUserForm
 const userForm = new UserForm() as TUserForm 
 ```
 this will give you direct access to the fields as properties of the class 
+
 ```html 
 
 <!-- Vue.js -->
@@ -148,192 +155,126 @@ userForm.addFormLevelValidator("firstName",new MinLengthValidator())
 <details>
 <summary>Javascript</summary>
 
-// get the value
-email.value
+## Stanalone Fields 
+```js
+import { FormField } from '../src/forms'
+import { IFormField } from '../src/interfaces'
+import {
+  RequiredValidator,
+} from '../src/validators'
 
-// check if the field is valid ( calls the validate method silently)
-email.isValid
-
-// validate the field
-email.validate()
-
-//get the errors (must call the validate method first)
-email.errors
-
-</details>
-
-
-## Stand alone fields
-
-
-Fields can be initated without needing a whole form and have access to (almost) all the form methods with optional parameters
-
-```
-email = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my field"})
+let email = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my-field",label:"email label"}) 
+// if and id or name are not provided one will be generated automatically
+// All fields are optional
 
 // get the value
 email.value
 
-// check if the field is valid ( calls the validate method silently)
+// check if the field is valid (calls the validate method silently)
 email.isValid
 
-// validate the field
+// validate the field this will trigger the error handler and add errors to the field
 email.validate()
 
 //get the errors (must call the validate method first)
 email.errors
-
-// bind to gield
-<input type="text" :name=email.name />
-
 ```
 
-## Form
+## Basic Form 
+```js
 
-**Create a new form instance**
-
-_form.js_
-
-```
-
-class UserRegistration form extends Form {
-static fullName = new FormField({ validators: [new RequiredValidator()] })
-static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
-static password = new FormField({
-    validators: [
-      new RequiredValidator(),
-      new MinLengthValidator({ minLength: 10, message: 'Minimum Length of 10 required' }),
-    ],
-  })
-static confirmPassword = new FormField({ validators: [new RequiredValidator()] })
-
-}
-
-```
-
-**Instatiate a form to a variable**
-
-_Form.vue_
-
-```
-data(){
-    return {
-        registrationForm = new UserRegistrationForm()
-    }
-}
-
-// use with the Tn field component (optionally)
-
-<FormField @blur="registrationForm.field.validate()" :errors="registrationForm.field.errors" v-model="registrationForm.field.value">
+// Build the interface to retrieve th fields in dot notation
+// optionally provide a type for the value of each field IFormField<type> any is used as a default
 
 
-// For dynamic validators (such as cross field validators) the validator must be added using the static dynamicFormValidators which accepsts an object of key value (field to apply the validator to) and value (an array of dynamic validators) pairs
 
 class UserForm extends Form {
-....
-static password = new FormField()
-static confirmPassowrd = new FormField()
-
+  static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+  static email = new FormField({ validators: [new EmailValidator()], label:"Email" })
+  static password = new FormField({ validators: [new RequiredValidator()] })
+  static confirmPassword = new FormField({
+    validators: [new MinLengthValidator({ minLength: 5 })],
+  })
+  static dob = new FormField({
+    validators: [
+      new MinDateValidator({ min: new Date('10/20/2022') }),
+      new MaxDateValidator({ max: new Date('10/18/2026') }),
+    ],
+  })
+  // collecttion of sub forms inside the main form -- see next example
+  static address = new FormArray({
+    name: 'address',
+    groups: [new UserAddressForm()],
+  })
+  // add cross field validators to the dynamicFormValidators object
   static dynamicFormValidators = {
     confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
   }
-
-....
 }
+//initialize the form 
+const userForm = new UserForm()
+// validate the form 
+userForm.validate()
+// check if the form is valid 
+userForm.isValid
+// get the value as an object
+userForm.value
+//get an individial value 
+userForm.value.firstName 
 
-// Get the form data
-
-methods:{
-    onSubmitForm(){
-
-        // optionally validate the form to retrieve all errors
-        this.registrationForm.validate()
-
-        // check the form is valid before submitting (.isValid validates form silently)
-        this.registrationForm.isValid
-
-        // get the form value (returns a dict of key value pairs)
-
-        const val = this.registrationForm.value
-    }
-}
-
-
-
+//add a formfield to the input 
+```
+```html 
+<!-- SEE NOTE FOR SHORHAND METHOD RECOMMENDED-->
+<!-- Vue.js -->
+<label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
+<input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
 ```
 
-**Dynamic Forms**
-_form.js_
 
+```js
+const userForm = new UserForm()
 ```
+
+```html 
+
+<!-- Vue.js -->
+<label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
+<input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
+```
+
+
+## Dynamic Form with form arrays
+```js
+
 class UserAddressForm extends Form {
-    static street = new FormField({})
-    static city = new FormField({})
-    static state = new FormField({})
-    static zipcode = new FormField({validators:[new MinValueValidator({min:10})]})
+  static street = new FormField({ validators: [], value: 'this', label:"Street" })
+  static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
+
 }
-
-class UserRegistration form extends Form {
-static fullName = new FormField({ validators: [new RequiredValidator()] })
-  static email = new FormField({ validators: [new RequiredValidator(), new EmailValidator()] })
-  static password = new FormField({
-    validators: [
-      new RequiredValidator(),
-      new MinLengthValidator({ minLength: 10, message: 'Minimum Length of 10 required' }),
-    ],
-  })
-  static confirmPassword = new FormField({ validators: [new RequiredValidator()] })
-  static addresses = new FormArray({name:'addresses' groups:[new UserAddressForm()]})
-}
-
-
 ```
 
-_Form.vue_
+```html 
+
+<!-- Vue.js -->
+<label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
+<input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
+<label :for="userForm.adress.groups[0].street.label">{{userForm.adress.groups[0].street.label}}</label>
+<input type="text" :name="userForm.adress.groups[0].street.name" :placeholder="userForm.adress.groups[0].street.name" v-model="userForm.adress.groups[0].street.value" /> 
 
 ```
-<FormField
-placeholder="day"
-:errors="form.field.recurrenceDay.errors"
-@blur="form.field.recurrenceDay.validate()"
-v-model="form.field.recurrenceDay.value"
-small
-/>
-<button @click="onAddAddress"></button>
+## Add Dynamic validators on the fly
+```js 
 
+// This method is useful for adding dynamic validators on the fly in response to other fields 
 
-//Dynamically add new address using the built in methods
+// Note for react this method is preferred to confrom to react's deep object mutability
 
-methods:{
-    ...
-    onAddAddress(){
-        this.userRegistration.addToArray('addresses',new UserAddressForm())
-    }m
-    onRemoveAddress(){
-         this.alertTemplateForm.removeFromArray('alertGroups', i)
-    }
-}
-
-// Add the forms to the html template with an array
-
-<div
-class="alerts-page__settings"
-:key="i"
-v-for="(form, i) in alertTemplateForm.field.addresses.groups"
->
-<FormField
-    placeholder="day"
-    :errors="form.field.recurrenceDay.errors"
-    @blur="form.field.recurrenceDay.validate()"
-    v-model="form.field.recurrenceDay.value"
-    small
-    />
-</div>
-
-
-
+const userForm = new UserForm()
+userForm.addFormLevelValidator("firstName",new MinLengthValidator())
 
 ```
+</details>
 
 ## Validators ##
 
@@ -370,13 +311,15 @@ Validates a field has a link pattern (ftp/http/https)
     new UrlValidator()
 ```
 **MustMatchValidator**
-Validates a field matches a value (dynamic)
+Validates a field matches another field 
 ```
-  //dynamic 
-  new MustMatchValidator({matcher?: string<fieldName>,form?:<FormField>})
+  new MustMatchValidator({matcher:<string-field-name>})
+```
 
-
-
+**TrueFalseValidator**
+Validates a field is true or false depending on true false value 
+```
+  new MustMatchValidator({truthy:boolean})
 ```
 
 

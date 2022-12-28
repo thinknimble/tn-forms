@@ -279,3 +279,18 @@ export class UrlValidator extends PatternValidator {
     super({ message, code, pattern })
   }
 }
+export class TrueFalseValidator extends Validator {
+  truthy: boolean
+  constructor({ message = 'Invalid option', code = 'invalidOption', truthy = true } = {}) {
+    message = `Value should be ${truthy}`
+    super({ message, code })
+    this.truthy = truthy
+  }
+  call(value: any) {
+    if (!notNullOrUndefined(value)) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    } else if (!!value !== this.truthy) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    }
+  }
+}
