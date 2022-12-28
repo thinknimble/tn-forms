@@ -157,11 +157,7 @@ userForm.addFormLevelValidator("firstName",new MinLengthValidator())
 
 ## Stanalone Fields 
 ```js
-import { FormField } from '../src/forms'
-import { IFormField } from '../src/interfaces'
-import {
-  RequiredValidator,
-} from '../src/validators'
+import { FormField, IFormField, RequiredValidator,FormArray, IFormArray,IFormField } from '@thinknimble/tn-forms'
 
 let email = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my-field",label:"email label"}) 
 // if and id or name are not provided one will be generated automatically
@@ -185,8 +181,6 @@ email.errors
 
 // Build the interface to retrieve th fields in dot notation
 // optionally provide a type for the value of each field IFormField<type> any is used as a default
-
-
 
 class UserForm extends Form {
   static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
@@ -331,13 +325,16 @@ The validators class is easily extendable and allows you to create your own vali
 **Simple Validator**
 
 ```
+import {Validator, notNullOrUndefined} from '@thinknimble/tn-forms'
+
+
 export class MyValidator extends Validator {
   // if you intend to override the default variables message & code define a constructor with a call to super
   // you can pass additional variables as well
 
   valueToEquals = null
-  constructor({ message = 'This is a required field', code = 'required', valueToEqual=null } = {}) {
-    super({ message, code })
+  constructor({ message = 'This is a required field', code = 'required', isRequired=true, valueToEqual=null } = {}) {
+    super({ message, code, isRequired })
     this.valueToEquals = valueToEqual
   }
   // caller method that gets executed by the validate method
@@ -358,8 +355,8 @@ export class MustMatchValidator extends Validator {
   matcher: string | null
   #matchingField: any
 
-  constructor({ message = 'Value must match', code = 'mustMatch', matcher = '' } = {}) {
-    super({ message, code })
+  constructor({ message = 'Value must match', code = 'mustMatch', isRequired=true, matcher = '' } = {}) {
+    super({ message, code, isRequired })
     this.matcher = matcher
   }
   

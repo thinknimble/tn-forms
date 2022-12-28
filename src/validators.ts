@@ -11,9 +11,11 @@ export default class Validator<T = any> implements IValidator<T> {
    */
   message: string = 'Invalid Value'
   code: string = 'invalid_validator'
-  constructor({ message = 'Invalid value', code = 'invalid' } = {}) {
+  isRequired: boolean = true
+  constructor({ message = 'Invalid value', code = 'invalid', isRequired = true } = {}) {
     this.message = message
     this.code = code
+    this.isRequired = isRequired
   }
 
   /**
@@ -26,8 +28,8 @@ export default class Validator<T = any> implements IValidator<T> {
 }
 
 export class RequiredValidator extends Validator {
-  constructor({ message = 'This is a required field', code = 'required' } = {}) {
-    super({ message, code })
+  constructor({ message = 'This is a required field', code = 'required', isRequired = true } = {}) {
+    super({ message, code, isRequired })
   }
   call(value: any) {
     if (!notNullOrUndefined(value)) {
@@ -46,9 +48,10 @@ export class MinLengthValidator extends Validator {
   constructor({
     message = 'Must meet minimum length requirements',
     code = 'minLength',
+    isRequired = true,
     minLength = 10,
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.minLength = minLength
   }
 
@@ -60,12 +63,17 @@ export class MinLengthValidator extends Validator {
   }
 }
 
-export class MustMatchValidator extends Validator {
+export class MustMatchValidator extends Validator implements IFormLevelValidator {
   matcher: string | null
   #matchingField: any
 
-  constructor({ message = 'Value must match', code = 'mustMatch', matcher = '' } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Value must match',
+    code = 'mustMatch',
+    isRequired = true,
+    matcher = '',
+  } = {}) {
+    super({ message, code, isRequired })
     this.matcher = matcher
   }
 
@@ -94,8 +102,12 @@ export class MustMatchValidator extends Validator {
 }
 
 export class EmailValidator extends Validator {
-  constructor({ message = 'Please Enter a Valid Email', code = 'invalidEmail' } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Please Enter a Valid Email',
+    code = 'invalidEmail',
+    isRequired = true,
+  } = {}) {
+    super({ message, code, isRequired })
   }
 
   call(value: any) {
@@ -112,8 +124,13 @@ export class EmailValidator extends Validator {
 
 export class MinDateValidator extends Validator {
   min: any
-  constructor({ message = 'Must meet minimum date', code = 'minDate', min = new Date() } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Must meet minimum date',
+    code = 'minDate',
+    isRequired = true,
+    min = new Date(),
+  } = {}) {
+    super({ message, code, isRequired })
     this.min = min
   }
 
@@ -162,8 +179,13 @@ export class MinDateValidator extends Validator {
 
 export class MaxDateValidator extends Validator {
   max: any
-  constructor({ message = 'Must meet minimum date', code = 'maxDate', max = new Date() } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Must meet minimum date',
+    code = 'maxDate',
+    isRequired = true,
+    max = new Date(),
+  } = {}) {
+    super({ message, code, isRequired })
     this.max = max
   }
 
@@ -213,8 +235,13 @@ export class MaxDateValidator extends Validator {
 
 export class MinimumValueValidator extends Validator {
   min: number
-  constructor({ message = 'Must meet minimum value', code = 'invalidMinValue', min = 0 } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Must meet minimum value',
+    code = 'invalidMinValue',
+    isRequired = true,
+    min = 0,
+  } = {}) {
+    super({ message, code, isRequired })
     this.min = min
   }
 
@@ -230,8 +257,13 @@ export class MinimumValueValidator extends Validator {
 }
 export class MaximumValueValidator extends Validator {
   max: number
-  constructor({ message = 'Must meet minimum value', code = 'invalidMaxValue', max = 10 } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Must meet minimum value',
+    code = 'invalidMaxValue',
+    isRequired = true,
+    max = 10,
+  } = {}) {
+    super({ message, code, isRequired })
     this.max = max
   }
 
@@ -251,9 +283,10 @@ export class PatternValidator extends Validator {
   constructor({
     message = 'Value does not match pattern',
     code = 'invalidPattern',
+    isRequired = true,
     pattern = /./,
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.pattern = typeof pattern == 'string' ? new RegExp(pattern) : pattern
   }
   call(value: any) {
@@ -268,17 +301,26 @@ export class PatternValidator extends Validator {
 }
 
 export class UrlValidator extends PatternValidator {
-  constructor({ message = 'Please enter a valid url', code = 'invalidUrl' } = {}) {
+  constructor({
+    message = 'Please enter a valid url',
+    code = 'invalidUrl',
+    isRequired = true,
+  } = {}) {
     let pattern =
       /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?$/
-    super({ message, code, pattern })
+    super({ message, code, isRequired, pattern })
   }
 }
 export class TrueFalseValidator extends Validator {
   truthy: boolean
-  constructor({ message = 'Invalid option', code = 'invalidOption', truthy = true } = {}) {
+  constructor({
+    message = 'Invalid option',
+    code = 'invalidOption',
+    isRequired = true,
+    truthy = true,
+  } = {}) {
     message = `Value should be ${truthy}`
-    super({ message, code })
+    super({ message, code, isRequired })
     this.truthy = truthy
   }
   call(value: any) {
