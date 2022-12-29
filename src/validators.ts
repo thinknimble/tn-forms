@@ -63,6 +63,9 @@ export class RequiredValidator extends Validator {
     super({ message, code, isRequired })
   }
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     } else if (Array.isArray(value) && !value.length) {
@@ -87,6 +90,9 @@ export class MinLengthValidator extends Validator {
   }
 
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     new RequiredValidator({ message: this.message, code: this.code }).call(value)
     if (!value || value.toString().length < this.minLength) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
@@ -96,6 +102,9 @@ export class MinLengthValidator extends Validator {
 
 export class MustMatchValidator extends FormLevelValidator implements IFormLevelValidator {
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (this.matchingVal !== value) {
       throw new Error(
         JSON.stringify({
@@ -117,6 +126,9 @@ export class EmailValidator extends Validator {
   }
 
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     try {
       const res = EmailValidatorObj.validate(value)
       if (!res) {
@@ -141,6 +153,9 @@ export class MinDateValidator extends Validator {
   }
 
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (!value) {
       throw new Error(
         JSON.stringify({
@@ -196,6 +211,9 @@ export class MaxDateValidator extends Validator {
   }
 
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (!value) {
       throw new Error(
         JSON.stringify({

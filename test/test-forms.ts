@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 
 import Form, { FormArray, FormField } from '../src/forms'
-import { IFormArray, IFormField, TFormFieldTypeOpts } from '../src/interfaces'
+import { IFormArray, IFormField } from '../src/interfaces'
 import {
   EmailValidator,
   MaxDateValidator,
@@ -303,7 +303,7 @@ describe('Forms', () => {
       newForm.confirmName.value = 'pari'
       assert.equal(newForm.confirmName.isValid, true)
     })
-    it('should mark the field as invalid because TrueFalseValidator failed', () => {
+    it('should mark the field as invalid first then valid, because TrueFalseValidator failed', () => {
       type TUserFormTrue = IUserForm & { trueVal: IFormField<boolean> } & UserForm
       class UserFormTrue extends UserForm {
         static trueVal = new FormField({
@@ -315,6 +315,18 @@ describe('Forms', () => {
       let userForm1 = new UserFormTrue() as TUserFormTrue
       assert.equal(userForm1.trueVal.isValid, false)
       userForm1.trueVal.value = false
+      assert.equal(userForm1.trueVal.isValid, true)
+    })
+    it('should mark the field as valid and ignore the validator', () => {
+      type TUserFormTrue = IUserForm & { trueVal: IFormField<boolean> } & UserForm
+      class UserFormTrue extends UserForm {
+        static trueVal = new FormField({
+          value: true,
+          validators: [new TrueFalseValidator({ isRequired: false })],
+        })
+      }
+
+      let userForm1 = new UserFormTrue() as TUserFormTrue
       assert.equal(userForm1.trueVal.isValid, true)
     })
   })
