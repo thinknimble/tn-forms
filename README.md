@@ -278,12 +278,12 @@ validators can be added to forms they all extend the base Validator class each v
 `message` a unique message for the validator 
 `isRequired` isRequired will only validate a field if there is a value
 
-```
-    new RequiredValidator({minLength: int})
-```
 
 **RequiredValidator**
 Validates a field is not null, undefiend or empty 
+```
+    new RequiredValidator({minLength: int})
+```
 
 **MinLengthValidator**
 Validates a field has a certain minimum length (if the value of the field is an array it will check arary length)
@@ -323,7 +323,8 @@ Validates a field is true or false depending on true false value
 ```
   new MustMatchValidator({truthy:boolean})
 ```
-### Custom Validators 
+### Custom Validators ###
+
 The validators class is easily extendable and allows you to create your own validators on the fly
 
 **Simple Validator**
