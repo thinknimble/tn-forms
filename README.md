@@ -272,7 +272,11 @@ userForm.addFormLevelValidator("firstName",new MinLengthValidator())
 
 ## Validators ##
 
-validators can be added to forms they all extend the base Validator class
+validators can be added to forms they all extend the base Validator class each validator can have its own additional variables plus 3 common ones. 
+
+`code` a unique code for the validator 
+`message` a unique message for the validator 
+`isRequired` isRequired will only validate a field if there is a value
 
 ```
     new RequiredValidator({minLength: int})
@@ -337,8 +341,17 @@ export class MyValidator extends Validator {
     super({ message, code, isRequired })
     this.valueToEquals = valueToEqual
   }
+
+  // override if needed
+  get enableValidate() {
+    return this.isRequired
+  }
+
   // caller method that gets executed by the validate method
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     // you can use any of the provided utility functions
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
@@ -360,6 +373,7 @@ export class MustMatchValidator extends Validator {
     this.matcher = matcher
   }
   
+  // override if needed
   // set matching field is required to set dynamically follow the matching field's value
   setMatchingField(form: IForm<any>) {
     if (this.matcher && form.field[this.matcher]) {
@@ -368,12 +382,21 @@ export class MustMatchValidator extends Validator {
     }
     throw new Error('Matching Field does not exist on form')
   }
-
+  // override if needed
   get matchingVal() {
     return this.#matchingField ? this.#matchingField.value : null
   }
 
+  // override if needed
+  get enableValidate() {
+    return this.isRequired
+  }
+
   call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
+
     if (this.matchingVal !== value) {
       throw new Error(
         JSON.stringify({
