@@ -282,7 +282,7 @@ validators can be added to forms they all extend the base Validator class each v
 **RequiredValidator**
 Validates a field is not null, undefiend or empty 
 ```
-    new RequiredValidator({minLength: int})
+    new RequiredValidator()
 ```
 
 **MinLengthValidator**
