@@ -363,7 +363,7 @@ export class MyValidator extends Validator {
 }
 ```
 
-*** Dynamic Validator ***
+***Dynamic Validator***
 ```
 export class MustMatchValidator extends Validator {
   matcher: string | null
