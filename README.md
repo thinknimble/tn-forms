@@ -425,7 +425,7 @@ export class MustMatchValidator extends Validator {
 
 # Change Log
 
-#### v2.0.0 release date _01/04/2023_
+#### v3.0.0 release date _01/04/2023_
 
 - TN-Forms built with typescript 
 - Removed adding dynamic validators to formarrays
