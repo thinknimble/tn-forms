@@ -1,69 +1,71 @@
+import { IValidator, IFormLevelValidator, IForm } from './interfaces'
 import * as EmailValidatorObj from 'email-validator'
-
 import { DateTime } from 'luxon'
-export default class Validator {
+import { notNullOrUndefined, isNumber, isNumberOrFloat } from './utils'
+
+export default class Validator<T = any> implements IValidator<T> {
   /**
    * Crete an instance of the validator.
    * @param {string} message - The error message to return if validation fails.
    * @param {string} code - The code to return with the thrown Error if validation fails.
    */
-  constructor({ message = 'Invalid value', code = 'invalid' } = {}) {
-    Object.assign(this, { message, code })
+  message: string = 'Invalid Value'
+  code: string = 'invalid_validator'
+  isRequired: boolean = true
+  constructor({ message = 'Invalid value', code = 'invalid', isRequired = true } = {}) {
+    this.message = message
+    this.code = code
+    this.isRequired = isRequired
+  }
+
+  get enableValidate() {
+    return this.isRequired
   }
 
   /**
    * Perform validation on a given value.
    * @param {string|number|Array|Object} value - The error message to return if validation fails.
    */
-  call(value) {
+  call(value: T) {
     throw new Error('Validator cannot be used directly, it must be overwritten in a subclass')
   }
 }
 
-export class NumberValidator extends Validator {
-  constructor({ message = 'Value must be a number', code = 'invalid' } = {}) {
-    super({ message, code })
-  }
+export class FormLevelValidator<T = any> extends Validator<T> implements IFormLevelValidator {
+  matcher: string | null
+  #matchingField: any
 
-  call(value) {
-    if (!notNullOrUndefined(value) || !Number.isInteger(parseFloat(value))) {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    }
-  }
-}
-export class MustMatchValidator extends Validator {
   constructor({
     message = 'Value must match',
     code = 'mustMatch',
-    matcher = null,
-    form = null,
+    isRequired = true,
+    matcher = '',
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.matcher = matcher
-    if (form) {
-      this._matchingField = form.field[this.matcher]
-    } else {
-      this._matchingField = null
+  }
+
+  setMatchingField(form: IForm<any>) {
+    if (this.matcher && form.field[this.matcher]) {
+      this.#matchingField = form.field[this.matcher]
+      return
     }
+    throw new Error('Matching Field does not exist on form')
   }
 
   get matchingVal() {
-    return this._matchingField ? this._matchingField.value : null
-  }
-
-  call(value) {
-    //this.matchingVal = extraArgs
-    if (this.matchingVal !== value) {
-      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    }
+    return this.#matchingField ? this.#matchingField.value : null
   }
 }
 
 export class RequiredValidator extends Validator {
-  constructor({ message = 'This is a required field', code = 'required' } = {}) {
-    super({ message, code })
+  constructor({ message = 'This is a required field', code = 'required', isRequired = true } = {}) {
+    super({ message, code, isRequired })
   }
-  call(value) {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     } else if (Array.isArray(value) && !value.length) {
@@ -75,28 +77,58 @@ export class RequiredValidator extends Validator {
 }
 
 export class MinLengthValidator extends Validator {
+  minLength: number
+
   constructor({
     message = 'Must meet minimum length requirements',
     code = 'minLength',
+    isRequired = true,
     minLength = 10,
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.minLength = minLength
   }
 
-  call(value) {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     new RequiredValidator({ message: this.message, code: this.code }).call(value)
     if (!value || value.toString().length < this.minLength) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }
 }
+
+export class MustMatchValidator extends FormLevelValidator implements IFormLevelValidator {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
+    if (this.matchingVal !== value) {
+      throw new Error(
+        JSON.stringify({
+          code: this.code,
+          message: `${this.message}`,
+        }),
+      )
+    }
+  }
+}
+
 export class EmailValidator extends Validator {
-  constructor({ message = 'Please Enter a Valid Email', code = 'invalidEmail' } = {}) {
-    super({ message, code })
+  constructor({
+    message = 'Please Enter a Valid Email',
+    code = 'invalidEmail',
+    isRequired = true,
+  } = {}) {
+    super({ message, code, isRequired })
   }
 
-  call(value) {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     try {
       const res = EmailValidatorObj.validate(value)
       if (!res) {
@@ -109,16 +141,21 @@ export class EmailValidator extends Validator {
 }
 
 export class MinDateValidator extends Validator {
+  min: any
   constructor({
     message = 'Must meet minimum date',
     code = 'minDate',
-    min = DateTime.local(new Date()),
+    isRequired = true,
+    min = new Date(),
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.min = min
   }
 
-  call(value) {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (!value) {
       throw new Error(
         JSON.stringify({
@@ -127,18 +164,17 @@ export class MinDateValidator extends Validator {
         }),
       )
     }
-    let min = null
-    let compare = null
+    let min
+    let compare
     try {
-      min = DateTime.local(this.min)
+      min = DateTime.fromJSDate(this.min)
     } catch (e) {
-      console.log(e)
       throw new Error(
         JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the minimum' }),
       )
     }
     try {
-      compare = DateTime.local(value)
+      compare = DateTime.fromJSDate(value)
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
@@ -148,7 +184,6 @@ export class MinDateValidator extends Validator {
       )
     }
     if (!compare || !compare.isValid) {
-      console.log('compare', compare)
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
 
@@ -156,7 +191,7 @@ export class MinDateValidator extends Validator {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${DateTime.local(min).toFormat('D')}`,
+          message: `Please enter a date greater than ${DateTime.fromJSDate(min).toFormat('D')}`,
         }),
       )
     }
@@ -164,16 +199,21 @@ export class MinDateValidator extends Validator {
 }
 
 export class MaxDateValidator extends Validator {
+  max: any
   constructor({
     message = 'Must meet minimum date',
     code = 'maxDate',
-    max = DateTime.local(new Date()),
+    isRequired = true,
+    max = new Date(),
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.max = max
   }
 
-  call(value) {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
     if (!value) {
       throw new Error(
         JSON.stringify({
@@ -182,17 +222,17 @@ export class MaxDateValidator extends Validator {
         }),
       )
     }
-    let max = null
-    let compare = null
+    let max
+    let compare
     try {
-      max = DateTime.local(this.max)
+      max = DateTime.fromJSDate(this.max)
     } catch (e) {
       throw new Error(
         JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the maximum' }),
       )
     }
     try {
-      compare = DateTime.local(value)
+      compare = DateTime.fromJSDate(value)
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
@@ -202,14 +242,15 @@ export class MaxDateValidator extends Validator {
       )
     }
     if (!compare || !compare.isValid) {
-      console.log('compare', compare)
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
-    if (DateTime.local(value).startOf('day') > DateTime.local(this.max).startOf('day')) {
+    if (DateTime.fromJSDate(value).startOf('day') > DateTime.fromJSDate(this.max).startOf('day')) {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${DateTime.local(this.max).toFormat('D')}`,
+          message: `Please enter a date greater than ${DateTime.fromJSDate(this.max).toFormat(
+            'D',
+          )}`,
         }),
       )
     }
@@ -217,12 +258,18 @@ export class MaxDateValidator extends Validator {
 }
 
 export class MinimumValueValidator extends Validator {
-  constructor({ message = 'Must meet minimum value', code = 'invalidMinValue', min = 0 } = {}) {
-    super({ message, code })
+  min: number
+  constructor({
+    message = 'Must meet minimum value',
+    code = 'invalidMinValue',
+    isRequired = true,
+    min = 0,
+  } = {}) {
+    super({ message, code, isRequired })
     this.min = min
   }
 
-  call(value) {
+  call(value: number | null) {
     if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {
@@ -233,12 +280,18 @@ export class MinimumValueValidator extends Validator {
   }
 }
 export class MaximumValueValidator extends Validator {
-  constructor({ message = 'Must meet minimum value', code = 'invalidMaxValue', max = 10 } = {}) {
-    super({ message, code })
+  max: number
+  constructor({
+    message = 'Must meet minimum value',
+    code = 'invalidMaxValue',
+    isRequired = true,
+    max = 10,
+  } = {}) {
+    super({ message, code, isRequired })
     this.max = max
   }
 
-  call(value) {
+  call(value: any) {
     if (!notNullOrUndefined(value) || !isNumberOrFloat(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Number' }))
     } else {
@@ -250,46 +303,55 @@ export class MaximumValueValidator extends Validator {
 }
 
 export class PatternValidator extends Validator {
+  pattern: RegExp
   constructor({
     message = 'Value does not match pattern',
     code = 'invalidPattern',
-    pattern = '',
+    isRequired = true,
+    pattern = /./,
   } = {}) {
-    super({ message, code })
+    super({ message, code, isRequired })
     this.pattern = typeof pattern == 'string' ? new RegExp(pattern) : pattern
   }
-  call(value) {
+  call(value: any) {
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     } else if (typeof value != 'string' && typeof value != 'number') {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (!this.pattern.test(value)) {
+    } else if (!this.pattern.test(value as string)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }
 }
 
 export class UrlValidator extends PatternValidator {
-  constructor({ message = 'Please enter a valid url', code = 'invalidUrl' } = {}) {
+  constructor({
+    message = 'Please enter a valid url',
+    code = 'invalidUrl',
+    isRequired = true,
+  } = {}) {
     let pattern =
       /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?$/
-    super({ message, code, pattern })
+    super({ message, code, isRequired, pattern })
   }
 }
-
-export function notNullOrUndefined(value) {
-  return value !== null && typeof value !== 'undefined'
-}
-
-export function isNumber(message = 'Value must be a number') {
-  return function (value) {
-    if (!Number.isInteger(value)) {
-      throw new Error(message)
+export class TrueFalseValidator extends Validator {
+  truthy: boolean
+  constructor({
+    message = 'Invalid option',
+    code = 'invalidOption',
+    isRequired = true,
+    truthy = true,
+  } = {}) {
+    message = `Value should be ${truthy}`
+    super({ message, code, isRequired })
+    this.truthy = truthy
+  }
+  call(value: any) {
+    if (!notNullOrUndefined(value)) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    } else if (!!value !== this.truthy) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }
-}
-
-export function isNumberOrFloat(value) {
-  let val = Number(value)
-  return typeof Number(val) == 'number' && !isNaN(val)
 }
