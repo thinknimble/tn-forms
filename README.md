@@ -17,11 +17,12 @@ The library is written in Typescript and exposes all of the types used to build 
 
 ## Stanalone Fields 
 ```ts
-import { FormField } from '../src/forms'
-import { IFormField } from '../src/interfaces'
-import {
+import Form, {
+  FormField,
+  MinLengthValidator,
   RequiredValidator,
-} from '../src/validators'
+  EmailValidator,
+} from '@thinknimble/tn-forms'
 
 let email:IFormField = new FormField({value:"Init Value", validators:[new RequiredValidator()], name:'email',id:"my-field",label:"email label"}) 
 // if and id or name are not provided one will be generated automatically
@@ -424,6 +425,12 @@ export class MustMatchValidator extends Validator {
 - (optional) Add vue and react components (framework)
 
 # Change Log
+
+
+
+#### v3.0.0 release date _01/04/2023_
+
+- Removed es7 private variables to accomodate Vue3 Proxies
 
 #### v3.0.0 release date _01/04/2023_
 

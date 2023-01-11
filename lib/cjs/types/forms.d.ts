@@ -1,10 +1,13 @@
 import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, IFormLevelValidator, FormValue, TArrayOfFormFieldValues, OptionalFormArgs } from './interfaces';
 export declare class FormField<T = any> implements IFormField<T> {
-    #private;
+    private _value;
+    private _errors;
+    private _validators;
     name: string;
     placeholder: string;
     type: string;
     id: string;
+    private _isTouched;
     label: string;
     constructor({ name, validators, errors, value, placeholder, type, id, isTouched, label, }?: IFormFieldKwargs);
     static create<TCreate>(data?: IFormFieldKwargs): FormField<TCreate>;
@@ -22,7 +25,8 @@ export declare class FormField<T = any> implements IFormField<T> {
     replicate(): FormField<any>;
 }
 export declare class FormArray<T> implements IFormArray<T> {
-    #private;
+    private _groups;
+    private _FormClass;
     name: string;
     constructor({ name, groups, FormClass }: IFormArrayKwargs<T>);
     get value(): FormValue<T>[];
@@ -34,7 +38,9 @@ export declare class FormArray<T> implements IFormArray<T> {
     replicate(): FormArray<T>;
 }
 export default class Form<T> implements IForm<T> {
-    #private;
+    private _fields;
+    private _dynamicFormValidators;
+    private _errors;
     constructor(kwargs?: OptionalFormArgs<T>);
     static create<T>(kwargs?: OptionalFormArgs<T>): Form<T>;
     replicate(): Form<T>;
