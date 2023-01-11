@@ -21,8 +21,8 @@ export default class Validator<T = any> implements IValidator<T> {
     call(value: T): void;
 }
 export declare class FormLevelValidator<T = any> extends Validator<T> implements IFormLevelValidator {
-    #private;
     matcher: string | null;
+    private _matchingField;
     constructor({ message, code, isRequired, matcher, }?: {
         message?: string | undefined;
         code?: string | undefined;
