@@ -428,7 +428,10 @@ export class MustMatchValidator extends Validator {
 
 
 
-#### v3.0.0 release date _01/04/2023_
+#### v3.1.1 release date _01/04/2023_
+
+- Prevent value to be null rather allow it to be undefined, so that we don't force users to coalesce their values when assigning to inputs
+#### v3.1.0 release date _01/04/2023_
 
 - Removed es7 private variables to accomodate Vue3 Proxies
 
