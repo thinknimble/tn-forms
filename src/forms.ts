@@ -53,14 +53,14 @@ function fields<T>(fields: TArrayOfFormFieldValues<T>): TFormFieldTypeCombos<T> 
 }
 
 export class FormField<T = any> implements IFormField<T> {
-  #value: T | null = null
-  #errors: IFormFieldError[] = []
-  #validators: IValidator<T>[] = []
+  private _value: T | null = null
+  private _errors: IFormFieldError[] = []
+  private _validators: IValidator<T>[] = []
   name: string = ''
   placeholder: string = ''
   type: string = ''
   id: string
-  #isTouched: boolean
+  private _isTouched: boolean
   label: string = ''
 
   constructor({
@@ -85,7 +85,7 @@ export class FormField<T = any> implements IFormField<T> {
     this.placeholder = placeholder
     this.type = type
     this.id = id ? id : name ? name : 'field' + '-' + v4()
-    this.#isTouched = isTouched
+    this._isTouched = isTouched
     this.label = label
   }
   static create<TCreate>(data: IFormFieldKwargs = {}): FormField<TCreate> {
@@ -93,10 +93,10 @@ export class FormField<T = any> implements IFormField<T> {
   }
   validate() {
     let errors: IFormFieldError[] = []
-    this.#validators.forEach((validator) => {
+    this._validators.forEach((validator) => {
       if (validator) {
         try {
-          validator.call(this.#value)
+          validator.call(this._value)
         } catch (e: any) {
           const err = JSON.parse(e.message)
           errors.push(err)
@@ -123,29 +123,29 @@ export class FormField<T = any> implements IFormField<T> {
     return true
   }
   get errors() {
-    return this.#errors
+    return this._errors
   }
   set errors(error) {
-    this.#errors = error
+    this._errors = error
   }
   set value(value) {
-    this.#value = value
+    this._value = value
   }
   get value() {
-    return this.#value
+    return this._value
   }
   get validators() {
-    return this.#validators
+    return this._validators
   }
   set validators(validator) {
-    this.#validators = validator
+    this._validators = validator
   }
 
   get isTouched(): boolean {
-    return this.#isTouched
+    return this._isTouched
   }
   set isTouched(touched: boolean) {
-    this.#isTouched = touched
+    this._isTouched = touched
   }
 
   addValidator(validator: IValidator<T>) {
@@ -167,13 +167,13 @@ export class FormField<T = any> implements IFormField<T> {
 }
 
 export class FormArray<T> implements IFormArray<T> {
-  #groups: IForm<T>[] = []
-  #FormClass: { new (): Form<T> } | null = null
+  private _groups: IForm<T>[] = []
+  private _FormClass: { new (): Form<T> } | null = null
   name: string = ''
 
   constructor({ name = '', groups = [], FormClass = null }: IFormArrayKwargs<T>) {
     this.name = name
-    this.#FormClass = FormClass
+    this._FormClass = FormClass
     groups && Array.isArray(groups) && groups.length ? groups.map((group) => this.add(group)) : []
     if (!groups.length && !FormClass) {
       throw new Error(
@@ -182,27 +182,27 @@ export class FormArray<T> implements IFormArray<T> {
         ),
       )
     }
-    if (!this.#FormClass && groups.length) {
+    if (!this._FormClass && groups.length) {
       //@ts-ignore
-      this.#FormClass = groups[0].constructor
+      this._FormClass = groups[0].constructor
     }
   }
   get value() {
-    return this.#groups.map((form: IForm<T>) => {
+    return this._groups.map((form: IForm<T>) => {
       return form.value
     })
   }
   get FormClass(): any {
-    return this.#FormClass
+    return this._FormClass
   }
   get groups(): IForm<T>[] {
-    return this.#groups
+    return this._groups
   }
   set groups(group) {
-    this.#groups = group
+    this._groups = group
   }
 
-  add(group: IForm<T> | null = this.#FormClass ? new this.#FormClass() : null) {
+  add(group: IForm<T> | null = this._FormClass ? new this._FormClass() : null) {
     this.groups = group ? [...this.groups, group] : [...this.groups]
   }
   remove(index: number) {
@@ -219,9 +219,9 @@ export class FormArray<T> implements IFormArray<T> {
 }
 
 export default class Form<T> implements IForm<T> {
-  #fields = {} as TFormFieldTypeOpts<T>
-  #dynamicFormValidators: IDynamicFormValidators = {}
-  #errors = {}
+  private _fields = {} as TFormFieldTypeOpts<T>
+  private _dynamicFormValidators: IDynamicFormValidators = {}
+  private _errors = {}
 
   constructor(kwargs: OptionalFormArgs<T> = {}) {
     /**
@@ -229,22 +229,22 @@ export default class Form<T> implements IForm<T> {
      */
     for (const prop in this.constructor) {
       if (this.constructor[prop] instanceof FormField) {
-        this.#fields[prop] = this.copy(this.constructor[prop])
+        this._fields[prop] = this.copy(this.constructor[prop])
       }
       if (this.constructor[prop] instanceof FormArray) {
-        this.#fields[prop] = this.copyArray(this.constructor[prop])
+        this._fields[prop] = this.copyArray(this.constructor[prop])
       }
       if (prop == 'dynamicFormValidators') {
-        this.#dynamicFormValidators = this.constructor[prop]
+        this._dynamicFormValidators = this.constructor[prop]
       }
     }
 
     /**
      * Iterates on keys of #fields.
      */
-    for (const fieldName in this.#fields) {
+    for (const fieldName in this._fields) {
       const fieldNameKey = fieldName
-      const field = this.#fields[fieldNameKey]
+      const field = this._fields[fieldNameKey]
       /**
        * need to do this since we cannot make `kwargs` and `fieldNameKey` to match their types. We know they will have the same keys but could not find a direct way of match them at compile time
        */
@@ -276,7 +276,7 @@ export default class Form<T> implements IForm<T> {
         this[fieldName] = field
       }
     }
-    for (const [_field, _validators] of Object.entries(this.#dynamicFormValidators)) {
+    for (const [_field, _validators] of Object.entries(this._dynamicFormValidators)) {
       for (let i = 0; i < _validators.length; i++) {
         this.addFormLevelValidator(_field, _validators[i])
       }
@@ -316,7 +316,7 @@ export default class Form<T> implements IForm<T> {
         })
         .filter(Boolean) as [name: string, f: any],
     )
-    newForm.#fields = formFieldOpts as TFormFieldTypeOpts<T>
+    newForm._fields = formFieldOpts as TFormFieldTypeOpts<T>
     newForm.errors = current.errors
     return newForm
   }
@@ -331,7 +331,7 @@ export default class Form<T> implements IForm<T> {
     return fields
   }
   get fields(): TArrayOfFormFieldValues<T> {
-    const result = Object.values(this.#fields) as TArrayOfFormFieldValues<T>
+    const result = Object.values(this._fields) as TArrayOfFormFieldValues<T>
     return result
   }
   copy<FormFieldType = any>(opts = {}): IFormField<FormFieldType> {
@@ -433,10 +433,10 @@ export default class Form<T> implements IForm<T> {
       }
       return acc
     }, {})
-    return { ...this.#errors, ...formFieldErrors, ...formArrayErrors }
+    return { ...this._errors, ...formFieldErrors, ...formArrayErrors }
   }
   set errors(errs) {
-    this.#errors = errs
+    this._errors = errs
   }
   get value(): FormValue<T> {
     let { formArrays, formFields } = fields(this.fields)
