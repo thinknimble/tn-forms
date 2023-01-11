@@ -33,7 +33,7 @@ export default class Validator<T = any> implements IValidator<T> {
 
 export class FormLevelValidator<T = any> extends Validator<T> implements IFormLevelValidator {
   matcher: string | null
-  private matchingField: any
+  private _matchingField: any
 
   constructor({
     message = 'Value must match',
@@ -47,14 +47,14 @@ export class FormLevelValidator<T = any> extends Validator<T> implements IFormLe
 
   setMatchingField(form: IForm<any>) {
     if (this.matcher && form.field[this.matcher]) {
-      this.matchingField = form.field[this.matcher]
+      this._matchingField = form.field[this.matcher]
       return
     }
     throw new Error('Matching Field does not exist on form')
   }
 
   get matchingVal() {
-    return this.matchingField ? this.matchingField.value : null
+    return this._matchingField ? this._matchingField.value : null
   }
 }
 
