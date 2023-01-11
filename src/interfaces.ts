@@ -10,7 +10,7 @@ export interface IValidator<T = any> {
   code: string
   isRequired: boolean
   get enableValidate(): boolean
-  call(value: T | null): void
+  call(value: T | undefined): void
 }
 
 export type TFormInstance<T> = {
@@ -92,7 +92,7 @@ export interface IFormFieldKwargs {
 }
 
 export interface IFormField<T = any> {
-  value: T | null
+  value: T | undefined
   errors: IFormFieldError[]
   validators: IValidator[]
   name: string

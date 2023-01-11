@@ -53,7 +53,7 @@ function fields<T>(fields: TArrayOfFormFieldValues<T>): TFormFieldTypeCombos<T> 
 }
 
 export class FormField<T = any> implements IFormField<T> {
-  private _value: T | null = null
+  private _value: T | undefined = undefined
   private _errors: IFormFieldError[] = []
   private _validators: IValidator<T>[] = []
   name: string = ''
