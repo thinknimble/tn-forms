@@ -1,4 +1,4 @@
-import { v4 } from 'uuid'
+import { getRandomUuid } from './utils'
 import {
   IDynamicFormValidators,
   IValidator,
@@ -79,12 +79,12 @@ export class FormField<T = any> implements IFormField<T> {
       : typeof value !== null && typeof value == 'object'
       ? { ...value }
       : value
-    this.name = name ? name : v4()
+    this.name = name ? name : getRandomUuid()
     this.errors = errors
     this.validators = validators
     this.placeholder = placeholder
     this.type = type
-    this.id = id ? id : name ? name : 'field' + '-' + v4()
+    this.id = id ? id : name ? name : 'field' + '-' + getRandomUuid()
     this._isTouched = isTouched
     this.label = label
   }

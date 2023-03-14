@@ -34,6 +34,7 @@
     "@types/luxon": "^3.0.0",
     "babel-loader": "^8.2.2",
     "email-validator": "^2.0.4",
+    "expo-crypto": "12.2.1",
     "install": "^0.13.0",
     "luxon": "^2.4.0",
     "npm": "^8.19.2",
