@@ -9,9 +9,9 @@ export interface IValidator<T = any> {
     code: string;
     isRequired: boolean;
     get enableValidate(): boolean;
-    call(value: T | null): void;
+    call(value: T | undefined): void;
 }
-export declare type TFormInstance<T> = {
+export type TFormInstance<T> = {
     [P in keyof T]: T[P];
 };
 export interface IFormArrayKwargs<T> {
@@ -29,10 +29,10 @@ export interface IFormArray<TFormFields, TValue = any> {
     remove(index: number): void;
     replicate(): IFormArray<TFormFields, TValue>;
 }
-export declare type TFormFieldTypeOpts<T> = {
+export type TFormFieldTypeOpts<T> = {
     [K in keyof T]: T[K] extends IFormField<infer TField> ? IFormField<TField> : T[K] extends IFormArray<infer TForm, infer TValue> ? IFormArray<TForm, TValue> : never;
 };
-export declare type TArrayOfFormFieldValues<T> = TFormFieldTypeOpts<T>[keyof TFormFieldTypeOpts<T>][];
+export type TArrayOfFormFieldValues<T> = TFormFieldTypeOpts<T>[keyof TFormFieldTypeOpts<T>][];
 export interface IForm<T> {
     get field(): TFormInstanceFields<T>;
     get fields(): TArrayOfFormFieldValues<T>;
@@ -47,7 +47,7 @@ export interface IForm<T> {
     validate(): void;
     replicate(): IForm<T>;
 }
-export declare type TForm<T> = {
+export type TForm<T> = {
     get field(): TFormInstanceFields<T>;
     get fields(): TFormFieldTypeOpts<T>[];
     get errors(): any[];
@@ -77,7 +77,7 @@ export interface IFormFieldKwargs {
     label?: string;
 }
 export interface IFormField<T = any> {
-    value: T | null;
+    value: T | undefined;
     errors: IFormFieldError[];
     validators: IValidator[];
     name: string;
@@ -95,27 +95,27 @@ export interface IFormField<T = any> {
 export interface IFormInstance {
     [key: string]: IFormField;
 }
-export declare type TFormInstanceFields<T> = {
+export type TFormInstanceFields<T> = {
     [P in keyof T]: T[P];
 };
-declare type FormArrayMap<T> = {
+type FormArrayMap<T> = {
     [K in keyof TFormFieldTypeOpts<T>]: TFormFieldTypeOpts<T>[K] extends IFormArray<infer TForm, infer TValue> ? IFormArray<TForm, TValue> : never;
 };
-declare type FormFieldMap<T> = {
+type FormFieldMap<T> = {
     [K in keyof TFormFieldTypeOpts<T>]: TFormFieldTypeOpts<T>[K] extends IFormField<infer TValue> ? IFormField<TValue> : never;
 };
-export declare type TFormFieldTypeCombos<T> = {
+export type TFormFieldTypeCombos<T> = {
     formArrays: FormArrayMap<T>[keyof FormArrayMap<T>][];
     formFields: FormFieldMap<T>[keyof FormFieldMap<T>][];
 };
-export declare type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>;
-export declare type PickByValue<T, ValueType> = Pick<T, {
+export type FormTypeUnion<T> = IFormField<T> & Record<keyof T, IFormField['value']>;
+export type PickByValue<T, ValueType> = Pick<T, {
     [Key in keyof T]-?: T[Key] extends ValueType ? Key : never;
 }[keyof T]>;
-export declare type PickFormValue<T> = PickByValue<T, IFormField | IFormArray<any>>;
-export declare type FormValue<T> = {
+export type PickFormValue<T> = PickByValue<T, IFormField | IFormArray<any>>;
+export type FormValue<T> = {
     [Property in keyof PickFormValue<T>]: T[Property] extends IFormField | IFormArray<any> ? T[Property]['value'] : never;
 };
-export declare type OptionalFormArgs<T> = Partial<FormValue<T>>;
+export type OptionalFormArgs<T> = Partial<FormValue<T>>;
 export {};
 //# sourceMappingURL=interfaces.d.ts.map

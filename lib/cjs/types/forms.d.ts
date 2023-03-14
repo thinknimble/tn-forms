@@ -15,8 +15,8 @@ export declare class FormField<T = any> implements IFormField<T> {
     get isValid(): boolean;
     get errors(): IFormFieldError[];
     set errors(error: IFormFieldError[]);
-    set value(value: T | null);
-    get value(): T | null;
+    set value(value: T | undefined);
+    get value(): T | undefined;
     get validators(): IValidator<T>[];
     set validators(validator: IValidator<T>[]);
     get isTouched(): boolean;
