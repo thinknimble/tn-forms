@@ -1,4 +1,3 @@
-import { getRandomUuid } from './utils'
 import {
   IDynamicFormValidators,
   IValidator,
@@ -16,6 +15,8 @@ import {
   TFormFieldTypeOpts,
   OptionalFormArgs,
 } from './interfaces'
+
+import { randomUUID } from 'expo-crypto'
 
 function setFormFieldValueFromKwargs<T>(
   name: string,
@@ -79,12 +80,12 @@ export class FormField<T = any> implements IFormField<T> {
       : typeof value !== null && typeof value == 'object'
       ? { ...value }
       : value
-    this.name = name ? name : getRandomUuid()
+    this.name = name ? name : randomUUID()
     this.errors = errors
     this.validators = validators
     this.placeholder = placeholder
     this.type = type
-    this.id = id ? id : name ? name : 'field' + '-' + getRandomUuid()
+    this.id = id ? id : name ? name : 'field' + '-' + randomUUID()
     this._isTouched = isTouched
     this.label = label
   }

@@ -37,8 +37,7 @@
     "expo-crypto": "12.2.1",
     "install": "^0.13.0",
     "luxon": "^2.4.0",
-    "npm": "^8.19.2",
-    "uuidv4": "^6.2.13"
+    "npm": "^8.19.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
