@@ -16,7 +16,7 @@ import {
   OptionalFormArgs,
 } from './interfaces'
 
-import { randomUUID } from 'expo-crypto'
+import uuid from 'react-native-uuid'
 
 function setFormFieldValueFromKwargs<T>(
   name: string,
@@ -80,12 +80,12 @@ export class FormField<T = any> implements IFormField<T> {
       : typeof value !== null && typeof value == 'object'
       ? { ...value }
       : value
-    this.name = name ? name : randomUUID()
+    this.name = name ? name : (uuid.v4() as string)
     this.errors = errors
     this.validators = validators
     this.placeholder = placeholder
     this.type = type
-    this.id = id ? id : name ? name : 'field' + '-' + randomUUID()
+    this.id = id ? id : name ? name : 'field' + '-' + uuid.v4()
     this._isTouched = isTouched
     this.label = label
   }
