@@ -1,16 +1,19 @@
-import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, IFormLevelValidator, FormValue, TArrayOfFormFieldValues, OptionalFormArgs } from './interfaces';
-export declare class FormField<T = any> implements IFormField<T> {
+import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, IFormLevelValidator, FormValue, TArrayOfFormFieldValues, OptionalFormArgs, FormFieldsRecord } from './interfaces';
+export declare class FormField<T = string, TName extends string = ''> implements IFormField<T, TName> {
     private _value;
     private _errors;
     private _validators;
-    name: string;
+    name: TName;
     placeholder: string;
     type: string;
     id: string;
     private _isTouched;
     label: string;
-    constructor({ name, validators, errors, value, placeholder, type, id, isTouched, label, }?: IFormFieldKwargs);
-    static create<TCreate>(data?: IFormFieldKwargs): FormField<TCreate>;
+    /**
+     * For type-safety sake, please pass value and name
+     */
+    constructor({ name, validators, errors, value, placeholder, type, id, isTouched, label, }?: IFormFieldKwargs<T, TName>);
+    static create<TValue = string, TName extends string = ''>(data?: IFormFieldKwargs<TValue, TName>): FormField<TValue, TName>;
     validate(): void;
     get isValid(): boolean;
     get errors(): IFormFieldError[];
@@ -22,9 +25,9 @@ export declare class FormField<T = any> implements IFormField<T> {
     get isTouched(): boolean;
     set isTouched(touched: boolean);
     addValidator(validator: IValidator<T>): void;
-    replicate(): FormField<any>;
+    replicate(): FormField<T, TName>;
 }
-export declare class FormArray<T> implements IFormArray<T> {
+export declare class FormArray<T extends FormFieldsRecord> implements IFormArray<T> {
     private _groups;
     private _FormClass;
     name: string;
@@ -37,17 +40,17 @@ export declare class FormArray<T> implements IFormArray<T> {
     remove(index: number): void;
     replicate(): FormArray<T>;
 }
-export default class Form<T> implements IForm<T> {
+export default class Form<T extends FormFieldsRecord> implements IForm<T> {
     private _fields;
     private _dynamicFormValidators;
     private _errors;
     constructor(kwargs?: OptionalFormArgs<T>);
-    static create<T>(kwargs?: OptionalFormArgs<T>): Form<T>;
+    static create<T extends FormFieldsRecord>(kwargs?: OptionalFormArgs<T>): Form<T>;
     replicate(): Form<T>;
     get field(): TFormInstanceFields<T>;
     get fields(): TArrayOfFormFieldValues<T>;
     copy<FormFieldType = any>(opts?: {}): IFormField<FormFieldType>;
-    copyArray<T>(opts: FormArray<T>): FormArray<T>;
+    copyArray<T extends FormFieldsRecord>(opts: FormArray<T>): FormArray<T>;
     _handleNoFieldErrors(fieldName: string): void;
     addFormLevelValidator(fieldName: string, validator: IFormLevelValidator): void;
     addValidator(fieldName: string, validator: IValidator): void;

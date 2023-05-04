@@ -1,7 +1,8 @@
 import * as assert from 'assert'
+import { Equals, Expect } from './type-utils'
 
 import Form, { FormArray, FormField } from '../src/forms'
-import { IFormArray, IFormField } from '../src/interfaces'
+import { GetFormFieldNames, IFormArray, IFormField } from '../src/interfaces'
 import {
   EmailValidator,
   MaxDateValidator,
@@ -12,11 +13,12 @@ import {
   TrueFalseValidator,
 } from '../src/validators'
 
-interface IUserAddressForm {
+type IUserAddressForm = {
   street: IFormField
   city: IFormField
 }
-interface IUserForm {
+
+type IUserForm = {
   firstName: IFormField<string>
   password: IFormField
   confirmPassword: IFormField
@@ -25,11 +27,11 @@ interface IUserForm {
   address: IFormArray<IUserAddressForm>
 }
 
-interface IFormNoAddress {
+type IFormNoAddress = {
   address: FormArray<IUserAddressForm>
 }
 
-interface ICrossFieldForm {
+type ICrossFieldForm = {
   usersName: IFormField
   confirmName: IFormField<string>
 }
@@ -340,6 +342,33 @@ describe('Forms', () => {
       let userAddressForm = new UserForm() as TUserForm
       userAddressForm.address.remove(0)
       assert.equal(userAddressForm.address.groups.length, 0)
+    })
+  })
+  // Although TS is compile time and this actually would just probably be a no-op we can get the TS errors here something messed up the types
+  describe('# TS tests', () => {
+    it('Checks name types of fields() and field()', () => {
+      const motivationName = 'motivationName'
+      const ageName = 'ageName'
+      const myFields = {
+        motivation: new FormField({
+          name: motivationName,
+          value: '',
+        }),
+        age: new FormField({
+          name: ageName,
+        }),
+      }
+      class MyFormImpl extends Form<typeof myFields> {}
+      const stuff = new MyFormImpl()
+      const result = stuff.fields.map((myField) => {
+        type shouldMatchName = Expect<
+          Equals<typeof myField['name'], typeof motivationName | typeof ageName>
+        >
+        return myField
+      })
+      type shouldHaveProperName = Expect<
+        Equals<typeof stuff['field']['motivation']['name'], typeof motivationName>
+      >
     })
   })
 })
