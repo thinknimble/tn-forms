@@ -17,12 +17,12 @@ export type TFormInstance<T> = {
   [P in keyof T]: T[P]
 }
 
-export interface IFormArrayKwargs<T> {
+export interface IFormArrayKwargs<T extends FormFieldsRecord> {
   name: string
   groups: IForm<T>[]
   FormClass?: any
 }
-export interface IFormArray<TFormFields, TValue = any> {
+export interface IFormArray<TFormFields extends FormFieldsRecord, TValue = any> {
   name: string
   get FormClass(): any
   get value(): TValue[]
@@ -34,8 +34,8 @@ export interface IFormArray<TFormFields, TValue = any> {
 }
 
 export type TFormFieldTypeOpts<T> = {
-  [K in keyof T]: T[K] extends IFormField<infer TField>
-    ? IFormField<TField>
+  [K in keyof T]: T[K] extends IFormField<infer TField, infer TName>
+    ? IFormField<TField, TName>
     : T[K] extends IFormArray<infer TForm, infer TValue>
     ? IFormArray<TForm, TValue>
     : never
@@ -43,7 +43,9 @@ export type TFormFieldTypeOpts<T> = {
 
 export type TArrayOfFormFieldValues<T> = TFormFieldTypeOpts<T>[keyof TFormFieldTypeOpts<T>][]
 
-export interface IForm<T> {
+export type FormFieldsRecord = Record<string, IFormField<any, any> | IFormArray<any>>
+
+export interface IForm<T extends FormFieldsRecord> {
   get field(): TFormInstanceFields<T>
   get fields(): TArrayOfFormFieldValues<T>
   get errors(): any[]
@@ -58,32 +60,17 @@ export interface IForm<T> {
   validate(): void
   replicate(): IForm<T>
 }
-export type TForm<T> = {
-  get field(): TFormInstanceFields<T>
-  get fields(): TFormFieldTypeOpts<T>[]
-  get errors(): any[]
-  set errors(errors: any[])
-  get value(): FormValue<T>
-  get isValid(): boolean
-  set isValid(valid: boolean)
-
-  copy(value: IFormField<T>): IFormField<T>
-  _handleNoFieldErrors(fieldName: string): any
-  addValidator(fieldName: string, validator: IValidator): any
-  validate(): void
-  replicate(): IForm<T>
-} & T
 
 export interface IFormFieldError {
   code: string
   message: string
 }
 
-export interface IFormFieldKwargs {
-  name?: string
+export interface IFormFieldKwargs<TValue = string, TName extends string = ''> {
+  readonly name?: TName
   validators?: IValidator[]
   errors?: IFormFieldError[]
-  value?: any
+  value?: TValue
   id?: string | null
   placeholder?: string
   type?: string
@@ -91,11 +78,11 @@ export interface IFormFieldKwargs {
   label?: string
 }
 
-export interface IFormField<T = any> {
+export interface IFormField<T = any, TName extends string = ''> {
   value: T | undefined
   errors: IFormFieldError[]
   validators: IValidator[]
-  name: string
+  readonly name: TName
   placeholder: string
   type: string
   id: string
@@ -106,14 +93,15 @@ export interface IFormField<T = any> {
   validate(): void
   get isTouched(): boolean
   set isTouched(touched: boolean)
-  replicate(): IFormField<T>
+  replicate(): IFormField<T, TName>
+  addValidator(validator: IValidator<T>): void
 }
 
 export interface IFormInstance {
   [key: string]: IFormField
 }
 
-export type TFormInstanceFields<T> = {
+export type TFormInstanceFields<T extends FormFieldsRecord> = {
   [P in keyof T]: T[P]
 }
 
@@ -144,14 +132,15 @@ export type PickByValue<T, ValueType> = Pick<
 
 export type PickFormValue<T> = PickByValue<T, IFormField | IFormArray<any>>
 
-// export type FormArgs<T> = {
-//   [Property in keyof PickFormValue<T>]: T[Property] extends IFormField | IFormArray<any>
-//     ? T[Property]
-//     : never
-// }
 export type FormValue<T> = {
   [Property in keyof PickFormValue<T>]: T[Property] extends IFormField | IFormArray<any>
     ? T[Property]['value']
     : never
 }
 export type OptionalFormArgs<T> = Partial<FormValue<T>>
+
+export type GetFormFieldNames<T extends FormFieldsRecord> = {
+  [K in keyof T]: T[K] extends IFormField<any, infer TName> ? TName : ''
+}[keyof T]
+
+export type GetFormFieldKeys<T extends FormFieldsRecord> = keyof T

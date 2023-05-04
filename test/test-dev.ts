@@ -11,11 +11,11 @@ import {
   RequiredValidator,
 } from '../src/validators'
 
-interface IUserAddressForm {
+type IUserAddressForm = {
   street: IFormField
   city: IFormField
 }
-interface IUserForm {
+type IUserForm = {
   firstName: IFormField
   password: IFormField
   confirmPassword: IFormField
@@ -24,7 +24,7 @@ interface IUserForm {
   address: IFormArray<IUserAddressForm>
 }
 
-interface IFormNoAddress {
+type IFormNoAddress = {
   address: FormArray<IUserAddressForm>
 }
 
