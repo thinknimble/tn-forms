@@ -1,4 +1,4 @@
-import { FormArray, FormField } from '.'
+import { FormArray, FormField } from './forms'
 import { FormFieldsRecord, IForm, IFormArray, IFormField } from './interfaces'
 
 export function notNullOrUndefined(value: any): boolean {
