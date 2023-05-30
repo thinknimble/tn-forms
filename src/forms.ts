@@ -1,22 +1,20 @@
 import {
+  FormFieldsRecord,
+  FormValue,
   IDynamicFormValidators,
-  IValidator,
   IForm,
-  IFormFieldError,
-  IFormFieldKwargs,
-  IFormField,
-  TFormInstanceFields,
   IFormArray,
   IFormArrayKwargs,
-  TFormFieldTypeCombos,
+  IFormField,
+  IFormFieldError,
+  IFormFieldKwargs,
   IFormLevelValidator,
-  FormValue,
-  TArrayOfFormFieldValues,
-  TFormFieldTypeOpts,
+  IValidator,
   OptionalFormArgs,
-  FormFieldsRecord,
-  GetFormFieldNames,
-  GetFormFieldKeys,
+  TArrayOfFormFieldValues,
+  TFormFieldTypeCombos,
+  TFormFieldTypeOpts,
+  TFormInstanceFields,
 } from './interfaces'
 
 import uuid from 'react-native-uuid'
@@ -69,13 +67,14 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
   label: string = ''
 
   /**
-   * For type-safety sake, please pass value and name
+   * For type-safety sake, please pass value and name, even if value is `null`.
+   * Not passing value will result in it being empty string which could cause issues if you don't expect it.
    */
   constructor({
     name = '' as TName,
     validators = [],
     errors = [],
-    value = '' as T,
+    value,
     placeholder = '',
     type = 'text',
     id = null,
@@ -85,8 +84,10 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
     this.value = (
       Array.isArray(value)
         ? [...value]
-        : typeof value !== null && typeof value == 'object'
+        : value !== null && typeof value == 'object'
         ? { ...value }
+        : value === undefined
+        ? ''
         : value
     ) as T
     this.name = (name ? name : (uuid.v4() as string)) as TName
@@ -456,7 +457,6 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
   }
   get value(): FormValue<T> {
     let { formArrays, formFields } = fields(this.fields)
-
     let formFieldValues = formFields.reduce<FormValue<T>>((acc, curr) => {
       acc[curr.name] = curr.value
       return acc

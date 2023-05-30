@@ -16,6 +16,7 @@ import {
 type IUserAddressForm = {
   street: IFormField
   city: IFormField
+  apartmentNumber: IFormField
 }
 
 type IUserForm = {
@@ -53,6 +54,7 @@ class UserAddressForm extends Form<IUserAddressForm> {
   static city = new FormField({
     validators: [new MinLengthValidator({ minLength: 5 })],
   })
+  static apartmentNumber = new FormField<string | null>({ value: null })
 }
 class FormNoAddressInstance extends Form<IFormNoAddress> {
   static address = new FormArray<IUserAddressForm>({
@@ -154,7 +156,7 @@ describe('Forms', () => {
     })
     it('should load all the form array values and create a new instance for each using the FormClass type', () => {
       const values = {
-        address: [{ street: 'testswdf', city: 'asdasdasdasd' }],
+        address: [{ street: 'testswdf', city: 'asdasdasdasd', apartmentNumber: '4B' }],
       }
       let testForm = new FormNoAddressInstance(values) as TFormNoAddressInstance
       assert.equal(testForm.address.groups.length, 1)
@@ -260,13 +262,12 @@ describe('Forms', () => {
       assert.equal(userAddressForm.city.isValid, true)
       assert.equal(userAddressForm.isValid, true)
     })
-
     it('should prefill city and street with default values', () => {
       const userAddressForm2 = new UserAddressForm2() as TUserAddressForm
       assert.equal(userAddressForm2.street.value, defaultAddress)
       assert.equal(
         JSON.stringify(userAddressForm2.value),
-        JSON.stringify({ street: defaultAddress, city: '' }),
+        JSON.stringify({ street: defaultAddress, city: '', apartmentNumber: null }),
       )
     })
     it('should prefill values of form using patch value and override field default', () => {
@@ -283,12 +284,11 @@ describe('Forms', () => {
         confirmPassword: 'testing123',
         dob: new Date('12/20/2022'),
         address: [
-          { street: 'testing', city: 'testing' },
-          { street: 'testing1', city: 'testing1' },
+          { street: 'testing', city: 'testing', apartmentNumber: null },
+          { street: 'testing1', city: 'testing1', apartmentNumber: null },
         ],
       }
       let userForm1 = new UserForm({ ...value }) as TUserForm
-      userForm1.value.address
       assert.equal(JSON.stringify(userForm1.value), JSON.stringify(value))
     })
     it('should mark the field as invalid if the matching field is not the same', () => {
@@ -330,6 +330,10 @@ describe('Forms', () => {
 
       let userForm1 = new UserFormTrue() as TUserFormTrue
       assert.equal(userForm1.trueVal.isValid, true)
+    })
+    it('should allow setting a field value to null', () => {
+      const nullField = new FormField({ value: null })
+      assert.equal(nullField.value, null)
     })
   })
   describe('# Form array functions', () => {
