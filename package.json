@@ -16,6 +16,7 @@
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "prepack": "npm run build",
     "test": "ts-mocha  -- --verbose=true -p ./configs/tsconfig.base.json --require @babel/register test/**.ts",
+    "test:watch": "ts-mocha  -- --verbose=true -p ./configs/tsconfig.base.json --require @babel/register -w --watch-files **/*.ts",
     "test-dev": "ts-mocha  -- --verbose=true -p ./configs/tsconfig.base.json --require @babel/register test/test-dev.ts"
   },
   "directories": {
