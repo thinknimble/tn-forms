@@ -12,8 +12,6 @@ npm version <next-version>
 
 npm run build 
 
-npm run prepublish 
-
 commit to git repo 
 
 npm publish

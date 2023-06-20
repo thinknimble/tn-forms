@@ -1,4 +1,4 @@
-import { IValidator, IForm, IFormFieldError, IFormFieldKwargs, IFormField, TFormInstanceFields, IFormArray, IFormArrayKwargs, IFormLevelValidator, FormValue, TArrayOfFormFieldValues, OptionalFormArgs, FormFieldsRecord } from './interfaces';
+import { FormFieldsRecord, FormValue, IForm, IFormArray, IFormArrayKwargs, IFormField, IFormFieldError, IFormFieldKwargs, IFormLevelValidator, IValidator, OptionalFormArgs, TArrayOfFormFieldValues, TFormInstanceFields } from './interfaces';
 export declare class FormField<T = string, TName extends string = ''> implements IFormField<T, TName> {
     private _value;
     private _errors;
@@ -10,7 +10,8 @@ export declare class FormField<T = string, TName extends string = ''> implements
     private _isTouched;
     label: string;
     /**
-     * For type-safety sake, please pass value and name
+     * For type-safety sake, please pass value and name, even if value is `null`.
+     * Not passing value will result in it being empty string which could cause issues if you don't expect it.
      */
     constructor({ name, validators, errors, value, placeholder, type, id, isTouched, label, }?: IFormFieldKwargs<T, TName>);
     static create<TValue = string, TName extends string = ''>(data?: IFormFieldKwargs<TValue, TName>): FormField<TValue, TName>;
