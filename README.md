@@ -12,10 +12,49 @@ Tn Forms was created to provide a consistent mechanism for creating forms in web
 The library supports creating simple forms, dynamic forms (using form arrays) or using standalone fields. It also includes a rich set of validators that can be easily extended to create new validators on the fly. 
 The library is written in Typescript and exposes all of the types used to build the forms and can be used with pure JS
 
-<details>
-<summary>TypeScript</summary>
 
-## Stanalone Fields 
+
+<details>
+<summary>Sample Forms </summary>
+
+```ts
+
+import Form, { FormField, IFormField, RequiredValidator } from '@thinknimble/tn-forms'
+
+/** 
+ * Step #1: Build the type annotation for the form inputs - this will be used to infer the value of the form
+ * Important Note: Since the interface of the form fields is IFormField and value is not required any type will be automatically cast to <T>|Undefined
+ * 
+*/
+export type LoginFormInputs = {
+  email: IFormField<string>
+  password: IFormField<string>
+}
+/** 
+ * Step #2: Build the form, this should extend the BaseForm class and be given a the input types, 
+ * the input types declared in step one will be used to infer the form value's type
+ * 
+ * 
+*/
+export class LoginForm extends Form<LoginFormInputs>{
+  static email = FormField.create({validators:[new EmailValidator({message:"Please enter a valid email address to login"})]})
+  static password = FormField.create({validators:[new RequiredValidator({message: "Please enter a password to login"})]})
+}
+/** 
+ * 
+ * Step #3: Create a union type this is an optional step that enables dot method notation on your form to access fields directly 
+ * e.g const loginForm = new LoginForm() as TLoginForm 
+ *      loginForm.email
+ * 
+*/
+export type TLoginForm = LoginFormInputs & LoginForm 
+```
+
+</details>
+
+<details>
+<summary>Standalone Fields</summary>
+
 ```ts
 import Form, {
   FormField,
@@ -41,22 +80,26 @@ email.validate()
 email.errors
 ```
 
-## Basic Form 
+</details>
+
+<details>
+<summary> Sample User form with Cross Field Validation and Form Arrays </summary> 
+
 ```ts
 
 // Build the interface to retrieve th fields in dot notation
 // optionally provide a type for the value of each field IFormField<type> any is used as a default
 
-interface IUserForm {
+export type UserFormInputs = {
   firstName: IFormField<string>
-  password: IFormField
-  confirmPassword: IFormField
-  dob: IFormField
-  email: IFormField
+  password: IFormField<string>
+  confirmPassword: IFormField<string>
+  dob: IFormField<string>
+  email: IFormField<string>
   address: IFormArray<IUserAddressForm>
 }
 
-class UserForm extends Form<IUserForm> {
+class UserForm extends Form<UserFormInputs> {
   static firstName = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
   static email = new FormField({ validators: [new EmailValidator()], label:"Email" })
   static password = new FormField({ validators: [new RequiredValidator()] })
@@ -75,6 +118,7 @@ class UserForm extends Form<IUserForm> {
     groups: [new UserAddressForm()],
   })
   // add cross field validators to the dynamicFormValidators object
+  // This implementation is a bit more complex for ReactJS and ReactNative (see the accompanying tn-forms-react module)
   static dynamicFormValidators = {
     confirmPassword: [new MustMatchValidator({ matcher: 'password' })],
   }
@@ -93,7 +137,6 @@ userForm.value.firstName
 //add a formfield to the input 
 ```
 ```html 
-<!-- SEE NOTE FOR SHORHAND METHOD RECOMMENDED-->
 <!-- Vue.js -->
 <label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
 <input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
@@ -101,7 +144,7 @@ userForm.value.firstName
 To use shorthand field method (access a field with dot notation) you need to decalre a union type of the form and its interface 
 
 ```ts
-type TUserForm = UserForm & IUserForm
+type TUserForm = UserForm & UserFormInputs
 const userForm = new UserForm() as TUserForm 
 ```
 this will give you direct access to the fields as properties of the class 
@@ -112,16 +155,18 @@ this will give you direct access to the fields as properties of the class
 <label :for="userForm.firstName.label">{{userForm.firstName.label}}</label>
 <input type="text" :name="userForm.firstName.name" :placeholder="userForm.firstName.name" v-model="userForm.firstName.value" /> 
 ```
+</details>
 
+<details>
+<summary>Dynamic Form with form arrays</summary>
 
-## Dynamic Form with form arrays
 ```ts 
-interface IUserAddressForm {
+export type UserAddressFormInputs = {
   street: IFormField
   city: IFormField
 }
 
-class UserAddressForm extends Form<IUserAddressForm> {
+class UserAddressForm extends Form<UserAddressFormInputs> {
   static street = new FormField({ validators: [], value: 'this', label:"Street" })
   static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
 
@@ -137,24 +182,30 @@ class UserAddressForm extends Form<IUserAddressForm> {
 <input type="text" :name="userForm.adress.groups[0].street.name" :placeholder="userForm.adress.groups[0].street.name" v-model="userForm.adress.groups[0].street.value" /> 
 
 ```
-## Add Dynamic validators on the fly
+
+</details>
+
+<details>
+<summary> Add Dynamic validators on the fly </summary>
+
 ```ts 
 
 // This method is useful for adding dynamic validators on the fly in response to other fields 
 
 // Note for react this method is preferred to confrom to react's deep object mutability
 
-type TUserForm = UserForm & IUserForm
+type TUserForm = UserForm & UserFormInputs
 const userForm = new UserForm() as TUserForm 
 userForm.addFormLevelValidator("firstName",new MinLengthValidator())
 
 ```
-
-
 </details>
+
+
 
 <details>
 <summary>Javascript</summary>
+
 
 ## Stanalone Fields 
 ```js
