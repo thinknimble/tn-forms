@@ -477,7 +477,9 @@ export class MustMatchValidator extends Validator {
 
 # Change Log
 
+#### v3.1.7 release date _08/21/2023_
 
+- Bump package versions to address security issues in dependencies.
 
 #### v3.1.1 release date _01/04/2023_
 
