@@ -8,10 +8,12 @@ Add tests and run
 After pr is reviewed it will be merged to main
 
 # build compile and publish 
-npm version <next-version>
+update changelog in readme.md
 
-npm run build 
+`npm version` <next-version>
+
+`npm run build` 
 
 commit to git repo 
 
-npm publish
+`npm publish`

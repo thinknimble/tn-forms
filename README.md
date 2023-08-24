@@ -477,6 +477,10 @@ export class MustMatchValidator extends Validator {
 
 # Change Log
 
+#### v3.1.8 release date _08/21/2023_
+
+- Export FormLevelValidator class.
+
 #### v3.1.7 release date _08/21/2023_
 
 - Bump package versions to address security issues in dependencies.

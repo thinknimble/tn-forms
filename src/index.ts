@@ -10,6 +10,7 @@ import Validator, {
   MaximumValueValidator,
   PatternValidator,
   UrlValidator,
+  FormLevelValidator
 } from './validators'
 import {
   IDynamicFormValidators,
@@ -34,6 +35,7 @@ export {
   FormField,
   FormArray,
   Validator,
+  FormLevelValidator,
   IDynamicFormValidators,
   IValidator,
   TFormInstance,
@@ -61,4 +63,5 @@ export {
   isNumberOrFloat,
   notNullOrUndefined,
   fieldGetter,
+
 }
