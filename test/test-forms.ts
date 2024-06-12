@@ -210,6 +210,8 @@ describe('Forms', () => {
     let today = new Date()
     let tomorrow = new Date()
     tomorrow.setDate(today.getDate() + 1)
+    let yesterday = new Date()
+    yesterday.setDate(today.getDate() - 1)
     const someDateFormInputs = new SomeDateForm({ min: today }) as TSomeDateForm
     it('should set the field to invalid as it is below the min length ', () => {
       assert.equal(userForm.firstName.isValid, false)
@@ -258,6 +260,11 @@ describe('Forms', () => {
       someDateFormInputs.max.value = tomorrow
       console.log(someDateFormInputs.value)
       assert.equal(someDateFormInputs.max.isValid, true)
+    })    
+    it('should first validate the max date is lower than the min date', () => {
+      someDateFormInputs.max.value = yesterday
+      console.log(someDateFormInputs.value)
+      assert.equal(someDateFormInputs.max.isValid, false)
     })
   })
 
