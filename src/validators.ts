@@ -257,6 +257,27 @@ export class MaxDateValidator extends Validator {
   }
 }
 
+export class DynamicMinDateValidator extends FormLevelValidator implements IFormLevelValidator {
+  call(value: any) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) {
+      return
+    }
+    // if (this.matchingVal !== value) {
+    //   throw new Error(
+    //     JSON.stringify({
+    //       code: this.code,
+    //       message: `${this.message}`,
+    //     }),
+    //   )
+    // }
+
+    new MinDateValidator({ message: this.message, code: this.code, min: this.matchingVal, isRequired: this.enableValidate }).call(value)
+
+
+  }
+}
+
+
 export class MinimumValueValidator extends Validator {
   min: number
   constructor({
