@@ -543,7 +543,11 @@ export class MustMatchValidator extends Validator {
 
 # Change Log
 
-#### v3.1.9 release date _06/12/2024_
+#### v3.1.92 release date _06/12/2024_
+
+- Always try to conver to real date
+
+#### v3.1.91 release date _06/12/2024_
 
 - Fix exports bug
 

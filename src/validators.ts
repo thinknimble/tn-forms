@@ -180,7 +180,7 @@ export class MinDateValidator extends Validator {
     }
     if (!min || !min.isValid) {
       throw new Error(
-        JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the maximum' }),
+        JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the minimum' }),
       )
     }
     if (!compare || !compare.isValid) {
@@ -266,9 +266,9 @@ export class DynamicMinDateValidator extends FormLevelValidator implements IForm
     new MinDateValidator({
       message: this.message,
       code: this.code,
-      min: this.matchingVal? new Date(this.matchingVal): undefined,
+      min: this.matchingVal ? new Date(this.matchingVal) : undefined,
       isRequired: this.enableValidate,
-    }).call(value? new Date(value): null)
+    }).call(value ? new Date(value) : null)
   }
 }
 

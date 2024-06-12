@@ -260,7 +260,7 @@ describe('Forms', () => {
       someDateFormInputs.max.value = tomorrow
       console.log(someDateFormInputs.value)
       assert.equal(someDateFormInputs.max.isValid, true)
-    })    
+    })
     it('should first validate the max date is lower than the min date', () => {
       someDateFormInputs.max.value = yesterday
       console.log(someDateFormInputs.value)
