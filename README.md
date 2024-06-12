@@ -543,7 +543,11 @@ export class MustMatchValidator extends Validator {
 
 # Change Log
 
-#### v3.1.9 release date _08/21/2023_
+#### v3.1.9 release date _06/12/2024_
+
+- Fix exports bug
+
+#### v3.1.9 release date _06/12/2024_
 
 - Dynamic Minimum Date Validator was added.
 
