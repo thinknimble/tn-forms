@@ -263,12 +263,14 @@ export class DynamicMinDateValidator extends FormLevelValidator implements IForm
       return
     }
 
-    new MinDateValidator({ message: this.message, code: this.code, min: this.matchingVal, isRequired: this.enableValidate }).call(value)
-
-
+    new MinDateValidator({
+      message: this.message,
+      code: this.code,
+      min: this.matchingVal,
+      isRequired: this.enableValidate,
+    }).call(value)
   }
 }
-
 
 export class MinimumValueValidator extends Validator {
   min: number

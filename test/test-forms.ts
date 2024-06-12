@@ -190,29 +190,27 @@ describe('Forms', () => {
       assert.equal(userForm.firstName.label, firstNameLabel)
     })
   })
-  
 
   type SomeDateFormInputs = {
-    min: IFormField<Date>,
+    min: IFormField<Date>
     max: IFormField<Date>
   }
 
   class SomeDateForm extends Form<SomeDateFormInputs> {
-    static min = new FormField({validators: [new MinDateValidator({ min: new Date() })]})
-    static max = new FormField({value:null})
+    static min = new FormField({ validators: [new MinDateValidator({ min: new Date() })] })
+    static max = new FormField({ value: null })
     static dynamicFormValidators = {
-      max: [new DynamicMinDateValidator({ matcher: 'min', isRequired: false})]
+      max: [new DynamicMinDateValidator({ matcher: 'min', isRequired: false })],
     }
   }
   type TSomeDateForm = SomeDateForm & SomeDateFormInputs
-  
-  
+
   describe('# Form Validators', () => {
     const userForm = new UserForm({ firstName: 'par' }) as TUserForm
     let today = new Date()
     let tomorrow = new Date()
     tomorrow.setDate(today.getDate() + 1)
-    const someDateFormInputs = new SomeDateForm({min: today}) as TSomeDateForm
+    const someDateFormInputs = new SomeDateForm({ min: today }) as TSomeDateForm
     it('should set the field to invalid as it is below the min length ', () => {
       assert.equal(userForm.firstName.isValid, false)
     })
@@ -251,19 +249,15 @@ describe('Forms', () => {
       userForm.email.value = 'testing123@yahoo.com'
       assert.equal(userForm.email.isValid, true)
     })
-    it('should set the min date to valid since it is greater than today and max is not required', ()=>{
+    it('should set the min date to valid since it is greater than today and max is not required', () => {
       someDateFormInputs.min.value = today
       assert.equal(someDateFormInputs.min.isValid, true)
       assert.equal(someDateFormInputs.max.isValid, true)
-      
-
-    
     })
-    it ('should first validate the max date is higher than the min date', ()=>{
+    it('should first validate the max date is higher than the min date', () => {
       someDateFormInputs.max.value = tomorrow
       console.log(someDateFormInputs.value)
       assert.equal(someDateFormInputs.max.isValid, true)
-
     })
   })
 
