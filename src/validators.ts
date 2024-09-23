@@ -2,8 +2,9 @@ import { IValidator, IFormLevelValidator, IForm } from './interfaces'
 import * as EmailValidatorObj from 'email-validator'
 import { DateTime } from 'luxon'
 import { notNullOrUndefined, isNumber, isNumberOrFloat } from './utils'
+import { isPossiblePhoneNumber } from 'libphonenumber-js'
 
-export default class Validator<T = any> implements IValidator<T> {
+export class Validator<T = any> implements IValidator<T> {
   /**
    * Crete an instance of the validator.
    * @param {string} message - The error message to return if validation fails.
@@ -101,6 +102,8 @@ export class MinLengthValidator extends Validator {
 }
 
 export class MustMatchValidator extends FormLevelValidator implements IFormLevelValidator {
+
+  
   call(value: any) {
     if (!this.enableValidate && !notNullOrUndefined(value)) {
       return
@@ -366,6 +369,28 @@ export class TrueFalseValidator extends Validator {
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     } else if (!!value !== this.truthy) {
+      throw new Error(JSON.stringify({ code: this.code, message: this.message }))
+    }
+  }
+}
+
+export class PhoneNumberValidator extends Validator {
+  constructor({
+    message,
+    code,
+    isRequired,
+  }: {
+    message: string
+    code: string
+    isRequired: boolean
+  }) {
+    super({ message, code, isRequired })
+  }
+
+  call(value: string) {
+    if (!this.enableValidate && !notNullOrUndefined(value)) return
+    const isValid = isPossiblePhoneNumber(value)
+    if (!isValid) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }

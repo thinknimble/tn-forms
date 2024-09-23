@@ -1,5 +1,5 @@
 import { IValidator, IFormLevelValidator, IForm } from './interfaces';
-export default class Validator<T = any> implements IValidator<T> {
+export declare class Validator<T = any> implements IValidator<T> {
     /**
      * Crete an instance of the validator.
      * @param {string} message - The error message to return if validation fails.
@@ -130,5 +130,13 @@ export declare class TrueFalseValidator extends Validator {
         truthy?: boolean | undefined;
     });
     call(value: any): void;
+}
+export declare class PhoneNumberValidator extends Validator {
+    constructor({ message, code, isRequired, }: {
+        message: string;
+        code: string;
+        isRequired: boolean;
+    });
+    call(value: string): void;
 }
 //# sourceMappingURL=validators.d.ts.map

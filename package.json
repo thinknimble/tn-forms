@@ -36,6 +36,7 @@
     "babel-loader": "^8.2.2",
     "email-validator": "^2.0.4",
     "install": "^0.13.0",
+    "libphonenumber-js": "^1.11.9",
     "luxon": "^2.4.0",
     "react-native-uuid": "^2.0.1"
   },
