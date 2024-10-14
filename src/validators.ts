@@ -102,8 +102,6 @@ export class MinLengthValidator extends Validator {
 }
 
 export class MustMatchValidator extends FormLevelValidator implements IFormLevelValidator {
-
-  
   call(value: any) {
     if (!this.enableValidate && !notNullOrUndefined(value)) {
       return
@@ -332,11 +330,14 @@ export class PatternValidator extends Validator {
     this.pattern = typeof pattern == 'string' ? new RegExp(pattern) : pattern
   }
   call(value: any) {
+    if (!value && !this.isRequired) return
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (typeof value != 'string' && typeof value != 'number') {
+    }
+    if (typeof value != 'string' && typeof value != 'number') {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (!this.pattern.test(value as string)) {
+    }
+    if (!this.pattern.test(value as string)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }
