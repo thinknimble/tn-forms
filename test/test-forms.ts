@@ -12,6 +12,7 @@ import {
   RequiredValidator,
   TrueFalseValidator,
   DynamicMinDateValidator,
+  UrlValidator,
 } from '../src/validators'
 
 type IUserAddressForm = {
@@ -27,6 +28,7 @@ type IUserForm = {
   dob: IFormField
   email: IFormField
   address: IFormArray<IUserAddressForm>
+  websiteUrl: IFormField<string>
 }
 
 type IFormNoAddress = {
@@ -89,6 +91,17 @@ class UserForm extends Form<IUserForm> {
     name: 'address',
     groups: [new UserAddressForm()],
   })
+  static websiteUrl = new FormField({
+    name: 'websiteUrl',
+    value: '',
+    validators: [
+      new UrlValidator({
+        code: 'invalidLink',
+        message: 'Invalid LInk',
+        isRequired: false,
+      }),
+    ],
+  })
 }
 
 describe('Forms', () => {
@@ -100,8 +113,8 @@ describe('Forms', () => {
   })
   describe('# Form setup', () => {
     const userForm = new UserForm({ firstName: 'pari' }) as TUserForm
-    it('should have 6 fields for each static property defined', () => {
-      assert.equal(userForm.fields.length, 6)
+    it('should have as many fields as static properties defined', () => {
+      assert.equal(userForm.fields.length, 7)
     })
     it('should have fields with keys of firstName', () => {
       assert.equal(
@@ -153,7 +166,7 @@ describe('Forms', () => {
     })
     it('should create a form using the factory method', () => {
       const userFormFact = UserForm.create() as TUserForm
-      assert.equal(userFormFact.fields.length, 6)
+      assert.equal(userFormFact.fields.length, 7)
     })
     it('should load all the form array values and create a new instance for each using the FormClass type', () => {
       const values = {
@@ -266,6 +279,9 @@ describe('Forms', () => {
       console.log(someDateFormInputs.value)
       assert.equal(someDateFormInputs.max.isValid, false)
     })
+    it('should not validate if it is not required and there is no value', () => {
+      assert.equal(userForm.websiteUrl.isValid, true)
+    })
   })
 
   describe('# Form entry & validation', () => {
@@ -320,6 +336,7 @@ describe('Forms', () => {
         password: 'testing123',
         confirmPassword: 'testing123',
         dob: new Date('12/20/2022'),
+        websiteUrl: '',
         address: [
           { street: 'testing', city: 'testing', apartmentNumber: null },
           { street: 'testing1', city: 'testing1', apartmentNumber: null },
