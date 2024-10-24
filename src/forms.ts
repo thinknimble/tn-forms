@@ -60,11 +60,11 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
   private _errors: IFormFieldError[] = []
   private _validators: IValidator<T>[] = []
   name: TName
-  placeholder: string = ''
+  private _placeholder: string = ''
   type: string = ''
   id: string
   private _isTouched: boolean
-  label: string = ''
+  private _label: string = ''
 
   /**
    * For type-safety sake, please pass value and name, even if value is `null`.
@@ -141,6 +141,19 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
   set errors(error) {
     this._errors = error
   }
+  get placeholder() {
+    return this._placeholder
+  }
+  set placeholder(placeholder) {
+    this._placeholder = placeholder
+  }
+  get label() {
+    return this._label
+  }
+  set label(label) {
+    this._label = label
+  }
+  
   set value(value) {
     this._value = value
   }
