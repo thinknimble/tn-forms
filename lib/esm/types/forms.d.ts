@@ -4,11 +4,11 @@ export declare class FormField<T = string, TName extends string = ''> implements
     private _errors;
     private _validators;
     name: TName;
-    placeholder: string;
+    private _placeholder;
     type: string;
     id: string;
     private _isTouched;
-    label: string;
+    private _label;
     /**
      * For type-safety sake, please pass value and name, even if value is `null`.
      * Not passing value will result in it being empty string which could cause issues if you don't expect it.
@@ -19,6 +19,10 @@ export declare class FormField<T = string, TName extends string = ''> implements
     get isValid(): boolean;
     get errors(): IFormFieldError[];
     set errors(error: IFormFieldError[]);
+    get placeholder(): string;
+    set placeholder(placeholder: string);
+    get label(): string;
+    set label(label: string);
     set value(value: T | undefined);
     get value(): T | undefined;
     get validators(): IValidator<T>[];
