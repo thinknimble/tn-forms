@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createForm } from '../src/builder'
 import { FormField } from '../src/forms'
-import { MustMatchValidator, RequiredValidator } from '../src/validators'
+import { EmailValidator, MustMatchValidator, RequiredValidator } from '../src/validators'
 
 describe('Form builder', () => {
   it('should create a form builder', () => {
@@ -30,8 +30,14 @@ describe('Form builder', () => {
   it('updates a field value', () => {
     const myForm = createForm().addField({ name: 'email', type: 'email' })
   })
-  it('can validate a form', () => {
-    //TODO::
+  it('can validate regular fields', () => {
+    const myForm = createForm().addField({
+      name: 'email',
+      type: 'email',
+      validators: [new EmailValidator()],
+    })
+    myForm.validate()
+    expect(myForm.fields.email.errors).toHaveLength(1)
   })
   // NEW !
   it('Can use zod validators', () => {
@@ -48,6 +54,5 @@ describe('Form builder', () => {
         message: 'Passwords must match',
       }),
     )
-    //TODO:
   })
 })

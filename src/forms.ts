@@ -413,6 +413,7 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
     this._handleNoFieldErrors(fieldName)
     currentField.addValidator(validator)
   }
+
   validate() {
     this.fields.forEach((f) => {
       if (f instanceof FormField) {

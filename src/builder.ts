@@ -35,9 +35,17 @@ export class FormBuilder<T extends Record<string, IFormField<any, any>> = {}> {
     const currentField = this.fields[fieldName]
     const newValidator = validator
     newValidator.setMatchingField(this.fields)
-    //TODO: arrayField
     if (this.fields[fieldName] instanceof FormField) {
       currentField.addValidator(newValidator)
+    }
+    return this
+  }
+
+  validate() {
+    for (const f of Object.values(this.fields)) {
+      if (f instanceof FormField) {
+        f.validate()
+      }
     }
     return this
   }
