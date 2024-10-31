@@ -49,6 +49,13 @@ export class FormBuilder<T extends Record<string, IFormField<any, any>> = {}> {
     }
     return this
   }
+
+  //TODO: This still has the same problem than the original tn-forms. We have no proper way of displaying the right type with the current system of validators. I'm thinking about moving away from these validators and instead provide a zod-like validators system where we just use either parse or safe parse and we get the valid value for real and that would be runtime and type checked.
+  get value() {
+    return Object.fromEntries(Object.entries(this.fields).map(([k, v]) => [k, v.value])) as {
+      [K in keyof T]: T[K]['value']
+    }
+  }
 }
 
 export const createForm = () => new FormBuilder()

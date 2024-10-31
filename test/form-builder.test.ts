@@ -57,4 +57,10 @@ describe('Form builder', () => {
     myForm.validate()
     expect(myForm.fields.password.errors).toHaveLength(1)
   })
+  it('gets the value of the form', () => {
+    const myForm = createForm()
+      .addField({ name: 'email', type: 'email', value: 'test-email' })
+      .addField({ name: 'password', type: 'password', value: 'test-password' })
+    expect(myForm.value).toEqual({ email: 'test-email', password: 'test-password' })
+  })
 })
