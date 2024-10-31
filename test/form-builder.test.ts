@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createForm } from '../src/builder'
+import { FormField } from '../src/forms'
 import { RequiredValidator } from '../src/validators'
 
 describe('Form builder', () => {
@@ -16,13 +17,18 @@ describe('Form builder', () => {
     })
     expect(myForm.fields.email).toBeDefined()
     expect(myForm.fields.email.value).toBe('initial value')
+    expect(myForm.fields.email).toBeInstanceOf(FormField)
+  })
+  it('can replicate a form', () => {
+    const myForm = createForm().addField({ name: 'email', type: 'email' })
+    const myReplicatedForm = myForm.replicate()
+    expect(myReplicatedForm).toBeDefined()
+    expect(myReplicatedForm).not.toBe(myForm)
+    expect(myReplicatedForm.fields.email).toBeDefined()
   })
   //Future features
   it('updates a field value', () => {
-    //TODO:
-  })
-  it('can replicate a form', () => {
-    //TODO:
+    const myForm = createForm().addField({ name: 'email', type: 'email' })
   })
   it('can validate a form', () => {
     //TODO::
