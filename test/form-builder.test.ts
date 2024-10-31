@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createForm } from '../src/builder'
 import { FormField } from '../src/forms'
-import { RequiredValidator } from '../src/validators'
+import { MustMatchValidator, RequiredValidator } from '../src/validators'
 
 describe('Form builder', () => {
   it('should create a form builder', () => {
@@ -35,6 +35,19 @@ describe('Form builder', () => {
   })
   // NEW !
   it('Can use zod validators', () => {
+    //TODO:
+  })
+  it('Adds a form level validator', () => {
+    const myForm = createForm()
+      .addField({ name: 'password', type: 'password' })
+      .addField({ name: 'confirmPassword', type: 'password' })
+    myForm.addFormLevelValidator(
+      'password',
+      new MustMatchValidator({
+        matcher: 'confirmPassword',
+        message: 'Passwords must match',
+      }),
+    )
     //TODO:
   })
 })

@@ -1,8 +1,8 @@
-import { IValidator, IFormLevelValidator, IForm } from './interfaces'
 import * as EmailValidatorObj from 'email-validator'
-import { DateTime } from 'luxon'
-import { notNullOrUndefined, isNumber, isNumberOrFloat } from './utils'
 import { isPossiblePhoneNumber } from 'libphonenumber-js'
+import { DateTime } from 'luxon'
+import { IFormLevelValidator, IValidator } from './interfaces'
+import { isNumberOrFloat, notNullOrUndefined } from './utils'
 
 export class Validator<T = any> implements IValidator<T> {
   /**
@@ -46,9 +46,9 @@ export class FormLevelValidator<T = any> extends Validator<T> implements IFormLe
     this.matcher = matcher
   }
 
-  setMatchingField(form: IForm<any>) {
-    if (this.matcher && form.field[this.matcher]) {
-      this._matchingField = form.field[this.matcher]
+  setMatchingField(formFields: Record<string, any>) {
+    if (this.matcher && formFields[this.matcher]) {
+      this._matchingField = formFields[this.matcher]
       return
     }
     throw new Error('Matching Field does not exist on form')
