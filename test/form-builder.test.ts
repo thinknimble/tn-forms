@@ -45,7 +45,7 @@ describe('Form builder', () => {
   })
   it('Adds a form level validator', () => {
     const myForm = createForm()
-      .addField({ name: 'password', type: 'password' })
+      .addField({ name: 'password', type: 'password', value: 'test-password' })
       .addField({ name: 'confirmPassword', type: 'password' })
     myForm.addFormLevelValidator(
       'password',
@@ -54,5 +54,7 @@ describe('Form builder', () => {
         message: 'Passwords must match',
       }),
     )
+    myForm.validate()
+    expect(myForm.fields.password.errors).toHaveLength(1)
   })
 })
