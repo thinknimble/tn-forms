@@ -78,6 +78,18 @@ export interface IFormFieldKwargs<TValue = string, TName extends string = ''> {
   label?: string
 }
 
+export interface IFormFieldCreate<TValue = string, TName extends string = ''> {
+  readonly name: TName
+  validators?: IValidator[]
+  errors?: IFormFieldError[]
+  value?: TValue
+  id?: string | null
+  placeholder?: string
+  type?: string
+  isTouched?: boolean
+  label?: string
+}
+
 export interface IFormField<T = any, TName extends string = ''> {
   value: T | undefined
   errors: IFormFieldError[]

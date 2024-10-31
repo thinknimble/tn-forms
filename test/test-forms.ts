@@ -2,8 +2,9 @@ import * as assert from 'assert'
 import { Equals, Expect } from './type-utils'
 
 import Form, { FormArray, FormField } from '../src/forms'
-import { GetFormFieldNames, IFormArray, IFormField } from '../src/interfaces'
+import { IFormArray, IFormField } from '../src/interfaces'
 import {
+  DynamicMinDateValidator,
   EmailValidator,
   MaxDateValidator,
   MinDateValidator,
@@ -11,7 +12,6 @@ import {
   MustMatchValidator,
   RequiredValidator,
   TrueFalseValidator,
-  DynamicMinDateValidator,
   UrlValidator,
 } from '../src/validators'
 
