@@ -2,7 +2,7 @@
 
 ## Installation
 
-```
+```shell
 npm i -S @thinknimble/tn-forms
 ```
 
@@ -15,7 +15,7 @@ The library is written in Typescript and exposes all of the types used to build 
 <details>
 <summary>Sample Forms </summary>
 
-```ts
+```typescript
 import Form, { FormField, IFormField, RequiredValidator } from '@thinknimble/tn-forms'
 
 /**
@@ -56,7 +56,7 @@ export type TLoginForm = LoginFormInputs & LoginForm
 <details>
 <summary>Standalone Fields</summary>
 
-```ts
+```typescript
 import Form, {
   FormField,
   MinLengthValidator,
@@ -92,7 +92,7 @@ email.errors
 <details>
 <summary> Sample User form with Cross Field Validation and Form Arrays </summary>
 
-```ts
+```typescript
 // Build the interface to retrieve th fields in dot notation
 // optionally provide a type for the value of each field IFormField<type> any is used as a default
 
@@ -156,7 +156,7 @@ userForm.value.firstName
 
 To use shorthand field method (access a field with dot notation) you need to decalre a union type of the form and its interface
 
-```ts
+```typescript
 type TUserForm = UserForm & UserFormInputs
 const userForm = new UserForm() as TUserForm
 ```
@@ -179,7 +179,7 @@ this will give you direct access to the fields as properties of the class
 <details>
 <summary>Dynamic Form with form arrays</summary>
 
-```ts
+```typescript
 export type UserAddressFormInputs = {
   street: IFormField
   city: IFormField
@@ -216,7 +216,7 @@ class UserAddressForm extends Form<UserAddressFormInputs> {
 <details>
 <summary> Add Dynamic validators on the fly </summary>
 
-```ts
+```typescript
 // This method is useful for adding dynamic validators on the fly in response to other fields
 
 // Note for react this method is preferred to confrom to react's deep object mutability
@@ -233,7 +233,7 @@ userForm.addFormLevelValidator('firstName', new MinLengthValidator())
 
 ## Stanalone Fields
 
-```js
+```typescript
 import {
   FormField,
   IFormField,
@@ -268,7 +268,7 @@ email.errors
 
 ## Basic Form
 
-```js
+```typescript
 // Build the interface to retrieve th fields in dot notation
 // optionally provide a type for the value of each field IFormField<type> any is used as a default
 
@@ -321,7 +321,7 @@ userForm.value.firstName
 />
 ```
 
-```js
+```typescript
 const userForm = new UserForm()
 ```
 
@@ -338,7 +338,7 @@ const userForm = new UserForm()
 
 ## Dynamic Form with form arrays
 
-```js
+```typescript
 class UserAddressForm extends Form {
   static street = new FormField({ validators: [], value: 'this', label: 'Street' })
   static city = new FormField({ validators: [new MinLengthValidator({ minLength: 5 })] })
@@ -367,7 +367,7 @@ class UserAddressForm extends Form {
 
 ## Add Dynamic validators on the fly
 
-```js
+```typescript
 // This method is useful for adding dynamic validators on the fly in response to other fields
 
 // Note for react this method is preferred to confrom to react's deep object mutability
@@ -389,56 +389,56 @@ validators can be added to forms they all extend the base Validator class each v
 **RequiredValidator**
 Validates a field is not null, undefiend or empty
 
-```
+```typescript
     new RequiredValidator()
 ```
 
 **MinLengthValidator**
 Validates a field has a certain minimum length (if the value of the field is an array it will check arary length)
 
-```
+```typescript
     new MinLengthValidator({minLength: int})
 ```
 
 **MinDateValidator/MaxDateValidator**
 Validates a field has a certain minimum/maxium date (this is a static validator)
 
-```
+```typescript
     new MinDateValidator/MaxDateValidator({min/max: str|date})
 ```
 
 **MinimumValueValidator/MaximumValidator**
 Validates a field has a certain minimum/maxium value (this is a static validator)
 
-```
+```typescript
     new MinValueValidator/MaxValueValidator({min/max: str|int})
 ```
 
 **PatternValidator**
 Validates a field matches a pattern
 
-```
+```typescript
     new PatternValidator({pattern:str/<Regex>})
 ```
 
 **UrlValidator**
 Validates a field has a link pattern (ftp/http/https)
 
-```
+```typescript
     new UrlValidator()
 ```
 
 **MustMatchValidator**
 Validates a field matches another field
 
-```
+```typescript
   new MustMatchValidator({matcher:<string-field-name>})
 ```
 
 **TrueFalseValidator**
 Validates a field is true or false depending on true false value
 
-```
+```typescript
   new MustMatchValidator({truthy:boolean})
 ```
 
@@ -448,7 +448,7 @@ The validators class is easily extendable and allows you to create your own vali
 
 **Simple Validator**
 
-```
+```typescript
 import {Validator, notNullOrUndefined} from '@thinknimble/tn-forms'
 
 
@@ -484,7 +484,7 @@ export class MyValidator extends Validator {
 
 **_Dynamic Validator_**
 
-```
+```typescript
 export class MustMatchValidator extends Validator {
   matcher: string | null
   #matchingField: any
