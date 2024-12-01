@@ -1,7 +1,7 @@
 import { FormArray, FormField } from './forms'
 import { FormFieldsRecord, IForm, IFormArray, IFormField } from './interfaces'
 
-export function notNullOrUndefined(value: any): boolean {
+export function notNullOrUndefined(value: any): value is NonNullable<any> {
   return value !== null && typeof value !== 'undefined'
 }
 

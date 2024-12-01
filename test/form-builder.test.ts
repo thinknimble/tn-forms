@@ -26,9 +26,12 @@ describe('Form builder', () => {
     expect(myReplicatedForm).not.toBe(myForm)
     expect(myReplicatedForm.fields.email).toBeDefined()
   })
-  //Future features
   it('updates a field value', () => {
-    const myForm = createForm().addField({ name: 'email', type: 'email' })
+    const myForm = createForm().addField({ name: 'email', type: 'email', value: '' })
+    //TODO: replace with faker
+    const email = 'test@example.com'
+    myForm.setFieldValue('email', email)
+    expect(myForm.fields.email.value).toBe(email)
   })
   it('can validate regular fields', () => {
     const myForm = createForm().addField({
@@ -39,9 +42,8 @@ describe('Form builder', () => {
     myForm.validate()
     expect(myForm.fields.email.errors).toHaveLength(1)
   })
-  // NEW !
   it('Can use zod validators', () => {
-    //TODO:
+    //TODO: Need to think about how to do this properly
   })
   it('Adds a form level validator', () => {
     const myForm = createForm()

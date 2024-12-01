@@ -59,25 +59,27 @@ export class FormLevelValidator<T = any> extends Validator<T> implements IFormLe
   }
 }
 
-export class RequiredValidator extends Validator {
+export class RequiredValidator<T> extends Validator<T> {
   constructor({ message = 'This is a required field', code = 'required', isRequired = true } = {}) {
     super({ message, code, isRequired })
   }
-  call(value: any) {
+  call(value: T) {
     if (!this.enableValidate && !notNullOrUndefined(value)) {
       return
     }
     if (!notNullOrUndefined(value)) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (Array.isArray(value) && !value.length) {
+    }
+    if (Array.isArray(value) && !value.length) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
-    } else if (!value.toString().length) {
+    }
+    if (value && !value.toString().length) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
   }
 }
 
-export class MinLengthValidator extends Validator {
+export class MinLengthValidator<T> extends Validator<T> {
   minLength: number
 
   constructor({
@@ -90,11 +92,11 @@ export class MinLengthValidator extends Validator {
     this.minLength = minLength
   }
 
-  call(value: any) {
+  call(value: T) {
     if (!this.enableValidate && !notNullOrUndefined(value)) {
       return
     }
-    new RequiredValidator({ message: this.message, code: this.code }).call(value)
+    new RequiredValidator<T>({ message: this.message, code: this.code }).call(value)
     if (!value || value.toString().length < this.minLength) {
       throw new Error(JSON.stringify({ code: this.code, message: this.message }))
     }
