@@ -4,4 +4,5 @@ export * from './validators';
 export * from './interfaces';
 export * from './forms';
 export * from './utils';
+export * from './types';
 //# sourceMappingURL=index.d.ts.map
