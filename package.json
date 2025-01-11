@@ -28,7 +28,6 @@
   "homepage": "https://github.com/thinknimble/tn-forms#readme",
   "dependencies": {
     "@thinknimble/tn-utils": "^1.4.0",
-    "@types/luxon": "^3.0.0",
     "babel-loader": "^8.2.2",
     "email-validator": "^2.0.4",
     "install": "^0.13.0",
@@ -37,6 +36,7 @@
     "react-native-uuid": "^2.0.1"
   },
   "devDependencies": {
+    "@types/luxon": "^3.0.0",
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@babel/eslint-parser": "^7.19.1",
