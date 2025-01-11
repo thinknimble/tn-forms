@@ -4,20 +4,16 @@
   "description": "Utilities for building front-end forms.",
   "author": "William Huster <william@thinknimble.com>, Pari Baker <pari@thinknimble.com>, Damian Lucero <damian@thinknimble.com>",
   "license": "MIT",
-  "files": [
-    "lib/**/*"
-  ],
-  "types": "./lib/cjs/types/index.d.ts",
-  "main": "./lib/cjs/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rm -rf ./lib",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
-    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
-    "prepack": "npm run build",
-    "test": "ts-mocha  -- --verbose=true -p ./configs/tsconfig.base.json --require @babel/register test/**.ts",
-    "test:watch": "ts-mocha  -- --verbose=true -p ./configs/tsconfig.base.json --require @babel/register -w --watch-files **/*.ts",
-    "test-dev": "ts-mocha  -- --verbose=true -p ./configs/tsconfig.base.json --require @babel/register test/test-dev.ts"
+    "clean": "rm -rf ./dist",
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "lint": "tsc",
+    "test": "ts-mocha  -- --verbose=true -p ./tsconfig.json --require @babel/register test/**.ts",
+    "test:watch": "ts-mocha  -- --verbose=true -p ./tsconfig.json --require @babel/register -w --watch-files **/*.ts",
+    "test-dev": "ts-mocha  -- --verbose=true -p ./tsconfig.json --require @babel/register test/test-dev.ts"
   },
   "directories": {
     "test": "test"

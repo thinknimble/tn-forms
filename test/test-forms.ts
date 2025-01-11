@@ -1,7 +1,7 @@
 import * as assert from 'assert'
 import { Equals, Expect } from './type-utils'
 
-import Form, { FormArray, FormField } from '../src/forms'
+import { FormArray, FormField, Form } from '../src/forms'
 import { GetFormFieldNames, IFormArray, IFormField } from '../src/interfaces'
 import {
   EmailValidator,
@@ -142,7 +142,7 @@ describe('Forms', () => {
       assert.equal(userForm.address.groups.length, 1)
     })
     it('should have a validator for address', () => {
-      assert.equal(userForm.address.groups[0].field['city'].validators.length, 1)
+      assert.equal(userForm.address.groups[0]!.field['city'].validators.length, 1)
     })
     it('should have a validator for address', () => {
       assert.equal((userForm.address.groups[0] as TUserAddressForm).city.validators.length, 1)
@@ -154,14 +154,14 @@ describe('Forms', () => {
     it('should set two different forms that do not share values', () => {
       let userFormOriginal = new UserForm() as TUserForm
       const originalFormAddresses = userFormOriginal.address.groups as TUserAddressForm[]
-      originalFormAddresses[0].street.value = 'testingoriginal'
-      originalFormAddresses[0].city.value = 'testingoriginal'
+      originalFormAddresses[0]!.street.value = 'testingoriginal'
+      originalFormAddresses[0]!.city.value = 'testingoriginal'
       let userFormSecond = new UserForm() as TUserForm
       const secondUserFormAddresses = userFormSecond.address.groups as TUserAddressForm[]
-      secondUserFormAddresses[0].street.value = 'testing'
+      secondUserFormAddresses[0]!.street.value = 'testing'
       assert.notEqual(
-        originalFormAddresses[0].street.value,
-        secondUserFormAddresses[0].street.value,
+        originalFormAddresses[0]!.street.value,
+        secondUserFormAddresses[0]!.street.value,
       )
     })
     it('should create a form using the factory method', () => {

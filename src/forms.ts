@@ -29,17 +29,6 @@ function setFormFieldValueFromKwargs<T, TName extends string = ''>(
   field.name = name as TName
   return field
 }
-function setValidatorProps(form: IForm<any>, validator: IValidator, kwargs: any): IValidator {
-  let props = {}
-  for (const prop in validator) {
-    props[prop] = validator[prop]
-  }
-  props['form'] = form
-  for (const [k, v] of Object.entries(kwargs)) {
-    props[k] = v
-  }
-  return validator.constructor(props)
-}
 
 function fields<T>(fields: TArrayOfFormFieldValues<T>): TFormFieldTypeCombos<T> {
   let formArrays: IFormArray<any, any>[] = []
@@ -153,7 +142,7 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
   set label(label) {
     this._label = label
   }
-  
+
   set value(value) {
     this._value = value
   }
@@ -244,7 +233,7 @@ export class FormArray<T extends FormFieldsRecord> implements IFormArray<T> {
   }
 }
 
-export default class Form<T extends FormFieldsRecord> implements IForm<T> {
+export class Form<T extends FormFieldsRecord> implements IForm<T> {
   private _fields = {} as TFormFieldTypeOpts<T>
   private _dynamicFormValidators: IDynamicFormValidators = {}
   private _errors = {}
@@ -254,15 +243,18 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
      * `this.constructor` has the static fields as keys. So here we're iterating over them to get the values from the child class and store them in the #fields private class field
      */
     for (const prop in this.constructor) {
+      //@ts-expect-error cursed iteration on static fields
       if (this.constructor[prop] instanceof FormField) {
         //@ts-expect-error not sure how to type this correctly as of now
         this._fields[prop] = this.copy(this.constructor[prop])
       }
+      //@ts-expect-error cursed iteration on static unknown fields
       if (this.constructor[prop] instanceof FormArray) {
         //@ts-expect-error not sure how to type this correctly as of now
         this._fields[prop] = this.copyArray(this.constructor[prop])
       }
       if (prop == 'dynamicFormValidators') {
+        //@ts-expect-error cursed iteration on static fields
         this._dynamicFormValidators = this.constructor[prop]
       }
     }
@@ -291,7 +283,7 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
               const group = field.groups[index]
               let valuesObj = kwargs[kwargsFieldNameKey][index]
               Object.keys(valuesObj).forEach((k: string) => {
-                group.field[k].value = valuesObj[k]
+                if (group) group.field[k].value = valuesObj[k]
               })
             } else {
               let valuesObj = kwargs[kwargsFieldNameKey][index]
@@ -306,7 +298,10 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
     }
     for (const [_field, _validators] of Object.entries(this._dynamicFormValidators)) {
       for (let i = 0; i < _validators.length; i++) {
-        this.addFormLevelValidator(_field, _validators[i])
+        const validator = _validators[i]
+        if (validator) {
+          this.addFormLevelValidator(_field, validator)
+        }
       }
     }
   }
@@ -409,7 +404,7 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
     const newValidator = validator
     newValidator.setMatchingField(this)
 
-    if (this.field[fieldName] instanceof FormField) {
+    if (this.field[fieldName] instanceof FormField && currentField) {
       currentField.addValidator(newValidator)
     }
   }
@@ -424,7 +419,7 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
       )
     }
     this._handleNoFieldErrors(fieldName)
-    currentField.addValidator(validator)
+    currentField && currentField.addValidator(validator)
   }
   validate() {
     this.fields.forEach((f) => {
@@ -445,24 +440,25 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
         .filter((group) => group.isValid)
         .map((invalidGroup) => invalidGroup.errors)
       if (invalidGroups.length) {
-        acc[curr.name]
-          ? (acc[curr.name] = [...acc[curr.name], invalidGroups])
-          : (acc[curr.name] = invalidGroups)
+        if (!acc[curr.name]) {
+          acc[curr.name] = invalidGroups
+          return acc
+        }
+        acc[curr.name] = [...(acc[curr.name] ?? []), invalidGroups]
         return acc
       }
       return acc
-    }, {})
+    }, {} as Record<string, any[]>)
 
     let formFieldErrors = formFields.reduce((acc, curr) => {
-      if (!curr.isValid) {
-        !acc[curr.name]
-          ? (acc[curr.name] = curr.errors)
-          : (acc[curr.name] = [...acc[curr.name], curr.errors])
-
+      if (curr.isValid) return acc
+      if (!acc[curr.name]) {
+        acc[curr.name] = curr.errors
         return acc
       }
+      acc[curr.name] = [...(acc[curr.name] ?? []), curr.errors]
       return acc
-    }, {})
+    }, {} as Record<string, any[]>)
     return { ...this._errors, ...formFieldErrors, ...formArrayErrors }
   }
   set errors(errs) {
@@ -471,14 +467,18 @@ export default class Form<T extends FormFieldsRecord> implements IForm<T> {
   get value(): FormValue<T> {
     let { formArrays, formFields } = fields(this.fields)
     let formFieldValues = formFields.reduce<FormValue<T>>((acc, curr) => {
+      //@ts-expect-error not sure how to type this.- FormValue<T> generic prevents this to be easily typed
       acc[curr.name] = curr.value
       return acc
     }, {} as FormValue<T>)
 
     let formArrayValues = formArrays.reduce<FormValue<T>>((acc, curr) => {
+      //@ts-expect-error not sure how to type this.- FormValue<T> generic prevents this to be easily typed
       if (!acc[curr.name]) {
+        //@ts-expect-error not sure how to type this.- FormValue<T> generic prevents this to be easily typed
         acc[curr.name] = curr.groups.map((formGroup) => formGroup.value)
       } else {
+        //@ts-expect-error not sure how to type this.- FormValue<T> generic prevents this to be easily typed
         acc[curr.name] = [...acc[curr.name], curr.groups.map((formGroup) => formGroup.value)]
       }
       return acc
