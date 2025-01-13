@@ -11,9 +11,6 @@ importers:
       '@thinknimble/tn-utils':
         specifier: ^1.4.0
         version: 1.6.1
-      '@types/luxon':
-        specifier: ^3.0.0
-        version: 3.0.0
       babel-loader:
         specifier: ^8.2.2
         version: 8.2.5(@babel/core@7.21.3)(webpack@5.88.2)
@@ -57,6 +54,9 @@ importers:
       '@types/expect':
         specifier: ^24.3.0
         version: 24.3.0
+      '@types/luxon':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/mocha':
         specifier: ^9.1.1
         version: 9.1.1
