@@ -11,6 +11,7 @@
     "clean": "rm -rf ./dist",
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "release": "pnpm run ci && changeset publish",
+    "ci": "pnpm run lint && pnpm run test && pnpm run build",
     "lint": "tsc",
     "test": "ts-mocha  -- --verbose=true -p ./tsconfig.json --require @babel/register test/**.ts",
     "test:watch": "ts-mocha  -- --verbose=true -p ./tsconfig.json --require @babel/register -w --watch-files **/*.ts",
