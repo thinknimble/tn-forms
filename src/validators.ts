@@ -165,10 +165,10 @@ export class MinDateValidator extends Validator {
         }),
       )
     }
-    let min
+    let minAsLuxonDateTime
     let compare
     try {
-      min = DateTime.fromJSDate(this.min)
+      minAsLuxonDateTime = DateTime.fromJSDate(this.min)
     } catch (e) {
       throw new Error(
         JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the minimum' }),
@@ -179,7 +179,7 @@ export class MinDateValidator extends Validator {
     } catch (e) {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
-    if (!min || !min.isValid) {
+    if (!minAsLuxonDateTime || !minAsLuxonDateTime.isValid) {
       throw new Error(
         JSON.stringify({ code: this.code, message: 'Please enter a valid Date for the minimum' }),
       )
@@ -188,11 +188,13 @@ export class MinDateValidator extends Validator {
       throw new Error(JSON.stringify({ code: this.code, message: 'Please enter a valid Date' }))
     }
 
-    if (compare.startOf('day') < min.startOf('day')) {
+    if (compare.startOf('day') < minAsLuxonDateTime.startOf('day')) {
       throw new Error(
         JSON.stringify({
           code: this.code,
-          message: `Please enter a date greater than ${DateTime.fromJSDate(min).toFormat('D')}`,
+          message: `Please enter a date greater than ${DateTime.fromJSDate(this.min).toFormat(
+            'D',
+          )}`,
         }),
       )
     }

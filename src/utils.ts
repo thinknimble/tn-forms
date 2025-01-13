@@ -6,14 +6,14 @@ export function notNullOrUndefined(value: any): boolean {
 }
 
 export function isNumber(message = 'Value must be a number') {
-  return function (value) {
+  return function (value: unknown) {
     if (!Number.isInteger(value)) {
       throw new Error(message)
     }
   }
 }
 
-export function isNumberOrFloat(value) {
+export function isNumberOrFloat(value: unknown) {
   let val = Number(value)
   return typeof Number(val) == 'number' && !isNaN(val)
 }
