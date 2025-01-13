@@ -1,0 +1,10 @@
+{
+  "mode": "exit",
+  "tag": "canary",
+  "initialVersions": {
+    "@thinknimble/tn-forms": "3.2.1"
+  },
+  "changesets": [
+    "five-guests-compare"
+  ]
+}
