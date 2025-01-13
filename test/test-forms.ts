@@ -432,7 +432,7 @@ describe('Forms', () => {
   })
 
   describe('# ExtractFormFields', () => {
-    class MyForm extends Form<any> {
+    class MyForm extends Form<ExtractFormFields<typeof MyForm>> {
       static name = new FormField()
       static age = new FormField<number>()
     }
@@ -447,7 +447,6 @@ describe('Forms', () => {
       type AgeFieldType = typeof myForm.age
       type ExpectedType = FormField<number>
       type isCorrectType = [Expect<Equals<AgeFieldType, ExpectedType>>]
-
    
     })
   })
