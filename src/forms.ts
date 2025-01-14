@@ -17,7 +17,6 @@ import {
   TFormInstanceFields,
 } from './interfaces'
 
-import uuid from 'react-native-uuid'
 import { isFormArray, isFormField } from './utils'
 
 function setFormFieldValueFromKwargs<T, TName extends string = ''>(
@@ -79,12 +78,12 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
         ? ''
         : value
     ) as T
-    this.name = (name ? name : (uuid.v4() as string)) as TName
+    this.name = (name ? name : (String(Date.now()))) as TName
     this.errors = errors
     this.validators = validators
     this.placeholder = placeholder
     this.type = type
-    this.id = id ? id : name ? name : 'field' + '-' + uuid.v4()
+    this.id = id ? id : name ? name : 'field' + '-' + String(Date.now())
     this._isTouched = isTouched
     this.label = label
   }
