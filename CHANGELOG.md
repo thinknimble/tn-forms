@@ -1,5 +1,11 @@
 # @thinknimble/tn-forms
 
+## 3.3.3
+
+### Patch Changes
+
+- 07f688c: Fix issue with uuid - remove it and use timestamp ms instead
+
 ## 3.3.2
 
 ### Patch Changes
