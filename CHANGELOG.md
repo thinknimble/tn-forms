@@ -1,5 +1,11 @@
 # @thinknimble/tn-forms
 
+## 3.3.2
+
+### Patch Changes
+
+- 0dff155: Remove unneeded exports entry in package.json. Fix package being private from configuration
+
 ## 3.3.0
 
 ### Minor Changes
