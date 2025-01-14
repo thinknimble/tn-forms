@@ -57,9 +57,6 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 
-// src/forms.ts
-var import_react_native_uuid = __toESM(require("react-native-uuid"));
-
 // src/utils.ts
 function notNullOrUndefined(value) {
   return value !== null && typeof value !== "undefined";
@@ -130,12 +127,12 @@ var FormField = class _FormField {
     label = ""
   } = {}) {
     this.value = Array.isArray(value) ? [...value] : value !== null && typeof value == "object" ? { ...value } : value === void 0 ? "" : value;
-    this.name = name ? name : import_react_native_uuid.default.v4();
+    this.name = name ? name : String(Date.now());
     this.errors = errors;
     this.validators = validators;
     this.placeholder = placeholder;
     this.type = type;
-    this.id = id ? id : name ? name : "field-" + import_react_native_uuid.default.v4();
+    this.id = id ? id : name ? name : "field-" + String(Date.now());
     this._isTouched = isTouched;
     this.label = label;
   }
