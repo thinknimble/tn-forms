@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { Equals, Expect } from './type-utils'
+import { Equals, Expect } from './type-utils';
 
 import { FormArray, FormField, Form } from '../src/forms'
 import { GetFormFieldNames, IFormArray, IFormField } from '../src/interfaces'
@@ -14,6 +14,7 @@ import {
   DynamicMinDateValidator,
   UrlValidator,
 } from '../src/validators'
+import { ExtractFormFields } from '../src'
 
 type IUserAddressForm = {
   street: IFormField
@@ -427,6 +428,26 @@ describe('Forms', () => {
       type shouldHaveProperName = Expect<
         Equals<typeof stuff['field']['motivation']['name'], typeof motivationName>
       >
+    })
+  })
+
+  describe('# ExtractFormFields', () => {
+    class MyForm extends Form<ExtractFormFields<typeof MyForm>> {
+      static name = new FormField()
+      static age = new FormField<number>()
+    }
+    type TMyForm = MyForm & ExtractFormFields<typeof MyForm>
+    it('should extract the form fields', () => {
+      let myForm = new MyForm() as TMyForm
+      assert.equal(myForm.name instanceof FormField, true)
+      assert.equal(myForm.age instanceof FormField, true)
+    })
+    it('should have age as FormField<number>', () => {
+      let myForm = new MyForm() as TMyForm
+      type AgeFieldType = typeof myForm.age
+      type ExpectedType = FormField<number>
+      type isCorrectType = [Expect<Equals<AgeFieldType, ExpectedType>>]
+   
     })
   })
 })
