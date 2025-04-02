@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export interface IDynamicFormValidators {
   [key: string]: IFormLevelValidator[]
 }
@@ -78,11 +80,41 @@ export interface IFormFieldKwargs<TValue = string, TName extends string = ''> {
   label?: string
 }
 
+export interface IFormFieldZodKwargs<
+  TZodValidator extends z.ZodTypeAny,
+  TName extends string = '',
+> {
+  readonly name?: TName
+  validator: TZodValidator
+  errors?: string[]
+  value?: z.infer<TZodValidator>
+  id?: string | null
+  placeholder?: string
+  type?: string
+  isTouched?: boolean
+  label?: string
+}
+
 export interface IFormFieldCreate<TValue = string, TName extends string = ''> {
   readonly name: TName
   validators?: IValidator[]
   errors?: IFormFieldError[]
   value?: TValue
+  id?: string | null
+  placeholder?: string
+  type?: string
+  isTouched?: boolean
+  label?: string
+}
+
+export interface IFormFieldZodCreate<
+  TZodValidator extends z.ZodTypeAny,
+  TName extends string = '',
+> {
+  readonly name: TName
+  validator: TZodValidator
+  errors?: IFormFieldError[]
+  value?: z.infer<TZodValidator>
   id?: string | null
   placeholder?: string
   type?: string
@@ -107,6 +139,25 @@ export interface IFormField<T = any, TName extends string = ''> {
   set isTouched(touched: boolean)
   replicate(): IFormField<T, TName>
   addValidator(validator: IValidator<T>): void
+}
+
+export interface IFormFieldZod<TZodValidator extends z.ZodTypeAny, TName extends string> {
+  value: z.infer<TZodValidator> | undefined
+  errors: string[]
+  validator: TZodValidator
+  readonly name: TName
+  placeholder: string
+  type: string
+  id: string
+  label: string
+
+  get isValid(): boolean
+  set isValid(value: boolean)
+  validate(): void
+  get isTouched(): boolean
+  set isTouched(touched: boolean)
+  replicate(): IFormFieldZod<TZodValidator, TName>
+  addValidator<TValidator extends z.ZodTypeAny>(validator: TValidator): void
 }
 
 export interface IFormInstance {

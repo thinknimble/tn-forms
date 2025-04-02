@@ -8,6 +8,8 @@ import {
   IFormField,
   IFormFieldError,
   IFormFieldKwargs,
+  IFormFieldZod,
+  IFormFieldZodKwargs,
   IFormLevelValidator,
   IValidator,
   OptionalFormArgs,
@@ -18,6 +20,7 @@ import {
 } from './interfaces'
 
 import uuid from 'react-native-uuid'
+import { z } from 'zod'
 import { isFormArray, isFormField } from './utils'
 
 function setFormFieldValueFromKwargs<T, TName extends string = ''>(
@@ -174,6 +177,105 @@ export class FormField<T = string, TName extends string = ''> implements IFormFi
       placeholder: this.placeholder,
       type: this.type,
       validators: [...this.validators],
+      value: this.value,
+    })
+  }
+}
+
+export class FormFieldZod<TZodValidator extends z.ZodTypeAny, TName extends string>
+  implements IFormFieldZod<TZodValidator, TName>
+{
+  private _value: z.infer<TZodValidator> | undefined = undefined
+  private _errors: string[] = []
+  private _validator: TZodValidator
+  name: TName
+  placeholder: string = ''
+  type: string = ''
+  id: string
+  private _isTouched: boolean
+  label: string = ''
+
+  constructor({
+    name = '' as TName,
+    validator,
+    errors = [],
+    value,
+    placeholder = '',
+    type = 'text',
+    id = null,
+    isTouched = false,
+    label = '',
+  }: IFormFieldZodKwargs<TZodValidator, TName>) {
+    this.value = value
+    this.name = (name ? name : (uuid.v4() as string)) as TName
+    this.errors = errors
+    this.validator = validator
+    this.placeholder = placeholder
+    this.type = type
+    this.id = id ? id : name ? name : 'field' + '-' + uuid.v4()
+    this._isTouched = isTouched
+    this.label = label
+  }
+  static create<TZodValidator extends z.ZodTypeAny, TName extends string>(
+    data: IFormFieldZodKwargs<TZodValidator, TName>,
+  ): FormFieldZod<TZodValidator, TName> {
+    return new FormFieldZod<TZodValidator, TName>(data)
+  }
+  validate() {
+    const result = this.validator?.safeParse(this._value)
+    if (!result) return null
+    if (!result.success && result.error) {
+      // study how zod errors work to get the best out of them
+      // this could be a good start
+      this.errors = result.error.issues.map((i) => i.message)
+      return null
+    }
+    return result.data as z.infer<TZodValidator>
+  }
+  get isValid(): boolean {
+    return Boolean(this.validator?.safeParse(this._value).success)
+  }
+  get errors() {
+    return this._errors
+  }
+  set errors(error) {
+    this._errors = error
+  }
+  set value(value) {
+    this._value = value
+  }
+  get value() {
+    return this._value
+  }
+  get validator() {
+    return this._validator
+  }
+  set validator(validator) {
+    this._validator = validator
+  }
+
+  get isTouched(): boolean {
+    return this._isTouched
+  }
+  set isTouched(touched: boolean) {
+    this._isTouched = touched
+  }
+
+  addValidator<TValidator extends z.ZodTypeAny>(validator: TValidator) {
+    const newValidator = this._validator.and(validator)
+    this._validator = newValidator as TZodValidator // hack to bypass type issue with z-intersection and regular zod
+    return this as FormFieldZod<typeof newValidator, TName>
+  }
+
+  replicate() {
+    return new FormFieldZod<TZodValidator, TName>({
+      errors: [...this.errors],
+      id: this.id,
+      isTouched: this.isTouched,
+      name: this.name,
+      placeholder: this.placeholder,
+      type: this.type,
+      validator: this.validator,
       value: this.value,
     })
   }
