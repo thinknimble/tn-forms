@@ -1,5 +1,11 @@
 # @thinknimble/tn-forms
 
+## 3.4.0
+
+### Minor Changes
+
+- e5efec8: Remove three unused runtime dependencies: `@thinknimble/tn-utils`, `babel-loader`, and `install`. None of them is imported by the source, the tests, or the built output. `babel-loader` pulled the full webpack and Babel toolchain into every install of this package.
+
 ## 3.3.3
 
 ### Patch Changes
